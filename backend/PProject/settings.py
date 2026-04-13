@@ -56,6 +56,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "portal.middleware.LanguageResolverMiddleware",
 ]
 
 ROOT_URLCONF = 'PProject.urls'
