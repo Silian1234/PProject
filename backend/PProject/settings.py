@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
-    "backend.portal",
+    "portal",
 ]
 
 MIDDLEWARE = [
