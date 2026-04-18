@@ -1,9 +1,26 @@
 import api from "./client";
-import type { Application, LoginResponse, User, Vacancy } from "../types/api";
+import type {
+  Application,
+  ApplicationStatus,
+  LoginResponse,
+  RegisterPayload,
+  RegisterResponse,
+  User,
+  Vacancy,
+  VacancyApplication,
+  VacancyWritePayload
+} from "../types/api";
 
 export async function getVacancies(q = ""): Promise<Vacancy[]> {
   const { data } = await api.get<Vacancy[]>("/vacancies/", {
     params: q ? { q } : {}
+  });
+  return data;
+}
+
+export async function getVacancyByLang(id: number, lang: "en" | "de" | "ru"): Promise<Vacancy> {
+  const { data } = await api.get<Vacancy>(`/vacancies/${id}/`, {
+    params: { lang }
   });
   return data;
 }
@@ -55,5 +72,37 @@ export async function loginUser(username: string, password: string): Promise<Log
 
 export async function getCurrentUser(): Promise<User> {
   const { data } = await api.get<User>("/auth/me/");
+  return data;
+}
+
+export async function registerUser(payload: RegisterPayload): Promise<RegisterResponse> {
+  const { data } = await api.post<RegisterResponse>("/auth/register/", payload);
+  return data;
+}
+
+export async function createVacancy(payload: VacancyWritePayload): Promise<Vacancy> {
+  const { data } = await api.post<Vacancy>("/vacancies/", payload);
+  return data;
+}
+
+export async function updateVacancy(id: number, payload: VacancyWritePayload): Promise<Vacancy> {
+  const { data } = await api.patch<Vacancy>(`/vacancies/${id}/`, payload);
+  return data;
+}
+
+export async function getVacancyApplications(vacancyId: number): Promise<VacancyApplication[]> {
+  const { data } = await api.get<VacancyApplication[]>(`/vacancies/${vacancyId}/applications/`);
+  return data;
+}
+
+export async function updateApplicationStatus(
+  applicationId: number,
+  status: ApplicationStatus,
+  employer_comment = ""
+): Promise<{ message: string }> {
+  const { data } = await api.patch<{ message: string }>(`/applications/${applicationId}/status/`, {
+    status,
+    employer_comment
+  });
   return data;
 }
