@@ -4,198 +4,132 @@ import { Link } from "react-router-dom";
 import { getErrorMessage } from "../api/error";
 import {
   createVacancy,
-  getCurrentUser,
   getVacancies,
   getVacancyApplications,
   getVacancyByLang,
   updateApplicationStatus,
   updateVacancy
 } from "../api/services";
-import type {
-  ApplicationStatus,
-  User,
-  Vacancy,
-  VacancyApplication,
-  VacancyTranslationPayload,
-  VacancyWritePayload
-} from "../types/api";
+import { getToken } from "../auth";
+import type { ApplicationStatus, Vacancy, VacancyWritePayload } from "../types/api";
 
-type Translations = {
-  en: VacancyTranslationPayload;
-  de: VacancyTranslationPayload;
-  ru: VacancyTranslationPayload;
+type Mode = "create" | "edit";
+
+type Translation = {
+  title: string;
+  description: string;
+  responsibilities: string;
+  requirements: string;
 };
 
-type AppDraft = {
-  status: ApplicationStatus;
-  employer_comment: string;
+type VacancyForm = {
+  department: string;
+  employment_type: "internship" | "part_time";
+  location: string;
+  workload_hours: string;
+  salary_from: string;
+  salary_to: string;
+  status: "draft" | "active" | "archived";
+  application_deadline: string;
+  en: Translation;
+  de: Translation;
+  ru: Translation;
 };
 
-const emptyTranslation = (): VacancyTranslationPayload => ({
+const emptyTranslation = (): Translation => ({
   title: "",
   description: "",
   responsibilities: "",
   requirements: ""
 });
 
-const emptyTranslations = (): Translations => ({
+const defaultForm = (): VacancyForm => ({
+  department: "1",
+  employment_type: "internship",
+  location: "",
+  workload_hours: "",
+  salary_from: "",
+  salary_to: "",
+  status: "draft",
+  application_deadline: "",
   en: emptyTranslation(),
   de: emptyTranslation(),
   ru: emptyTranslation()
 });
 
 export default function AdminVacanciesPage() {
-  const token = localStorage.getItem("token");
-  const [user, setUser] = useState<User | null>(null);
-  const [authError, setAuthError] = useState("");
-  const [loadingAuth, setLoadingAuth] = useState(true);
-
+  const token = getToken();
+  const [mode, setMode] = useState<Mode>("create");
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
-  const [loadingVacancies, setLoadingVacancies] = useState(false);
-  const [vacancyError, setVacancyError] = useState("");
-  const [message, setMessage] = useState("");
-
-  const [editingVacancyId, setEditingVacancyId] = useState<number | null>(null);
   const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(null);
-
-  const [department, setDepartment] = useState("1");
-  const [employmentType, setEmploymentType] = useState<"part_time" | "internship">("internship");
-  const [location, setLocation] = useState("");
-  const [workloadHours, setWorkloadHours] = useState("");
-  const [salaryFrom, setSalaryFrom] = useState("");
-  const [salaryTo, setSalaryTo] = useState("");
-  const [status, setStatus] = useState<"draft" | "active" | "archived">("draft");
-  const [applicationDeadline, setApplicationDeadline] = useState("");
-  const [translations, setTranslations] = useState<Translations>(emptyTranslations());
-  const [savingVacancy, setSavingVacancy] = useState(false);
-
-  const [applications, setApplications] = useState<VacancyApplication[]>([]);
-  const [loadingApplications, setLoadingApplications] = useState(false);
-  const [applicationError, setApplicationError] = useState("");
-  const [appDrafts, setAppDrafts] = useState<Record<number, AppDraft>>({});
-  const [updatingApplicationId, setUpdatingApplicationId] = useState<number | null>(null);
-
-  const isAllowed = useMemo(() => {
-    if (!user) return false;
-    return user.role_code === "employer" || user.role_code === "admin";
-  }, [user]);
-
-  const resetVacancyForm = () => {
-    setEditingVacancyId(null);
-    setDepartment("1");
-    setEmploymentType("internship");
-    setLocation("");
-    setWorkloadHours("");
-    setSalaryFrom("");
-    setSalaryTo("");
-    setStatus("draft");
-    setApplicationDeadline("");
-    setTranslations(emptyTranslations());
-  };
+  const [counts, setCounts] = useState<Record<number, number>>({});
+  const [quickStatus, setQuickStatus] = useState<Record<number, ApplicationStatus>>({});
+  const [form, setForm] = useState<VacancyForm>(defaultForm());
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [error, setError] = useState("");
 
   const loadVacancies = useCallback(async () => {
-    setLoadingVacancies(true);
-    setVacancyError("");
+    setLoading(true);
+    setError("");
     try {
       const data = await getVacancies();
       setVacancies(data);
+      const quick: Record<number, ApplicationStatus> = {};
+      data.forEach((v) => {
+        quick[v.id] = "under_review";
+      });
+      setQuickStatus(quick);
+
+      const countEntries = await Promise.all(
+        data.map(async (vacancy) => {
+          try {
+            const apps = await getVacancyApplications(vacancy.id);
+            return [vacancy.id, apps.length] as const;
+          } catch {
+            return [vacancy.id, 0] as const;
+          }
+        })
+      );
+      setCounts(Object.fromEntries(countEntries));
+
       if (data.length > 0 && !selectedVacancyId) {
         setSelectedVacancyId(data[0].id);
       }
     } catch (e) {
-      setVacancyError(getErrorMessage(e));
+      setError(getErrorMessage(e));
     } finally {
-      setLoadingVacancies(false);
+      setLoading(false);
     }
   }, [selectedVacancyId]);
 
-  const loadApplications = useCallback(async (vacancyId: number) => {
-    setLoadingApplications(true);
-    setApplicationError("");
-    try {
-      const data = await getVacancyApplications(vacancyId);
-      setApplications(data);
-      const draftMap: Record<number, AppDraft> = {};
-      data.forEach((item) => {
-        draftMap[item.id] = {
-          status: item.status,
-          employer_comment: item.employer_comment || ""
-        };
-      });
-      setAppDrafts(draftMap);
-    } catch (e) {
-      setApplicationError(getErrorMessage(e));
-      setApplications([]);
-      setAppDrafts({});
-    } finally {
-      setLoadingApplications(false);
-    }
-  }, []);
-
   useEffect(() => {
-    if (!token) {
-      setLoadingAuth(false);
-      return;
-    }
-
-    const loadAuth = async () => {
-      try {
-        const me = await getCurrentUser();
-        setUser(me);
-      } catch (e) {
-        setAuthError(getErrorMessage(e));
-      } finally {
-        setLoadingAuth(false);
-      }
-    };
-
-    void loadAuth();
-  }, [token]);
-
-  useEffect(() => {
-    if (!isAllowed) return;
     void loadVacancies();
-  }, [isAllowed, loadVacancies]);
+  }, [loadVacancies]);
 
-  useEffect(() => {
-    if (!isAllowed || !selectedVacancyId) return;
-    void loadApplications(selectedVacancyId);
-  }, [isAllowed, selectedVacancyId, loadApplications]);
+  const selectedVacancy = useMemo(
+    () => vacancies.find((v) => v.id === selectedVacancyId) || null,
+    [vacancies, selectedVacancyId]
+  );
 
-  const setTranslation = (
-    lang: "en" | "de" | "ru",
-    field: keyof VacancyTranslationPayload,
-    value: string
-  ) => {
-    setTranslations((prev) => ({
-      ...prev,
-      [lang]: {
-        ...prev[lang],
-        [field]: value
-      }
-    }));
-  };
-
-  const applyVacancyToForm = async (vacancy: Vacancy) => {
-    setMessage("");
-    setVacancyError("");
-    setEditingVacancyId(vacancy.id);
-    setDepartment(String(vacancy.department));
-    setEmploymentType(vacancy.employment_type as "part_time" | "internship");
-    setLocation(vacancy.location || "");
-    setWorkloadHours(vacancy.workload_hours ? String(vacancy.workload_hours) : "");
-    setSalaryFrom(vacancy.salary_from || "");
-    setSalaryTo(vacancy.salary_to || "");
-    setStatus(vacancy.status as "draft" | "active" | "archived");
-    setApplicationDeadline(vacancy.application_deadline || "");
-
+  const syncFormFromVacancy = async (vacancy: Vacancy) => {
+    setError("");
     try {
       const [en, de, ru] = await Promise.all([
         getVacancyByLang(vacancy.id, "en"),
         getVacancyByLang(vacancy.id, "de"),
         getVacancyByLang(vacancy.id, "ru")
       ]);
-      setTranslations({
+      setForm({
+        department: String(vacancy.department),
+        employment_type: vacancy.employment_type as "internship" | "part_time",
+        location: vacancy.location || "",
+        workload_hours: vacancy.workload_hours ? String(vacancy.workload_hours) : "",
+        salary_from: vacancy.salary_from || "",
+        salary_to: vacancy.salary_to || "",
+        status: vacancy.status as "draft" | "active" | "archived",
+        application_deadline: vacancy.application_deadline || "",
         en: {
           title: en.title,
           description: en.description,
@@ -216,76 +150,62 @@ export default function AdminVacanciesPage() {
         }
       });
     } catch (e) {
-      setVacancyError(getErrorMessage(e));
+      setError(getErrorMessage(e));
     }
   };
 
-  const buildPayload = (): VacancyWritePayload => {
-    const dept = Number(department);
-    if (!Number.isFinite(dept) || dept <= 0) {
-      throw new Error("Department must be a positive numeric id");
+  const toPayload = (): VacancyWritePayload => ({
+    department: Number(form.department),
+    employment_type: form.employment_type,
+    location: form.location,
+    workload_hours: form.workload_hours ? Number(form.workload_hours) : null,
+    salary_from: form.salary_from || null,
+    salary_to: form.salary_to || null,
+    status: form.status,
+    application_deadline: form.application_deadline || null,
+    translations: {
+      en: form.en,
+      de: form.de,
+      ru: form.ru
     }
+  });
 
-    return {
-      department: dept,
-      employment_type: employmentType,
-      location,
-      workload_hours: workloadHours ? Number(workloadHours) : null,
-      salary_from: salaryFrom || null,
-      salary_to: salaryTo || null,
-      status,
-      application_deadline: applicationDeadline || null,
-      translations
-    };
-  };
-
-  const onSubmitVacancy = async (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setVacancyError("");
-    setMessage("");
-    setSavingVacancy(true);
+    setSaving(true);
+    setMsg("");
+    setError("");
     try {
-      const payload = buildPayload();
-      if (editingVacancyId) {
-        await updateVacancy(editingVacancyId, payload);
-        setMessage("Vacancy updated");
-      } else {
+      const payload = toPayload();
+      if (mode === "create") {
         await createVacancy(payload);
-        setMessage("Vacancy created");
+        setMsg("Vacancy created");
+        setForm(defaultForm());
+      } else if (selectedVacancyId) {
+        await updateVacancy(selectedVacancyId, payload);
+        setMsg("Vacancy updated");
       }
       await loadVacancies();
-      if (selectedVacancyId) {
-        await loadApplications(selectedVacancyId);
-      }
-      resetVacancyForm();
-    } catch (e) {
-      setVacancyError(getErrorMessage(e));
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
-      setSavingVacancy(false);
+      setSaving(false);
     }
   };
 
-  const onUpdateApplication = async (applicationId: number) => {
-    const draft = appDrafts[applicationId];
-    if (!draft) return;
-
-    setApplicationError("");
-    setMessage("");
-    setUpdatingApplicationId(applicationId);
+  const onQuickSet = async (vacancyId: number) => {
+    setError("");
+    setMsg("");
     try {
-      const data = await updateApplicationStatus(
-        applicationId,
-        draft.status,
-        draft.employer_comment
+      const targetStatus = quickStatus[vacancyId] || "under_review";
+      const apps = await getVacancyApplications(vacancyId);
+      await Promise.all(
+        apps.map((app) => updateApplicationStatus(app.id, targetStatus))
       );
-      setMessage(data.message);
-      if (selectedVacancyId) {
-        await loadApplications(selectedVacancyId);
-      }
+      setMsg(`Updated ${apps.length} applications`);
+      await loadVacancies();
     } catch (e) {
-      setApplicationError(getErrorMessage(e));
-    } finally {
-      setUpdatingApplicationId(null);
+      setError(getErrorMessage(e));
     }
   };
 
@@ -297,283 +217,206 @@ export default function AdminVacanciesPage() {
     );
   }
 
-  if (loadingAuth) {
-    return <p>Loading...</p>;
-  }
-
-  if (authError) {
-    return <p style={{ color: "crimson" }}>{authError}</p>;
-  }
-
-  if (!isAllowed) {
-    return <p style={{ color: "crimson" }}>Access denied: employer/admin only.</p>;
-  }
-
   return (
-    <div>
-      <h1>Admin Vacancy Management</h1>
-      <p>Use this page to create/edit vacancies and manage application statuses.</p>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {vacancyError && <p style={{ color: "crimson" }}>{vacancyError}</p>}
+    <div className="pp-page">
+      <h1 className="pp-title">Employer Vacancy Management</h1>
+      {msg && <p className="pp-success">{msg}</p>}
+      {error && <p className="pp-error">{error}</p>}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: 16
-        }}
-      >
-        <section style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
-          <h2>{editingVacancyId ? `Edit vacancy #${editingVacancyId}` : "Create vacancy"}</h2>
-          <form onSubmit={onSubmitVacancy}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
-              <label>
-                Department ID
+      <section className="pp-employer-grid">
+        <aside className="pp-card">
+          <h2>Actions</h2>
+          <div className="pp-column">
+            <button type="button" className="pp-btn-primary" onClick={() => setMode("create")}>
+              Create Vacancy
+            </button>
+            <button type="button" className="pp-btn-outline" onClick={() => setMode("edit")}>
+              Edit Vacancy
+            </button>
+          </div>
+        </aside>
+
+        <article className="pp-card">
+          <h2>Applications by Vacancy</h2>
+          {loading && <p>Loading...</p>}
+          {!loading &&
+            vacancies.map((vacancy) => (
+              <div key={vacancy.id} className="pp-application-item">
+                <h3>{vacancy.title}</h3>
+                <p>{counts[vacancy.id] ?? 0} applications</p>
+                <div className="pp-row">
+                  <select
+                    className="pp-select pp-select-sm"
+                    value={quickStatus[vacancy.id] || "under_review"}
+                    onChange={(e) =>
+                      setQuickStatus((prev) => ({
+                        ...prev,
+                        [vacancy.id]: e.target.value as ApplicationStatus
+                      }))
+                    }
+                  >
+                    <option value="submitted">submitted</option>
+                    <option value="under_review">under_review</option>
+                    <option value="interview">interview</option>
+                    <option value="accepted">accepted</option>
+                    <option value="rejected">rejected</option>
+                  </select>
+                  <button
+                    type="button"
+                    className="pp-btn-outline pp-btn-sm"
+                    onClick={() => void onQuickSet(vacancy.id)}
+                  >
+                    Set: {quickStatus[vacancy.id] || "under_review"}
+                  </button>
+                </div>
+                {mode === "edit" && (
+                  <button
+                    type="button"
+                    className="pp-btn-link"
+                    onClick={() => {
+                      setSelectedVacancyId(vacancy.id);
+                      void syncFormFromVacancy(vacancy);
+                    }}
+                  >
+                    Load to editor
+                  </button>
+                )}
+              </div>
+            ))}
+        </article>
+      </section>
+
+      <section className="pp-card">
+        <h2>{mode === "create" ? "Create vacancy" : "Edit vacancy"}</h2>
+        {mode === "edit" && selectedVacancy && (
+          <p className="pp-subtitle">Editing: {selectedVacancy.title}</p>
+        )}
+
+        <form onSubmit={onSubmit} className="pp-form-grid">
+          <label className="pp-label">
+            Department ID
+            <input
+              className="pp-input"
+              value={form.department}
+              onChange={(e) => setForm((prev) => ({ ...prev, department: e.target.value }))}
+              required
+            />
+          </label>
+
+          <label className="pp-label">
+            Type
+            <select
+              className="pp-select"
+              value={form.employment_type}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  employment_type: e.target.value as "internship" | "part_time"
+                }))
+              }
+            >
+              <option value="internship">internship</option>
+              <option value="part_time">part_time</option>
+            </select>
+          </label>
+
+          <label className="pp-label">
+            Location
+            <input
+              className="pp-input"
+              value={form.location}
+              onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
+            />
+          </label>
+
+          <label className="pp-label">
+            Status
+            <select
+              className="pp-select"
+              value={form.status}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  status: e.target.value as "draft" | "active" | "archived"
+                }))
+              }
+            >
+              <option value="draft">draft</option>
+              <option value="active">active</option>
+              <option value="archived">archived</option>
+            </select>
+          </label>
+
+          {(["en", "de", "ru"] as const).map((lang) => (
+            <fieldset key={lang} className="pp-translation-box">
+              <legend>{lang.toUpperCase()}</legend>
+              <label className="pp-label">
+                Title
                 <input
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
+                  className="pp-input"
+                  value={form[lang].title}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      [lang]: { ...prev[lang], title: e.target.value }
+                    }))
+                  }
                   required
                 />
               </label>
-
-              <label>
-                Employment type
-                <select
-                  value={employmentType}
+              <label className="pp-label">
+                Description
+                <textarea
+                  className="pp-textarea pp-textarea-sm"
+                  value={form[lang].description}
                   onChange={(e) =>
-                    setEmploymentType(e.target.value as "part_time" | "internship")
+                    setForm((prev) => ({
+                      ...prev,
+                      [lang]: { ...prev[lang], description: e.target.value }
+                    }))
                   }
-                >
-                  <option value="internship">internship</option>
-                  <option value="part_time">part_time</option>
-                </select>
-              </label>
-
-              <label>
-                Location
-                <input value={location} onChange={(e) => setLocation(e.target.value)} />
-              </label>
-
-              <label>
-                Workload hours
-                <input
-                  type="number"
-                  min={0}
-                  value={workloadHours}
-                  onChange={(e) => setWorkloadHours(e.target.value)}
+                  required
                 />
               </label>
-
-              <label>
-                Salary from
-                <input value={salaryFrom} onChange={(e) => setSalaryFrom(e.target.value)} />
-              </label>
-
-              <label>
-                Salary to
-                <input value={salaryTo} onChange={(e) => setSalaryTo(e.target.value)} />
-              </label>
-
-              <label>
-                Status
-                <select
-                  value={status}
+              <label className="pp-label">
+                Responsibilities
+                <textarea
+                  className="pp-textarea pp-textarea-sm"
+                  value={form[lang].responsibilities}
                   onChange={(e) =>
-                    setStatus(e.target.value as "draft" | "active" | "archived")
+                    setForm((prev) => ({
+                      ...prev,
+                      [lang]: { ...prev[lang], responsibilities: e.target.value }
+                    }))
                   }
-                >
-                  <option value="draft">draft</option>
-                  <option value="active">active</option>
-                  <option value="archived">archived</option>
-                </select>
-              </label>
-
-              <label>
-                Application deadline
-                <input
-                  type="date"
-                  value={applicationDeadline}
-                  onChange={(e) => setApplicationDeadline(e.target.value)}
+                  required
                 />
               </label>
-            </div>
+              <label className="pp-label">
+                Requirements
+                <textarea
+                  className="pp-textarea pp-textarea-sm"
+                  value={form[lang].requirements}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      [lang]: { ...prev[lang], requirements: e.target.value }
+                    }))
+                  }
+                  required
+                />
+              </label>
+            </fieldset>
+          ))}
 
-            {(["en", "de", "ru"] as const).map((lang) => (
-              <fieldset
-                key={lang}
-                style={{
-                  marginTop: 12,
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
-                  padding: 10
-                }}
-              >
-                <legend>Translations ({lang.toUpperCase()})</legend>
-                <label style={{ display: "block", marginBottom: 6 }}>
-                  Title
-                  <input
-                    style={{ width: "100%" }}
-                    value={translations[lang].title}
-                    onChange={(e) => setTranslation(lang, "title", e.target.value)}
-                    required
-                  />
-                </label>
-                <label style={{ display: "block", marginBottom: 6 }}>
-                  Description
-                  <textarea
-                    style={{ width: "100%" }}
-                    rows={3}
-                    value={translations[lang].description}
-                    onChange={(e) => setTranslation(lang, "description", e.target.value)}
-                    required
-                  />
-                </label>
-                <label style={{ display: "block", marginBottom: 6 }}>
-                  Responsibilities
-                  <textarea
-                    style={{ width: "100%" }}
-                    rows={3}
-                    value={translations[lang].responsibilities}
-                    onChange={(e) => setTranslation(lang, "responsibilities", e.target.value)}
-                    required
-                  />
-                </label>
-                <label style={{ display: "block" }}>
-                  Requirements
-                  <textarea
-                    style={{ width: "100%" }}
-                    rows={3}
-                    value={translations[lang].requirements}
-                    onChange={(e) => setTranslation(lang, "requirements", e.target.value)}
-                    required
-                  />
-                </label>
-              </fieldset>
-            ))}
-
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              <button type="submit" disabled={savingVacancy}>
-                {savingVacancy
-                  ? "Saving..."
-                  : editingVacancyId
-                    ? "Update vacancy"
-                    : "Create vacancy"}
-              </button>
-              {editingVacancyId && (
-                <button type="button" onClick={resetVacancyForm}>
-                  Cancel editing
-                </button>
-              )}
-            </div>
-          </form>
-        </section>
-
-        <section style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
-          <h2>Vacancies</h2>
-          {loadingVacancies && <p>Loading vacancies...</p>}
-          {!loadingVacancies && vacancies.length === 0 && <p>No vacancies</p>}
-          <ul>
-            {vacancies.map((vacancy) => (
-              <li key={vacancy.id} style={{ marginBottom: 10 }}>
-                <div>
-                  <strong>{vacancy.title}</strong> (id: {vacancy.id}) - {vacancy.status}
-                </div>
-                <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                  <button type="button" onClick={() => void applyVacancyToForm(vacancy)}>
-                    Edit
-                  </button>
-                  <button type="button" onClick={() => setSelectedVacancyId(vacancy.id)}>
-                    View applications
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
-          <h2>
-            Applications
-            {selectedVacancyId ? ` for vacancy #${selectedVacancyId}` : ""}
-          </h2>
-          {applicationError && <p style={{ color: "crimson" }}>{applicationError}</p>}
-          {loadingApplications && <p>Loading applications...</p>}
-          {!loadingApplications && applications.length === 0 && (
-            <p>No applications for selected vacancy.</p>
-          )}
-          {applications.map((app) => {
-            const draft = appDrafts[app.id] || {
-              status: app.status,
-              employer_comment: app.employer_comment || ""
-            };
-            return (
-              <div
-                key={app.id}
-                style={{
-                  border: "1px solid #e5e5e5",
-                  borderRadius: 8,
-                  padding: 10,
-                  marginBottom: 10
-                }}
-              >
-                <div>
-                  <strong>{app.vacancy_title}</strong> (application #{app.id})
-                </div>
-                <div style={{ marginTop: 6 }}>
-                  <label>
-                    Status
-                    <select
-                      value={draft.status}
-                      onChange={(e) =>
-                        setAppDrafts((prev) => ({
-                          ...prev,
-                          [app.id]: {
-                            ...draft,
-                            status: e.target.value as ApplicationStatus
-                          }
-                        }))
-                      }
-                      style={{ marginLeft: 8 }}
-                    >
-                      <option value="submitted">submitted</option>
-                      <option value="under_review">under_review</option>
-                      <option value="interview">interview</option>
-                      <option value="accepted">accepted</option>
-                      <option value="rejected">rejected</option>
-                    </select>
-                  </label>
-                </div>
-                <div style={{ marginTop: 6 }}>
-                  <label style={{ display: "block" }}>
-                    Employer comment
-                    <textarea
-                      rows={3}
-                      style={{ width: "100%" }}
-                      value={draft.employer_comment}
-                      onChange={(e) =>
-                        setAppDrafts((prev) => ({
-                          ...prev,
-                          [app.id]: {
-                            ...draft,
-                            employer_comment: e.target.value
-                          }
-                        }))
-                      }
-                    />
-                  </label>
-                </div>
-                <button
-                  type="button"
-                  disabled={updatingApplicationId === app.id}
-                  onClick={() => void onUpdateApplication(app.id)}
-                >
-                  {updatingApplicationId === app.id ? "Updating..." : "Update status"}
-                </button>
-              </div>
-            );
-          })}
-        </section>
-      </div>
+          <div className="pp-row">
+            <button type="submit" className="pp-btn-primary" disabled={saving}>
+              {saving ? "Saving..." : mode === "create" ? "Create vacancy" : "Save changes"}
+            </button>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
+

@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { createApplication, getVacancy } from "../api/services";
 import { getErrorMessage } from "../api/error";
+import { getVacancy, getVacancyByLang } from "../api/services";
 import type { Vacancy } from "../types/api";
+
+type LocalizedPreview = {
+  en: string;
+  de: string;
+  ru: string;
+};
 
 export default function VacancyDetailsPage() {
   const { id } = useParams();
   const vacancyId = Number(id);
-
   const [vacancy, setVacancy] = useState<Vacancy | null>(null);
+  const [localization, setLocalization] = useState<LocalizedPreview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [studentMessage, setStudentMessage] = useState("");
-  const [coverLetterText, setCoverLetterText] = useState("");
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [result, setResult] = useState("");
-
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!Number.isFinite(vacancyId)) {
@@ -28,10 +26,21 @@ export default function VacancyDetailsPage() {
     }
 
     const load = async () => {
+      setLoading(true);
+      setError("");
       try {
-        setLoading(true);
-        const data = await getVacancy(vacancyId);
-        setVacancy(data);
+        const [base, en, de, ru] = await Promise.all([
+          getVacancy(vacancyId),
+          getVacancyByLang(vacancyId, "en"),
+          getVacancyByLang(vacancyId, "de"),
+          getVacancyByLang(vacancyId, "ru")
+        ]);
+        setVacancy(base);
+        setLocalization({
+          en: en.title,
+          de: de.title,
+          ru: ru.title
+        });
       } catch (e) {
         setError(getErrorMessage(e));
       } finally {
@@ -42,87 +51,50 @@ export default function VacancyDetailsPage() {
     void load();
   }, [vacancyId]);
 
-  const onApply = async (e: FormEvent) => {
-    e.preventDefault();
-    setResult("");
-    setError("");
-
-    try {
-      const response = await createApplication({
-        vacancy_id: vacancyId,
-        student_message: studentMessage,
-        cover_letter_text: coverLetterText,
-        resume_file: resumeFile || undefined
-      });
-      setResult(response.message);
-      setStudentMessage("");
-      setCoverLetterText("");
-      setResumeFile(null);
-    } catch (e) {
-      setError(getErrorMessage(e));
-    }
-  };
-
   if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
-  if (!vacancy) return <p>No vacancy found</p>;
+  if (error) return <p className="pp-error">{error}</p>;
+  if (!vacancy) return <p>Vacancy not found.</p>;
 
   return (
-    <div>
-      <h1>{vacancy.title}</h1>
-      <p>{vacancy.description}</p>
+    <div className="pp-page">
+      <h1 className="pp-title">Vacancy Details</h1>
 
-      <h3>Responsibilities</h3>
-      <p>{vacancy.responsibilities}</p>
+      <div className="pp-details-grid">
+        <article className="pp-card">
+          <h2>{vacancy.title}</h2>
+          <p className="pp-subtitle">Department: {vacancy.department}</p>
 
-      <h3>Requirements</h3>
-      <p>{vacancy.requirements}</p>
+          <h3>Responsibilities</h3>
+          <div className="pp-multiline">{vacancy.responsibilities}</div>
 
-      <h3>Apply</h3>
-      {!token && (
-        <p>
-          You need login first: <Link to="/login">Login</Link>
-        </p>
-      )}
+          <h3>Requirements</h3>
+          <div className="pp-multiline">{vacancy.requirements}</div>
 
-      {token && (
-        <form onSubmit={onApply}>
-          <div style={{ marginBottom: 8 }}>
-            <label>Student message</label>
-            <br />
-            <textarea
-              value={studentMessage}
-              onChange={(e) => setStudentMessage(e.target.value)}
-              rows={3}
-              style={{ width: "100%" }}
-            />
+          <div className="pp-actions-bottom">
+            <Link to={`/vacancies/${vacancy.id}/apply`} className="pp-btn-primary">
+              Apply
+            </Link>
           </div>
+        </article>
 
-          <div style={{ marginBottom: 8 }}>
-            <label>Cover letter</label>
+        <aside className="pp-card">
+          <h3>Localization Preview</h3>
+          <p>EN: {localization?.en || "-"}</p>
+          <p>DE: {localization?.de || "-"}</p>
+          <p>RU: {localization?.ru || "-"}</p>
+
+          <div className="pp-note">
+            Language selector affects:
             <br />
-            <textarea
-              value={coverLetterText}
-              onChange={(e) => setCoverLetterText(e.target.value)}
-              rows={5}
-              style={{ width: "100%" }}
-            />
-          </div>
-
-          <div style={{ marginBottom: 8 }}>
-            <label>Resume file (optional)</label>
+            UI labels
             <br />
-            <input
-              type="file"
-              onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
-            />
+            API messages
+            <br />
+            Vacancy content
           </div>
-
-          <button type="submit">Send application</button>
-        </form>
-      )}
-
-      {result && <p style={{ color: "green" }}>{result}</p>}
+        </aside>
+      </div>
     </div>
   );
 }
+

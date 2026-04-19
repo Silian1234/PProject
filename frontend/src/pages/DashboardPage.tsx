@@ -1,47 +1,39 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getErrorMessage } from "../api/error";
-import { getCurrentUser } from "../api/services";
-import type { User } from "../types/api";
+import { getStoredUser } from "../auth";
 
 export default function DashboardPage() {
-  const token = localStorage.getItem("token");
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!token) return;
-
-    const load = async () => {
-      try {
-        const data = await getCurrentUser();
-        setUser(data);
-      } catch (e) {
-        setError(getErrorMessage(e));
-      }
-    };
-
-    void load();
-  }, [token]);
-
-  if (!token) {
-    return (
-      <p>
-        Login required: <Link to="/login">Login</Link>
-      </p>
-    );
-  }
-
-  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
-  if (!user) return <p>Loading...</p>;
+  const user = getStoredUser();
 
   return (
-    <div>
-      <h1>Student Dashboard</h1>
-      <p>Username: {user.username}</p>
-      <p>Email: {user.email}</p>
-      <p>Role: {user.role_code}</p>
-      <p>Preferred language: {user.preferred_language}</p>
+    <div className="pp-page">
+      <h1 className="pp-title">Profile</h1>
+
+      <section className="pp-dashboard-grid">
+        <article className="pp-card">
+          <h2>{user?.first_name || user?.username || "Student"}</h2>
+          <p>Email: {user?.email || "-"}</p>
+          <p>Role: {user?.role_code || "-"}</p>
+          <p>Preferred language: {user?.preferred_language || "-"}</p>
+        </article>
+
+        <article className="pp-card">
+          <h2>Quick Actions</h2>
+          <div className="pp-column">
+            <Link to="/vacancies" className="pp-btn-primary">
+              Browse vacancies
+            </Link>
+            <Link to="/my-applications" className="pp-btn-outline">
+              View my applications
+            </Link>
+            {(user?.role_code === "employer" || user?.role_code === "admin") && (
+              <Link to="/admin/vacancies" className="pp-btn-outline">
+                Open employer panel
+              </Link>
+            )}
+          </div>
+        </article>
+      </section>
     </div>
   );
 }
+

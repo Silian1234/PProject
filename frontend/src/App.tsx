@@ -11,6 +11,7 @@ import RegisterPage from "./pages/RegisterPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import RequireAuth from "./components/RequireAuth";
 import RequireRole from "./components/RequireRole";
+import ApplyPage from "./pages/ApplyPage";
 
 export default function App() {
   return (
@@ -19,6 +20,14 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/vacancies" element={<VacanciesPage />} />
         <Route path="/vacancies/:id" element={<VacancyDetailsPage />} />
+        <Route
+          path="/vacancies/:id/apply"
+          element={
+            <RequireAuth>
+              <ApplyPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/dashboard"
           element={

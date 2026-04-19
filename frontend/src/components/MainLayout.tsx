@@ -6,13 +6,12 @@ import { logoutUser } from "../api/services";
 
 export default function MainLayout() {
   const { t, i18n } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
-  const [logoutError, setLogoutError] = useState("");
-  const [busyLogout, setBusyLogout] = useState(false);
+  const location = useLocation();
 
   const token = getToken();
   const [user, setUser] = useState(getStoredUser());
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     setUser(getStoredUser());
@@ -23,97 +22,117 @@ export default function MainLayout() {
     i18n.changeLanguage(lang);
   };
 
-  const isStudent = user?.role_code === "student";
-  const isEmployerOrAdmin = user?.role_code === "employer" || user?.role_code === "admin";
+  const canSeeApplications = Boolean(token && user?.role_code === "student");
+  const canSeeEmployer = Boolean(
+    token && (user?.role_code === "employer" || user?.role_code === "admin")
+  );
 
-  const navItems = useMemo(
+  const desktopNav = useMemo(
     () => [
-      { to: "/", label: t("nav.home"), visible: true },
-      { to: "/vacancies", label: t("nav.vacancies"), visible: true },
-      { to: "/dashboard", label: t("nav.dashboard"), visible: Boolean(token) },
-      { to: "/my-applications", label: t("nav.applications"), visible: Boolean(token && isStudent) },
-      { to: "/admin/vacancies", label: t("nav.admin"), visible: Boolean(token && isEmployerOrAdmin) }
+      { to: "/vacancies", label: t("nav.vacancies"), show: true },
+      { to: "/my-applications", label: t("nav.applications"), show: canSeeApplications },
+      { to: "/admin/vacancies", label: t("nav.admin"), show: canSeeEmployer }
     ],
-    [t, token, isStudent, isEmployerOrAdmin]
+    [t, canSeeApplications, canSeeEmployer]
   );
 
   const onLogout = async () => {
-    setBusyLogout(true);
-    setLogoutError("");
+    setIsLoggingOut(true);
     try {
       await logoutUser();
     } catch {
-      // token may already be invalid, clear local auth anyway
+      // backend token may already be invalid
     } finally {
       clearAuth();
       setUser(null);
-      setBusyLogout(false);
+      setIsLoggingOut(false);
       navigate("/login", { replace: true });
     }
   };
 
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-title">Campus Jobs</span>
-          <span className="brand-subtitle">University part-time jobs and internships</span>
+    <div className="pp-root">
+      <header className="pp-topbar">
+        <div className="pp-logo-wrap">
+          <NavLink to="/" className="pp-logo">
+            PProject
+          </NavLink>
         </div>
 
-        <nav className="nav-list">
-          {navItems
-            .filter((item) => item.visible)
+        <nav className="pp-desktop-nav">
+          {desktopNav
+            .filter((item) => item.show)
             .map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
+                className={({ isActive }) =>
+                  isActive ? "pp-nav-link pp-nav-link-active" : "pp-nav-link"
+                }
               >
                 {item.label}
               </NavLink>
             ))}
         </nav>
 
-        <div className="topbar-right">
-          <div className="lang-switch">
+        <div className="pp-topbar-right">
+          <div className="pp-lang">
+            <button type="button" onClick={() => setLang("ru")}>
+              RU
+            </button>
             <button type="button" onClick={() => setLang("en")}>
               EN
             </button>
             <button type="button" onClick={() => setLang("de")}>
               DE
             </button>
-            <button type="button" onClick={() => setLang("ru")}>
-              RU
-            </button>
           </div>
 
           {!token && (
-            <div className="auth-links">
-              <NavLink to="/login" className="nav-link">
+            <div className="pp-auth">
+              <NavLink to="/login" className="pp-auth-link">
                 {t("nav.login")}
               </NavLink>
-              <NavLink to="/register" className="nav-link">
+              <NavLink to="/register" className="pp-auth-link">
                 {t("nav.register")}
               </NavLink>
             </div>
           )}
 
           {token && (
-            <div className="auth-links">
-              <span className="user-pill">{user?.username || "user"}</span>
-              <button type="button" className="logout-btn" disabled={busyLogout} onClick={onLogout}>
-                {busyLogout ? "..." : t("nav.logout")}
-              </button>
-            </div>
+            <button
+              type="button"
+              className="pp-auth-link"
+              onClick={onLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? "..." : t("nav.logout")}
+            </button>
           )}
         </div>
       </header>
 
-      {logoutError && <p className="error-text">{logoutError}</p>}
-
-      <main className="content">
+      <main className="pp-content">
         <Outlet />
       </main>
+
+      <nav className="pp-mobile-bottom-nav">
+        <NavLink to="/" className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}>
+          Home
+        </NavLink>
+        <NavLink
+          to="/vacancies"
+          className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
+        >
+          Vacancies
+        </NavLink>
+        <NavLink
+          to={token ? "/dashboard" : "/login"}
+          className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
+        >
+          Profile
+        </NavLink>
+      </nav>
     </div>
   );
 }
