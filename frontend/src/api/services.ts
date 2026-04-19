@@ -75,6 +75,11 @@ export async function getCurrentUser(): Promise<User> {
   return data;
 }
 
+export async function logoutUser(): Promise<{ message: string }> {
+  const { data } = await api.post<{ message: string }>("/auth/logout/");
+  return data;
+}
+
 export async function registerUser(payload: RegisterPayload): Promise<RegisterResponse> {
   const { data } = await api.post<RegisterResponse>("/auth/register/", payload);
   return data;

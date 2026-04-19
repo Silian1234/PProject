@@ -23,7 +23,8 @@ const resources = {
         applications: "My Applications",
         admin: "Admin",
         login: "Login",
-        register: "Register"
+        register: "Register",
+        logout: "Logout"
       },
       pages: {
         home: "Home",
@@ -57,7 +58,8 @@ const resources = {
         applications: "Meine Bewerbungen",
         admin: "Admin",
         login: "Anmelden",
-        register: "Registrieren"
+        register: "Registrieren",
+        logout: "Abmelden"
       },
       pages: {
         home: "Startseite",
@@ -94,7 +96,8 @@ const resources = {
         applications: "Мои заявки",
         admin: "Админ",
         login: "Вход",
-        register: "Регистрация"
+        register: "Регистрация",
+        logout: "Выход"
       },
       pages: {
         home: "Главная",

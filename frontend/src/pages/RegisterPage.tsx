@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../api/error";
 import { registerUser } from "../api/services";
+import { getToken, saveAuth } from "../auth";
 import type { RegisterPayload } from "../types/api";
 
 type Role = "student" | "employer";
@@ -27,6 +28,12 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (getToken()) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMsg("");
@@ -47,9 +54,7 @@ export default function RegisterPage() {
       if (role === "student") payload.university_id = universityId;
       if (role === "employer") payload.organization_name = organizationName;
       const data = await registerUser(payload);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("lang", data.user.preferred_language);
+      saveAuth(data.token, data.user);
       setMsg(data.message);
       navigate("/dashboard");
     } catch (e) {

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../api/error";
 import { loginUser } from "../api/services";
+import { getToken, saveAuth } from "../auth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -12,6 +13,12 @@ export default function LoginPage() {
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (getToken()) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMsg("");
@@ -19,8 +26,7 @@ export default function LoginPage() {
 
     try {
       const data = await loginUser(username, password);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      saveAuth(data.token, data.user);
       setMsg(data.message);
       navigate("/dashboard");
     } catch (e) {

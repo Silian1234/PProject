@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { getErrorMessage } from "../api/error";
@@ -93,7 +93,7 @@ export default function AdminVacanciesPage() {
     setTranslations(emptyTranslations());
   };
 
-  const loadVacancies = async () => {
+  const loadVacancies = useCallback(async () => {
     setLoadingVacancies(true);
     setVacancyError("");
     try {
@@ -107,9 +107,9 @@ export default function AdminVacanciesPage() {
     } finally {
       setLoadingVacancies(false);
     }
-  };
+  }, [selectedVacancyId]);
 
-  const loadApplications = async (vacancyId: number) => {
+  const loadApplications = useCallback(async (vacancyId: number) => {
     setLoadingApplications(true);
     setApplicationError("");
     try {
@@ -130,7 +130,7 @@ export default function AdminVacanciesPage() {
     } finally {
       setLoadingApplications(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -155,12 +155,12 @@ export default function AdminVacanciesPage() {
   useEffect(() => {
     if (!isAllowed) return;
     void loadVacancies();
-  }, [isAllowed]);
+  }, [isAllowed, loadVacancies]);
 
   useEffect(() => {
     if (!isAllowed || !selectedVacancyId) return;
     void loadApplications(selectedVacancyId);
-  }, [isAllowed, selectedVacancyId]);
+  }, [isAllowed, selectedVacancyId, loadApplications]);
 
   const setTranslation = (
     lang: "en" | "de" | "ru",
