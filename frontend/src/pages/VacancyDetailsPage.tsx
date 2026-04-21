@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { getVacancy, getVacancyByLang } from "../api/services";
 import type { Vacancy } from "../types/api";
@@ -11,6 +12,7 @@ type LocalizedPreview = {
 };
 
 export default function VacancyDetailsPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const vacancyId = Number(id);
   const [vacancy, setVacancy] = useState<Vacancy | null>(null);
@@ -20,7 +22,7 @@ export default function VacancyDetailsPage() {
 
   useEffect(() => {
     if (!Number.isFinite(vacancyId)) {
-      setError("Invalid vacancy id");
+      setError(t("vacancyDetails.invalidId"));
       setLoading(false);
       return;
     }
@@ -49,52 +51,53 @@ export default function VacancyDetailsPage() {
     };
 
     void load();
-  }, [vacancyId]);
+  }, [vacancyId, t]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>{t("common.loading")}</p>;
   if (error) return <p className="pp-error">{error}</p>;
-  if (!vacancy) return <p>Vacancy not found.</p>;
+  if (!vacancy) return <p>{t("vacancyDetails.vacancyNotFound")}</p>;
 
   return (
     <div className="pp-page">
-      <h1 className="pp-title">Vacancy Details</h1>
+      <h1 className="pp-title">{t("vacancyDetails.title")}</h1>
 
       <div className="pp-details-grid">
         <article className="pp-card">
           <h2>{vacancy.title}</h2>
-          <p className="pp-subtitle">Department: {vacancy.department}</p>
+          <p className="pp-subtitle">
+            {t("vacancyDetails.department")}: {vacancy.department}
+          </p>
 
-          <h3>Responsibilities</h3>
+          <h3>{t("vacancyDetails.responsibilities")}</h3>
           <div className="pp-multiline">{vacancy.responsibilities}</div>
 
-          <h3>Requirements</h3>
+          <h3>{t("vacancyDetails.requirements")}</h3>
           <div className="pp-multiline">{vacancy.requirements}</div>
 
           <div className="pp-actions-bottom">
             <Link to={`/vacancies/${vacancy.id}/apply`} className="pp-btn-primary">
-              Apply
+              {t("vacancyDetails.apply")}
             </Link>
           </div>
         </article>
 
         <aside className="pp-card">
-          <h3>Localization Preview</h3>
+          <h3>{t("vacancyDetails.localizationPreview")}</h3>
           <p>EN: {localization?.en || "-"}</p>
           <p>DE: {localization?.de || "-"}</p>
           <p>RU: {localization?.ru || "-"}</p>
 
           <div className="pp-note">
-            Language selector affects:
+            {t("vacancyDetails.selectorAffects")}
             <br />
-            UI labels
+            {t("vacancyDetails.uiLabels")}
             <br />
-            API messages
+            {t("vacancyDetails.apiMessages")}
             <br />
-            Vacancy content
+            {t("vacancyDetails.vacancyContent")}
           </div>
         </aside>
       </div>
     </div>
   );
 }
-

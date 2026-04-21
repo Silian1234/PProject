@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { getVacancies } from "../api/services";
 import type { Vacancy } from "../types/api";
@@ -12,6 +13,7 @@ function badgeClass(status: string) {
 }
 
 export default function VacanciesPage() {
+  const { t } = useTranslation();
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,30 +45,30 @@ export default function VacanciesPage() {
 
   return (
     <div className="pp-page">
-      <h1 className="pp-title">Vacancies List</h1>
+      <h1 className="pp-title">{t("vacancies.title")}</h1>
 
       <form className="pp-filters-row" onSubmit={onSubmit}>
         <input
           className="pp-input"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by keyword, company, role..."
+          placeholder={t("vacancies.searchPlaceholder")}
         />
         <select className="pp-select" defaultValue="">
           <option value="" disabled>
-            Department
+            {t("vacancies.department")}
           </option>
-          <option value="all">All departments</option>
+          <option value="all">{t("vacancies.allDepartments")}</option>
         </select>
         <select className="pp-select" defaultValue="">
           <option value="" disabled>
-            Type
+            {t("vacancies.type")}
           </option>
-          <option value="all">All types</option>
+          <option value="all">{t("vacancies.allTypes")}</option>
         </select>
       </form>
 
-      {loading && <p>Loading...</p>}
+      {loading && <p>{t("common.loading")}</p>}
       {error && <p className="pp-error">{error}</p>}
 
       {!loading &&
@@ -76,14 +78,18 @@ export default function VacanciesPage() {
             <div>
               <h3>{vacancy.title}</h3>
               <p>
-                {vacancy.location || "Campus"} •{" "}
-                {vacancy.employment_type === "part_time" ? "Part-time" : "Internship"}
+                {vacancy.location || t("vacancies.campus")} •{" "}
+                {vacancy.employment_type === "part_time"
+                  ? t("vacancies.partTime")
+                  : t("vacancies.internship")}
               </p>
             </div>
             <div className="pp-row">
-              <span className={badgeClass(vacancy.status)}>{vacancy.status}</span>
+              <span className={badgeClass(vacancy.status)}>
+                {t(`status.${vacancy.status}`, vacancy.status)}
+              </span>
               <Link to={`/vacancies/${vacancy.id}`} className="pp-btn-primary pp-btn-sm">
-                Open
+                {t("vacancies.open")}
               </Link>
             </div>
           </article>

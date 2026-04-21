@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { getMyApplications } from "../api/services";
 import { getStoredUser, getToken } from "../auth";
@@ -14,6 +15,7 @@ function statusClass(status: string) {
 }
 
 export default function MyApplicationsPage() {
+  const { t } = useTranslation();
   const token = getToken();
   const user = getStoredUser();
   const [items, setItems] = useState<Application[]>([]);
@@ -47,37 +49,41 @@ export default function MyApplicationsPage() {
   if (!token) {
     return (
       <p>
-        Login required: <Link to="/login">Login</Link>
+        {t("common.loginRequired")} <Link to="/login">{t("nav.login")}</Link>
       </p>
     );
   }
 
   return (
     <div className="pp-page">
-      <h1 className="pp-title">Student Dashboard / My Applications</h1>
+      <h1 className="pp-title">{t("myApplications.title")}</h1>
 
-      {loading && <p>Loading...</p>}
+      {loading && <p>{t("common.loading")}</p>}
       {error && <p className="pp-error">{error}</p>}
 
       {!loading && !error && (
         <section className="pp-dashboard-grid">
           <article className="pp-card">
-            <h2>Profile</h2>
-            <p>Name: {user?.first_name || "Student"} {user?.last_name || ""}</p>
-            <p>Program: Computer Science</p>
-            <p>Year: 3</p>
-            <p>Resume: alex_cv.pdf</p>
+            <h2>{t("myApplications.profile")}</h2>
+            <p>
+              {t("myApplications.name")}: {user?.first_name || t("dashboard.defaultStudent")} {user?.last_name || ""}
+            </p>
+            <p>{t("myApplications.program")}: {t("myApplications.programValue")}</p>
+            <p>{t("myApplications.year")}: {t("myApplications.yearValue")}</p>
+            <p>{t("myApplications.resume")}: {t("myApplications.resumeValue")}</p>
           </article>
 
           <article className="pp-card">
-            <h2>My Applications</h2>
-            {rows.length === 0 && <p>No applications yet.</p>}
+            <h2>{t("myApplications.myApplications")}</h2>
+            {rows.length === 0 && <p>{t("myApplications.noApplications")}</p>}
             {rows.map((application) => (
               <div key={application.id} className="pp-application-item">
                 <h3>{application.vacancy_title}</h3>
                 <div className="pp-row">
-                  <span className="pp-muted">Status</span>
-                  <span className={statusClass(application.status)}>{application.status}</span>
+                  <span className="pp-muted">{t("myApplications.status")}</span>
+                  <span className={statusClass(application.status)}>
+                    {t(`status.${application.status}`, application.status)}
+                  </span>
                 </div>
               </div>
             ))}
@@ -87,4 +93,3 @@ export default function MyApplicationsPage() {
     </div>
   );
 }
-

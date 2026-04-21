@@ -106,7 +106,7 @@ export default function MainLayout() {
               onClick={onLogout}
               disabled={isLoggingOut}
             >
-              {isLoggingOut ? "..." : t("nav.logout")}
+              {isLoggingOut ? t("auth.loggingOut") : t("nav.logout")}
             </button>
           )}
         </div>
@@ -118,22 +118,21 @@ export default function MainLayout() {
 
       <nav className="pp-mobile-bottom-nav">
         <NavLink to="/" className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}>
-          Home
+          {t("nav.home")}
         </NavLink>
         <NavLink
           to="/vacancies"
           className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
         >
-          Vacancies
+          {t("nav.vacancies")}
         </NavLink>
         <NavLink
           to={token ? "/dashboard" : "/login"}
           className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
         >
-          Profile
+          {t("nav.profile")}
         </NavLink>
       </nav>
     </div>
   );
 }
-

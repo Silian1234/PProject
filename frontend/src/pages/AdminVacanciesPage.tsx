@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import {
   createVacancy,
@@ -58,6 +59,7 @@ const defaultForm = (): VacancyForm => ({
 });
 
 export default function AdminVacanciesPage() {
+  const { t } = useTranslation();
   const token = getToken();
   const [mode, setMode] = useState<Mode>("create");
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
@@ -179,11 +181,11 @@ export default function AdminVacanciesPage() {
       const payload = toPayload();
       if (mode === "create") {
         await createVacancy(payload);
-        setMsg("Vacancy created");
+        setMsg(t("admin.vacancyCreated"));
         setForm(defaultForm());
       } else if (selectedVacancyId) {
         await updateVacancy(selectedVacancyId, payload);
-        setMsg("Vacancy updated");
+        setMsg(t("admin.vacancyUpdated"));
       }
       await loadVacancies();
     } catch (err) {
@@ -202,7 +204,7 @@ export default function AdminVacanciesPage() {
       await Promise.all(
         apps.map((app) => updateApplicationStatus(app.id, targetStatus))
       );
-      setMsg(`Updated ${apps.length} applications`);
+      setMsg(t("admin.updatedApplications", { count: apps.length }));
       await loadVacancies();
     } catch (e) {
       setError(getErrorMessage(e));
@@ -212,38 +214,38 @@ export default function AdminVacanciesPage() {
   if (!token) {
     return (
       <p>
-        Login required: <Link to="/login">Login</Link>
+        {t("common.loginRequired")} <Link to="/login">{t("nav.login")}</Link>
       </p>
     );
   }
 
   return (
     <div className="pp-page">
-      <h1 className="pp-title">Employer Vacancy Management</h1>
+      <h1 className="pp-title">{t("admin.title")}</h1>
       {msg && <p className="pp-success">{msg}</p>}
       {error && <p className="pp-error">{error}</p>}
 
       <section className="pp-employer-grid">
         <aside className="pp-card">
-          <h2>Actions</h2>
+          <h2>{t("admin.actions")}</h2>
           <div className="pp-column">
             <button type="button" className="pp-btn-primary" onClick={() => setMode("create")}>
-              Create Vacancy
+              {t("admin.createVacancy")}
             </button>
             <button type="button" className="pp-btn-outline" onClick={() => setMode("edit")}>
-              Edit Vacancy
+              {t("admin.editVacancy")}
             </button>
           </div>
         </aside>
 
         <article className="pp-card">
-          <h2>Applications by Vacancy</h2>
-          {loading && <p>Loading...</p>}
+          <h2>{t("admin.applicationsByVacancy")}</h2>
+          {loading && <p>{t("common.loading")}</p>}
           {!loading &&
             vacancies.map((vacancy) => (
               <div key={vacancy.id} className="pp-application-item">
                 <h3>{vacancy.title}</h3>
-                <p>{counts[vacancy.id] ?? 0} applications</p>
+                <p>{t("admin.applicationsCount", { count: counts[vacancy.id] ?? 0 })}</p>
                 <div className="pp-row">
                   <select
                     className="pp-select pp-select-sm"
@@ -255,18 +257,18 @@ export default function AdminVacanciesPage() {
                       }))
                     }
                   >
-                    <option value="submitted">submitted</option>
-                    <option value="under_review">under_review</option>
-                    <option value="interview">interview</option>
-                    <option value="accepted">accepted</option>
-                    <option value="rejected">rejected</option>
+                    <option value="submitted">{t("status.submitted")}</option>
+                    <option value="under_review">{t("status.under_review")}</option>
+                    <option value="interview">{t("status.interview")}</option>
+                    <option value="accepted">{t("status.accepted")}</option>
+                    <option value="rejected">{t("status.rejected")}</option>
                   </select>
                   <button
                     type="button"
                     className="pp-btn-outline pp-btn-sm"
                     onClick={() => void onQuickSet(vacancy.id)}
                   >
-                    Set: {quickStatus[vacancy.id] || "under_review"}
+                    {t("admin.setStatus")}: {t(`status.${quickStatus[vacancy.id] || "under_review"}`)}
                   </button>
                 </div>
                 {mode === "edit" && (
@@ -278,7 +280,7 @@ export default function AdminVacanciesPage() {
                       void syncFormFromVacancy(vacancy);
                     }}
                   >
-                    Load to editor
+                    {t("admin.loadToEditor")}
                   </button>
                 )}
               </div>
@@ -287,14 +289,14 @@ export default function AdminVacanciesPage() {
       </section>
 
       <section className="pp-card">
-        <h2>{mode === "create" ? "Create vacancy" : "Edit vacancy"}</h2>
+        <h2>{mode === "create" ? t("admin.createModeTitle") : t("admin.editModeTitle")}</h2>
         {mode === "edit" && selectedVacancy && (
-          <p className="pp-subtitle">Editing: {selectedVacancy.title}</p>
+          <p className="pp-subtitle">{t("admin.editing")}: {selectedVacancy.title}</p>
         )}
 
         <form onSubmit={onSubmit} className="pp-form-grid">
           <label className="pp-label">
-            Department ID
+            {t("admin.departmentId")}
             <input
               className="pp-input"
               value={form.department}
@@ -304,7 +306,7 @@ export default function AdminVacanciesPage() {
           </label>
 
           <label className="pp-label">
-            Type
+            {t("admin.type")}
             <select
               className="pp-select"
               value={form.employment_type}
@@ -315,13 +317,13 @@ export default function AdminVacanciesPage() {
                 }))
               }
             >
-              <option value="internship">internship</option>
-              <option value="part_time">part_time</option>
+              <option value="internship">{t("vacancies.internship")}</option>
+              <option value="part_time">{t("vacancies.partTime")}</option>
             </select>
           </label>
 
           <label className="pp-label">
-            Location
+            {t("admin.location")}
             <input
               className="pp-input"
               value={form.location}
@@ -330,7 +332,7 @@ export default function AdminVacanciesPage() {
           </label>
 
           <label className="pp-label">
-            Status
+            {t("admin.status")}
             <select
               className="pp-select"
               value={form.status}
@@ -341,9 +343,9 @@ export default function AdminVacanciesPage() {
                 }))
               }
             >
-              <option value="draft">draft</option>
-              <option value="active">active</option>
-              <option value="archived">archived</option>
+              <option value="draft">{t("status.draft")}</option>
+              <option value="active">{t("status.active")}</option>
+              <option value="archived">{t("status.archived")}</option>
             </select>
           </label>
 
@@ -351,7 +353,7 @@ export default function AdminVacanciesPage() {
             <fieldset key={lang} className="pp-translation-box">
               <legend>{lang.toUpperCase()}</legend>
               <label className="pp-label">
-                Title
+                {t("admin.titleField")}
                 <input
                   className="pp-input"
                   value={form[lang].title}
@@ -365,7 +367,7 @@ export default function AdminVacanciesPage() {
                 />
               </label>
               <label className="pp-label">
-                Description
+                {t("admin.descriptionField")}
                 <textarea
                   className="pp-textarea pp-textarea-sm"
                   value={form[lang].description}
@@ -379,7 +381,7 @@ export default function AdminVacanciesPage() {
                 />
               </label>
               <label className="pp-label">
-                Responsibilities
+                {t("admin.responsibilitiesField")}
                 <textarea
                   className="pp-textarea pp-textarea-sm"
                   value={form[lang].responsibilities}
@@ -393,7 +395,7 @@ export default function AdminVacanciesPage() {
                 />
               </label>
               <label className="pp-label">
-                Requirements
+                {t("admin.requirementsField")}
                 <textarea
                   className="pp-textarea pp-textarea-sm"
                   value={form[lang].requirements}
@@ -411,7 +413,11 @@ export default function AdminVacanciesPage() {
 
           <div className="pp-row">
             <button type="submit" className="pp-btn-primary" disabled={saving}>
-              {saving ? "Saving..." : mode === "create" ? "Create vacancy" : "Save changes"}
+              {saving
+                ? t("admin.saving")
+                : mode === "create"
+                  ? t("admin.createVacancy")
+                  : t("admin.saveChanges")}
             </button>
           </div>
         </form>
@@ -419,4 +425,3 @@ export default function AdminVacanciesPage() {
     </div>
   );
 }
-

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { registerUser } from "../api/services";
 import { getToken, saveAuth } from "../auth";
@@ -10,6 +11,7 @@ type Role = "student" | "employer";
 type Lang = "en" | "de" | "ru";
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [role, setRole] = useState<Role>("student");
@@ -24,9 +26,8 @@ export default function RegisterPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [universityId, setUniversityId] = useState("");
   const [organizationName, setOrganizationName] = useState("");
-  const [msg, setMsg] = useState("");
-  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (getToken()) {
@@ -34,12 +35,24 @@ export default function RegisterPage() {
     }
   }, [navigate]);
 
+  const roleHint = useMemo(
+    () =>
+      role === "student"
+        ? t("auth.studentHint")
+        : t("auth.employerHint"),
+    [role, t]
+  );
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMsg("");
     setError("");
-    setSubmitting(true);
 
+    if (password !== passwordConfirm) {
+      setError(t("auth.passwordsMismatch"));
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const payload: RegisterPayload = {
         username,
@@ -53,9 +66,9 @@ export default function RegisterPage() {
       };
       if (role === "student") payload.university_id = universityId;
       if (role === "employer") payload.organization_name = organizationName;
+
       const data = await registerUser(payload);
       saveAuth(data.token, data.user);
-      setMsg(data.message);
       navigate("/dashboard");
     } catch (e) {
       setError(getErrorMessage(e));
@@ -65,111 +78,144 @@ export default function RegisterPage() {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
+    <div className="pp-page pp-auth-wrap">
+      <h1 className="pp-title">{t("auth.registerTitle")}</h1>
 
-      <form onSubmit={onSubmit}>
-        <div style={{ marginBottom: 8 }}>
-          <label>Role</label>
-          <br />
-          <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
-            <option value="student">Student</option>
-            <option value="employer">Employer</option>
-          </select>
-        </div>
+      <section className="pp-card pp-auth-card">
+        <p className="pp-auth-subtitle">{t("auth.registerSubtitle")}</p>
+        <p className="pp-auth-note">{roleHint}</p>
 
-        <div style={{ marginBottom: 8 }}>
-          <label>Preferred language</label>
-          <br />
-          <select
-            value={preferredLanguage}
-            onChange={(e) => setPreferredLanguage(e.target.value as Lang)}
-          >
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-            <option value="ru">Russian</option>
-          </select>
-        </div>
+        <form onSubmit={onSubmit} className="pp-auth-form pp-auth-grid">
+          <label className="pp-label">
+            {t("common.role")}
+            <select
+              className="pp-select"
+              value={role}
+              onChange={(e) => setRole(e.target.value as Role)}
+            >
+              <option value="student">{t("auth.roleStudent")}</option>
+              <option value="employer">{t("auth.roleEmployer")}</option>
+            </select>
+          </label>
 
-        <div style={{ marginBottom: 8 }}>
-          <label>Username</label>
-          <br />
-          <input value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </div>
+          <label className="pp-label">
+            {t("auth.preferredLanguage")}
+            <select
+              className="pp-select"
+              value={preferredLanguage}
+              onChange={(e) => setPreferredLanguage(e.target.value as Lang)}
+            >
+              <option value="en">English</option>
+              <option value="de">Deutsch</option>
+              <option value="ru">Русский</option>
+            </select>
+          </label>
 
-        <div style={{ marginBottom: 8 }}>
-          <label>Email</label>
-          <br />
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <label>First name</label>
-          <br />
-          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <label>Last name</label>
-          <br />
-          <input value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-        </div>
-
-        {role === "student" && (
-          <div style={{ marginBottom: 8 }}>
-            <label>University ID</label>
-            <br />
+          <label className="pp-label">
+            {t("auth.username")}
             <input
-              value={universityId}
-              onChange={(e) => setUniversityId(e.target.value)}
+              className="pp-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={t("auth.usernamePlaceholder")}
               required
             />
-          </div>
-        )}
+          </label>
 
-        {role === "employer" && (
-          <div style={{ marginBottom: 8 }}>
-            <label>Organization name</label>
-            <br />
+          <label className="pp-label">
+            {t("dashboard.email")}
             <input
-              value={organizationName}
-              onChange={(e) => setOrganizationName(e.target.value)}
+              className="pp-input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="email@example.com"
               required
             />
+          </label>
+
+          <label className="pp-label">
+            {t("auth.firstName")}
+            <input
+              className="pp-input"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </label>
+
+          <label className="pp-label">
+            {t("auth.lastName")}
+            <input
+              className="pp-input"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </label>
+
+          {role === "student" && (
+            <label className="pp-label pp-col-span-2">
+              {t("auth.universityId")}
+              <input
+                className="pp-input"
+                value={universityId}
+                onChange={(e) => setUniversityId(e.target.value)}
+                placeholder={t("auth.universityIdPlaceholder")}
+                required
+              />
+            </label>
+          )}
+
+          {role === "employer" && (
+            <label className="pp-label pp-col-span-2">
+              {t("auth.organizationName")}
+              <input
+                className="pp-input"
+                value={organizationName}
+                onChange={(e) => setOrganizationName(e.target.value)}
+                placeholder={t("auth.organizationNamePlaceholder")}
+                required
+              />
+            </label>
+          )}
+
+          <label className="pp-label">
+            {t("auth.password")}
+            <input
+              className="pp-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={8}
+              required
+            />
+          </label>
+
+          <label className="pp-label">
+            {t("auth.confirmPassword")}
+            <input
+              className="pp-input"
+              type="password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              minLength={8}
+              required
+            />
+          </label>
+
+          {error && <p className="pp-error pp-col-span-2">{error}</p>}
+
+          <div className="pp-row pp-col-span-2">
+            <button type="submit" className="pp-btn-primary" disabled={submitting}>
+              {submitting ? t("auth.creating") : t("auth.createAccount")}
+            </button>
+            <Link to="/login" className="pp-btn-outline">
+              {t("auth.backToLogin")}
+            </Link>
           </div>
-        )}
-
-        <div style={{ marginBottom: 8 }}>
-          <label>Password</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={8}
-            required
-          />
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <label>Confirm password</label>
-          <br />
-          <input
-            type="password"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            minLength={8}
-            required
-          />
-        </div>
-
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Creating..." : "Create account"}
-        </button>
-      </form>
-
-      {msg && <p style={{ color: "green" }}>{msg}</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+        </form>
+      </section>
     </div>
   );
 }

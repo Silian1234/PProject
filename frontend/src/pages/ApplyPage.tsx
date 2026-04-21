@@ -1,11 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { createApplication } from "../api/services";
 import { getErrorMessage } from "../api/error";
 import { getToken } from "../auth";
 
 export default function ApplyPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const vacancyId = Number(id);
   const token = getToken();
@@ -21,13 +23,13 @@ export default function ApplyPage() {
   if (!token) {
     return (
       <p>
-        Login required: <Link to="/login">Login</Link>
+        {t("common.loginRequired")} <Link to="/login">{t("nav.login")}</Link>
       </p>
     );
   }
 
   if (!Number.isFinite(vacancyId)) {
-    return <p className="pp-error">Invalid vacancy id.</p>;
+    return <p className="pp-error">{t("apply.invalidId")}</p>;
   }
 
   const onSubmit = async (e: FormEvent) => {
@@ -53,13 +55,13 @@ export default function ApplyPage() {
 
   return (
     <div className="pp-page">
-      <h1 className="pp-title">Apply Form</h1>
+      <h1 className="pp-title">{t("apply.title")}</h1>
 
       <article className="pp-card pp-apply-card">
-        <h2>Submit your application</h2>
+        <h2>{t("apply.submitTitle")}</h2>
         <form onSubmit={onSubmit}>
           <label className="pp-label">
-            Resume
+            {t("apply.resume")}
             <input
               className="pp-input"
               type="file"
@@ -68,31 +70,31 @@ export default function ApplyPage() {
           </label>
 
           <label className="pp-label">
-            Cover letter
+            {t("apply.coverLetter")}
             <textarea
               className="pp-textarea"
               value={coverLetterText}
               onChange={(e) => setCoverLetterText(e.target.value)}
-              placeholder="Write why you fit this role..."
+              placeholder={t("apply.coverLetterPlaceholder")}
             />
           </label>
 
           <label className="pp-label">
-            Message for employer
+            {t("apply.messageForEmployer")}
             <textarea
               className="pp-textarea pp-textarea-sm"
               value={studentMessage}
               onChange={(e) => setStudentMessage(e.target.value)}
-              placeholder="Additional details..."
+              placeholder={t("apply.employerMessagePlaceholder")}
             />
           </label>
 
           <div className="pp-row">
             <button type="submit" className="pp-btn-primary" disabled={submitting}>
-              {submitting ? "Sending..." : "Send Application"}
+              {submitting ? t("apply.sending") : t("apply.sendApplication")}
             </button>
             <Link to={`/vacancies/${vacancyId}`} className="pp-btn-outline">
-              Cancel
+              {t("common.cancel")}
             </Link>
           </div>
         </form>
@@ -103,4 +105,3 @@ export default function ApplyPage() {
     </div>
   );
 }
-

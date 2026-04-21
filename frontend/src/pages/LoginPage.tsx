@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { loginUser } from "../api/services";
 import { getToken, saveAuth } from "../auth";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -21,44 +22,62 @@ export default function LoginPage() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMsg("");
     setError("");
-
+    setSubmitting(true);
     try {
       const data = await loginUser(username, password);
       saveAuth(data.token, data.user);
-      setMsg(data.message);
       navigate("/dashboard");
     } catch (e) {
       setError(getErrorMessage(e));
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={onSubmit}>
-        <div style={{ marginBottom: 8 }}>
-          <label>Username</label>
-          <br />
-          <input value={username} onChange={(e) => setUsername(e.target.value)} />
-        </div>
+    <div className="pp-page pp-auth-wrap">
+      <h1 className="pp-title">{t("auth.loginTitle")}</h1>
 
-        <div style={{ marginBottom: 8 }}>
-          <label>Password</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+      <section className="pp-card pp-auth-card">
+        <p className="pp-auth-subtitle">{t("auth.loginSubtitle")}</p>
 
-        <button type="submit">Login</button>
-      </form>
+        <form onSubmit={onSubmit} className="pp-auth-form">
+          <label className="pp-label">
+            {t("auth.username")}
+            <input
+              className="pp-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={t("auth.usernamePlaceholder")}
+              required
+            />
+          </label>
 
-      {msg && <p style={{ color: "green" }}>{msg}</p>}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
+          <label className="pp-label">
+            {t("auth.password")}
+            <input
+              className="pp-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t("auth.passwordPlaceholder")}
+              required
+            />
+          </label>
+
+          {error && <p className="pp-error">{error}</p>}
+
+          <div className="pp-row">
+            <button type="submit" className="pp-btn-primary" disabled={submitting}>
+              {submitting ? t("auth.signingIn") : t("auth.loginButton")}
+            </button>
+            <Link to="/register" className="pp-btn-outline">
+              {t("auth.createAccount")}
+            </Link>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
