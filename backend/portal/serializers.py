@@ -15,9 +15,78 @@ def request_language(serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    university_id = serializers.SerializerMethodField()
+    faculty = serializers.SerializerMethodField()
+    course = serializers.SerializerMethodField()
+    organization_name = serializers.SerializerMethodField()
+    primary_resume_title = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "first_name", "last_name", "preferred_language", "role_code")
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "preferred_language",
+            "role_code",
+            "university_id",
+            "faculty",
+            "course",
+            "organization_name",
+            "primary_resume_title",
+        )
+
+    def get_full_name(self, obj):
+        full_name = f"{obj.first_name} {obj.last_name}".strip()
+        return full_name or obj.username
+
+    def get_university_id(self, obj):
+        if hasattr(obj, "student_profile"):
+            return obj.student_profile.university_id
+        return None
+
+    def get_faculty(self, obj):
+        if hasattr(obj, "student_profile"):
+            return obj.student_profile.faculty
+        return None
+
+    def get_course(self, obj):
+        if hasattr(obj, "student_profile"):
+            return obj.student_profile.course
+        return None
+
+    def get_organization_name(self, obj):
+        if hasattr(obj, "employer_profile"):
+            return obj.employer_profile.organization_name
+        return None
+
+    def get_primary_resume_title(self, obj):
+        resume = obj.resumes.filter(is_primary=True).first() or obj.resumes.order_by("-created_at").first()
+        return resume.title if resume else None
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Department
+        fields = ("id", "code", "name", "description")
+
+    def _tr(self, obj):
+        return obj.translation_for(request_language(self))
+
+    def get_name(self, obj):
+        tr = self._tr(obj)
+        return tr.name if tr else obj.code
+
+    def get_description(self, obj):
+        tr = self._tr(obj)
+        return tr.description if tr else ""
 
 
 class VacancySerializer(serializers.ModelSerializer):
@@ -25,12 +94,15 @@ class VacancySerializer(serializers.ModelSerializer):
     description = serializers.SerializerMethodField()
     responsibilities = serializers.SerializerMethodField()
     requirements = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+    department_name = serializers.SerializerMethodField()
+    employer_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Vacancy
         fields = (
             "id", "title", "description", "responsibilities", "requirements",
-            "department", "employment_type", "location", "workload_hours",
+            "department", "department_name", "employer_name", "employment_type", "location", "workload_hours",
             "salary_from", "salary_to", "status", "application_deadline", "created_at", "updated_at",
         )
 
@@ -53,6 +125,22 @@ class VacancySerializer(serializers.ModelSerializer):
         tr = self._tr(obj)
         return tr.requirements if tr else ""
 
+    def get_location(self, obj):
+        tr = self._tr(obj)
+        if tr and tr.location:
+            return tr.location
+        return obj.location
+
+    def get_department_name(self, obj):
+        tr = obj.department.translation_for(request_language(self))
+        return tr.name if tr else obj.department.code
+
+    def get_employer_name(self, obj):
+        if hasattr(obj.employer, "employer_profile") and obj.employer.employer_profile.organization_name:
+            return obj.employer.employer_profile.organization_name
+        full_name = f"{obj.employer.first_name} {obj.employer.last_name}".strip()
+        return full_name or obj.employer.username
+
 
 class VacancyWriteSerializer(serializers.ModelSerializer):
     translations = serializers.DictField(write_only=True)
@@ -66,9 +154,19 @@ class VacancyWriteSerializer(serializers.ModelSerializer):
 
     def validate_translations(self, value):
         lang = request_language(self)
-        required_fields = ("title", "description", "responsibilities", "requirements")
+        required_fields = ("title", "description", "responsibilities", "requirements", "location")
+        supported_codes = {code for code, _ in SUPPORTED_LANGUAGE_CHOICES}
+        provided_codes = set(value.keys())
 
-        for code, _ in SUPPORTED_LANGUAGE_CHOICES:
+        unknown_codes = provided_codes - supported_codes
+        if unknown_codes:
+            bad_code = sorted(unknown_codes)[0]
+            raise serializers.ValidationError(f"translations.{bad_code}: unsupported language")
+
+        if not self.instance and "en" not in provided_codes:
+            raise serializers.ValidationError(f"translations.en: {t('msg.field_required', lang)}")
+
+        for code in provided_codes:
             payload = value.get(code)
             if not isinstance(payload, dict):
                 raise serializers.ValidationError(f"translations.{code}: {t('msg.field_required', lang)}")
@@ -78,6 +176,7 @@ class VacancyWriteSerializer(serializers.ModelSerializer):
         return value
 
     def _sync(self, vacancy, data):
+        fallback_location = vacancy.location
         for code, payload in data.items():
             VacancyTranslation.objects.update_or_create(
                 vacancy=vacancy,
@@ -87,6 +186,7 @@ class VacancyWriteSerializer(serializers.ModelSerializer):
                     "description": payload["description"],
                     "responsibilities": payload["responsibilities"],
                     "requirements": payload["requirements"],
+                    "location": payload.get("location", fallback_location),
                 },
             )
 

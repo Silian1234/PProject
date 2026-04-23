@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -155,3 +156,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+GOOGLE_TRANSLATE_API_KEY = "AIzaSyBsKGsiNXLpoQFXL13-sajCPNwgC9mcwMI"
+GOOGLE_TRANSLATE_API_URL = os.getenv(
+    "GOOGLE_TRANSLATE_API_URL",
+    "https://translation.googleapis.com/language/translate/v2",
+).strip()
+GOOGLE_TRANSLATE_TIMEOUT_SECONDS = float(os.getenv("GOOGLE_TRANSLATE_TIMEOUT_SECONDS", "12"))
+GOOGLE_TRANSLATE_MAX_SEGMENTS_PER_REQUEST = int(os.getenv("GOOGLE_TRANSLATE_MAX_SEGMENTS_PER_REQUEST", "100"))

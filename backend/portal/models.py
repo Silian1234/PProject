@@ -2,7 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .constants import SUPPORTED_LANGUAGE_CHOICES
+from .constants import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CHOICES, SUPPORTED_LANGUAGE_CODES
+from .translation_service import translate_fields_with_google
 
 
 class TimestampedModel(models.Model):
@@ -25,11 +26,33 @@ class Role(TimestampedModel):
         return self.code
 
     def translation_for(self, language: str):
-        return (
-            self.translations.filter(language=language).first()
-            or self.translations.filter(language="en").first()
-            or self.translations.first()
+        requested = language if language in SUPPORTED_LANGUAGE_CODES else DEFAULT_LANGUAGE
+        existing = self.translations.filter(language=requested).first()
+        if existing:
+            return existing
+
+        source = self.translations.filter(language="en").first() or self.translations.first()
+        if not source:
+            return None
+        if source.language == requested:
+            return source
+
+        translated_values = translate_fields_with_google(
+            source_language=source.language,
+            target_language=requested,
+            fields={
+                "name": source.name,
+                "description": source.description,
+            },
         )
+        if translated_values:
+            translated, _ = RoleTranslation.objects.update_or_create(
+                role=self,
+                language=requested,
+                defaults=translated_values,
+            )
+            return translated
+        return source
 
 
 class RoleTranslation(TimestampedModel):
@@ -74,11 +97,33 @@ class Department(TimestampedModel):
         return self.code
 
     def translation_for(self, language: str):
-        return (
-            self.translations.filter(language=language).first()
-            or self.translations.filter(language="en").first()
-            or self.translations.first()
+        requested = language if language in SUPPORTED_LANGUAGE_CODES else DEFAULT_LANGUAGE
+        existing = self.translations.filter(language=requested).first()
+        if existing:
+            return existing
+
+        source = self.translations.filter(language="en").first() or self.translations.first()
+        if not source:
+            return None
+        if source.language == requested:
+            return source
+
+        translated_values = translate_fields_with_google(
+            source_language=source.language,
+            target_language=requested,
+            fields={
+                "name": source.name,
+                "description": source.description,
+            },
         )
+        if translated_values:
+            translated, _ = DepartmentTranslation.objects.update_or_create(
+                department=self,
+                language=requested,
+                defaults=translated_values,
+            )
+            return translated
+        return source
 
 
 class DepartmentTranslation(TimestampedModel):
@@ -119,11 +164,36 @@ class Vacancy(TimestampedModel):
     application_deadline = models.DateField(null=True, blank=True)
 
     def translation_for(self, language: str):
-        return (
-            self.translations.filter(language=language).first()
-            or self.translations.filter(language="en").first()
-            or self.translations.first()
+        requested = language if language in SUPPORTED_LANGUAGE_CODES else DEFAULT_LANGUAGE
+        existing = self.translations.filter(language=requested).first()
+        if existing:
+            return existing
+
+        source = self.translations.filter(language="en").first() or self.translations.first()
+        if not source:
+            return None
+        if source.language == requested:
+            return source
+
+        translated_values = translate_fields_with_google(
+            source_language=source.language,
+            target_language=requested,
+            fields={
+                "title": source.title,
+                "description": source.description,
+                "responsibilities": source.responsibilities,
+                "requirements": source.requirements,
+                "location": source.location,
+            },
         )
+        if translated_values:
+            translated, _ = VacancyTranslation.objects.update_or_create(
+                vacancy=self,
+                language=requested,
+                defaults=translated_values,
+            )
+            return translated
+        return source
 
 
 class VacancyTranslation(TimestampedModel):
@@ -133,6 +203,7 @@ class VacancyTranslation(TimestampedModel):
     description = models.TextField()
     responsibilities = models.TextField()
     requirements = models.TextField()
+    location = models.CharField(max_length=200, blank=True)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["vacancy", "language"], name="unique_vacancy_translation")]

@@ -1,8 +1,122 @@
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "../api/error";
+import { getHomeStats, getVacancies } from "../api/services";
+import type { HomeStats, Vacancy } from "../types/api";
+
+function stripLeadingNumber(text: string): string {
+  return text.replace(/^\s*\d+\s*/, "").trim();
+}
+
+function stripLanguagePrefix(text: string): string {
+  return text.replace(/^\s*EN\s*\|\s*DE\s*\|\s*RU\s*/i, "").trim();
+}
+
+function stripAfterColon(text: string): string {
+  const index = text.indexOf(":");
+  return index >= 0 ? text.slice(0, index).trim() : text.trim();
+}
+
+function statusClass(status: string): string {
+  if (status === "active") return "pp-pill pp-pill-green";
+  if (status === "draft") return "pp-pill pp-pill-orange";
+  if (status === "archived") return "pp-pill pp-pill-blue-soft";
+  return "pp-pill";
+}
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  const [stats, setStats] = useState<HomeStats | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [featuredVacancies, setFeaturedVacancies] = useState<Vacancy[]>([]);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+  const [featuredError, setFeaturedError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingStats(true);
+    getHomeStats()
+      .then((data) => {
+        if (!cancelled) {
+          setStats(data);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setStats(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoadingStats(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [i18n.language]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingFeatured(true);
+    setFeaturedError("");
+    getVacancies({ status: "active" })
+      .then((data) => {
+        if (!cancelled) {
+          setFeaturedVacancies(data.slice(0, 3));
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setFeaturedError(getErrorMessage(error));
+          setFeaturedVacancies([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoadingFeatured(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [i18n.language]);
+
+  const activeVacanciesLabel = useMemo(
+    () => stripLeadingNumber(t("home.activeVacancies")),
+    [t, i18n.language]
+  );
+  const studentApplicationsLabel = useMemo(
+    () => stripLeadingNumber(t("home.studentApplications")),
+    [t, i18n.language]
+  );
+  const localizationLabel = useMemo(
+    () => stripLanguagePrefix(t("home.localization")),
+    [t, i18n.language]
+  );
+  const apiDocsLabel = useMemo(() => stripAfterColon(t("home.apiDocs")), [t, i18n.language]);
+
+  const statsLanguages = stats?.supported_languages?.join(" | ") || "EN | DE | RU";
+  const activeVacanciesText = `${stats?.active_vacancies ?? 0} ${activeVacanciesLabel}`;
+  const studentApplicationsText = `${stats?.student_applications ?? 0} ${studentApplicationsLabel}`;
+  const docsUrl = stats?.api_docs_url || "/api/docs/swagger/";
+  const showStats = !isLoadingStats;
+
+  const primaryFeatured = featuredVacancies[0] || null;
+  const secondaryFeatured = featuredVacancies.slice(1);
+
+  const onSearchSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    const normalized = searchQuery.trim();
+    navigate(normalized ? `/vacancies?q=${encodeURIComponent(normalized)}` : "/vacancies");
+  };
 
   return (
     <div className="pp-page">
@@ -25,47 +139,64 @@ export default function HomePage() {
         <aside className="pp-card pp-stats-card">
           <h3>{t("home.quickStats")}</h3>
           <ul className="pp-flat-list">
-            <li>{t("home.activeVacancies")}</li>
-            <li>{t("home.studentApplications")}</li>
-            <li>{t("home.localization")}</li>
-            <li>{t("home.apiDocs")}</li>
+            <li>{showStats ? activeVacanciesText : t("common.loading")}</li>
+            <li>{showStats ? studentApplicationsText : t("common.loading")}</li>
+            <li>{showStats ? `${statsLanguages} ${localizationLabel}` : t("common.loading")}</li>
+            <li>{showStats ? `${apiDocsLabel}: ${docsUrl}` : t("common.loading")}</li>
           </ul>
         </aside>
       </section>
 
       <section className="pp-home-mobile">
         <p className="pp-subtitle">{t("home.featuredOpportunities")}</p>
-        <input className="pp-input" placeholder={t("home.searchPlaceholder")} />
+
+        <form onSubmit={onSearchSubmit}>
+          <input
+            className="pp-input"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder={t("home.searchPlaceholder")}
+          />
+        </form>
 
         <article className="pp-card pp-mobile-featured">
           <p className="pp-overline">{t("home.featuredInternship")}</p>
-          <h3>IT Support Assistant</h3>
-          <p>Library Digital Lab</p>
-          <span className="pp-pill pp-pill-blue-soft">{t("home.paid")}</span>
+          {isLoadingFeatured && <p>{t("common.loading")}</p>}
+          {!isLoadingFeatured && featuredError && <p className="pp-error">{featuredError}</p>}
+          {!isLoadingFeatured && !featuredError && !primaryFeatured && <p>{t("common.notFound")}</p>}
+          {!isLoadingFeatured && !featuredError && primaryFeatured && (
+            <>
+              <h3>{primaryFeatured.title}</h3>
+              <p>{primaryFeatured.department_name || primaryFeatured.location || "-"}</p>
+              <span className={statusClass(primaryFeatured.status)}>
+                {t(`status.${primaryFeatured.status}`, primaryFeatured.status)}
+              </span>
+            </>
+          )}
         </article>
 
         <div className="pp-mobile-stats">
           <article className="pp-card">
-            <h2 className="pp-stat-number">12</h2>
+            <h2 className="pp-stat-number">{showStats ? stats?.active_vacancies ?? 0 : "..."}</h2>
             <p>{t("home.activeVacanciesSmall")}</p>
           </article>
           <article className="pp-card">
-            <h2 className="pp-stat-number pp-stat-green">5</h2>
-            <p>{t("home.newUpdates")}</p>
+            <h2 className="pp-stat-number pp-stat-green">{showStats ? stats?.student_applications ?? 0 : "..."}</h2>
+            <p>{studentApplicationsLabel}</p>
           </article>
         </div>
 
-        <article className="pp-card">
-          <h3>Research Intern</h3>
-          <p>Computer Vision Lab</p>
-          <span className="pp-text-orange">{t("status.under_review")}</span>
-        </article>
-
-        <article className="pp-card">
-          <h3>Event Coordinator</h3>
-          <p>Student Affairs Office</p>
-          <span className="pp-text-blue">{t("home.new")}</span>
-        </article>
+        {!isLoadingFeatured &&
+          !featuredError &&
+          secondaryFeatured.map((vacancy) => (
+            <article key={vacancy.id} className="pp-card">
+              <h3>{vacancy.title}</h3>
+              <p>{vacancy.department_name || vacancy.location || "-"}</p>
+              <span className={statusClass(vacancy.status)}>
+                {t(`status.${vacancy.status}`, vacancy.status)}
+              </span>
+            </article>
+          ))}
       </section>
     </div>
   );

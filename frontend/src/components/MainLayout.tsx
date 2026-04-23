@@ -5,7 +5,7 @@ import { clearAuth, getStoredUser, getToken } from "../auth";
 import { logoutUser } from "../api/services";
 
 export default function MainLayout() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,7 +19,10 @@ export default function MainLayout() {
 
   const setLang = (lang: "en" | "de" | "ru") => {
     localStorage.setItem("lang", lang);
-    i18n.changeLanguage(lang);
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", lang);
+    window.history.replaceState({}, "", url.toString());
+    window.location.reload();
   };
 
   const canSeeApplications = Boolean(token && user?.role_code === "student");

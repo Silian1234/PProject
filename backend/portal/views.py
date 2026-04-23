@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
+from .constants import SUPPORTED_LANGUAGE_CHOICES
 from .permissions import IsEmployerOrAdmin, IsStudent, IsVacancyOwnerOrAdmin
 from .serializers import *
 
@@ -20,8 +21,30 @@ class HealthAPIView(generics.GenericAPIView):
         return Response({"ok": True, "service": "backend"})
 
 
+class HomeStatsAPIView(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        return Response(
+            {
+                "active_vacancies": Vacancy.objects.filter(status=Vacancy.VacancyStatus.ACTIVE).count(),
+                "student_applications": Application.objects.count(),
+                "supported_languages": [code.upper() for code, _ in SUPPORTED_LANGUAGE_CHOICES],
+                "api_docs_url": "/api/docs/swagger/",
+            }
+        )
+
+
+class DepartmentListAPIView(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = DepartmentSerializer
+    queryset = Department.objects.filter(is_active=True).prefetch_related("translations").order_by("id")
+
+
 class VacancyViewSet(viewsets.ModelViewSet):
-    queryset = Vacancy.objects.select_related("department", "employer").prefetch_related("translations")
+    queryset = Vacancy.objects.select_related("department", "employer", "employer__employer_profile").prefetch_related(
+        "translations"
+    )
     filterset_fields = ("department", "employment_type", "status")
 
     def get_serializer_class(self):
@@ -98,7 +121,11 @@ class MyApplicationListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def get_queryset(self):
-        return Application.objects.filter(student=self.request.user).select_related("vacancy").order_by("-created_at")
+        return (
+            Application.objects.filter(student=self.request.user)
+            .select_related("vacancy", "vacancy__department", "vacancy__employer", "vacancy__employer__employer_profile")
+            .order_by("-created_at")
+        )
 
 
 class ApplicationStatusUpdateAPIView(generics.UpdateAPIView):
@@ -157,4 +184,8 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return self.request.user
+        return (
+            User.objects.select_related("role", "student_profile", "employer_profile")
+            .prefetch_related("resumes")
+            .get(pk=self.request.user.pk)
+        )

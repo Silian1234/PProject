@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
-import { getMyApplications } from "../api/services";
-import { getStoredUser, getToken } from "../auth";
-import type { Application } from "../types/api";
+import { getCurrentUser, getMyApplications } from "../api/services";
+import { getToken } from "../auth";
+import type { Application, User } from "../types/api";
 
 function statusClass(status: string) {
   if (status === "submitted") return "pp-pill pp-pill-blue";
@@ -17,8 +17,9 @@ function statusClass(status: string) {
 export default function MyApplicationsPage() {
   const { t } = useTranslation();
   const token = getToken();
-  const user = getStoredUser();
+
   const [items, setItems] = useState<Application[]>([]);
+  const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -32,8 +33,9 @@ export default function MyApplicationsPage() {
       setLoading(true);
       setError("");
       try {
-        const data = await getMyApplications();
-        setItems(data);
+        const [apps, user] = await Promise.all([getMyApplications(), getCurrentUser()]);
+        setItems(apps);
+        setProfile(user);
       } catch (e) {
         setError(getErrorMessage(e));
       } finally {
@@ -45,6 +47,10 @@ export default function MyApplicationsPage() {
   }, [token]);
 
   const rows = useMemo(() => items, [items]);
+  const displayName = profile?.full_name || profile?.username || t("dashboard.defaultStudent");
+  const program = profile?.faculty || "-";
+  const year = profile?.course ?? "-";
+  const resume = profile?.primary_resume_title || "-";
 
   if (!token) {
     return (
@@ -66,11 +72,11 @@ export default function MyApplicationsPage() {
           <article className="pp-card">
             <h2>{t("myApplications.profile")}</h2>
             <p>
-              {t("myApplications.name")}: {user?.first_name || t("dashboard.defaultStudent")} {user?.last_name || ""}
+              {t("myApplications.name")}: {displayName}
             </p>
-            <p>{t("myApplications.program")}: {t("myApplications.programValue")}</p>
-            <p>{t("myApplications.year")}: {t("myApplications.yearValue")}</p>
-            <p>{t("myApplications.resume")}: {t("myApplications.resumeValue")}</p>
+            <p>{t("myApplications.program")}: {program}</p>
+            <p>{t("myApplications.year")}: {year}</p>
+            <p>{t("myApplications.resume")}: {resume}</p>
           </article>
 
           <article className="pp-card">

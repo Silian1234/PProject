@@ -7,6 +7,8 @@ router = DefaultRouter()
 router.register("vacancies", VacancyViewSet, basename="vacancies")
 
 urlpatterns = [
+    path("stats/", HomeStatsAPIView.as_view(), name="home-stats"),
+    path("departments/", DepartmentListAPIView.as_view(), name="departments"),
     path("health/", HealthAPIView.as_view(), name="health"),
     path("applications/", ApplicationCreateAPIView.as_view(), name="application-create"),
     path("my-applications/", MyApplicationListAPIView.as_view(), name="my-applications"),

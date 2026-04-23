@@ -5,6 +5,8 @@ export type Vacancy = {
   responsibilities: string;
   requirements: string;
   department: number;
+  department_name?: string;
+  employer_name?: string;
   employment_type: string;
   location: string;
   workload_hours: number | null;
@@ -38,10 +40,23 @@ export type User = {
   id: number;
   username: string;
   email: string;
+  full_name?: string;
   first_name: string;
   last_name: string;
   preferred_language: "en" | "de" | "ru";
   role_code: "student" | "employer" | "admin" | null;
+  university_id?: string | null;
+  faculty?: string | null;
+  course?: number | null;
+  organization_name?: string | null;
+  primary_resume_title?: string | null;
+};
+
+export type Department = {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
 };
 
 export type LoginResponse = {
@@ -70,6 +85,7 @@ export type VacancyTranslationPayload = {
   description: string;
   responsibilities: string;
   requirements: string;
+  location: string;
 };
 
 export type VacancyWritePayload = {
@@ -83,8 +99,8 @@ export type VacancyWritePayload = {
   application_deadline?: string | null;
   translations: {
     en: VacancyTranslationPayload;
-    de: VacancyTranslationPayload;
-    ru: VacancyTranslationPayload;
+    de?: VacancyTranslationPayload;
+    ru?: VacancyTranslationPayload;
   };
 };
 
@@ -97,4 +113,11 @@ export type VacancyApplication = {
   employer_comment: string;
   created_at: string;
   updated_at: string;
+};
+
+export type HomeStats = {
+  active_vacancies: number;
+  student_applications: number;
+  supported_languages: string[];
+  api_docs_url: string;
 };

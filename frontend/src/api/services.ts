@@ -2,6 +2,8 @@ import api from "./client";
 import type {
   Application,
   ApplicationStatus,
+  Department,
+  HomeStats,
   LoginResponse,
   RegisterPayload,
   RegisterResponse,
@@ -11,10 +13,33 @@ import type {
   VacancyWritePayload
 } from "../types/api";
 
-export async function getVacancies(q = ""): Promise<Vacancy[]> {
+export type VacancyQuery = {
+  q?: string;
+  department?: number | string;
+  employment_type?: "internship" | "part_time" | "";
+  status?: "draft" | "active" | "archived" | "";
+};
+
+export async function getVacancies(query: VacancyQuery = {}): Promise<Vacancy[]> {
+  const params: Record<string, string | number> = {};
+  if (query.q?.trim()) params.q = query.q.trim();
+  if (query.department !== undefined && query.department !== "") params.department = query.department;
+  if (query.employment_type) params.employment_type = query.employment_type;
+  if (query.status) params.status = query.status;
+
   const { data } = await api.get<Vacancy[]>("/vacancies/", {
-    params: q ? { q } : {}
+    params
   });
+  return data;
+}
+
+export async function getHomeStats(): Promise<HomeStats> {
+  const { data } = await api.get<HomeStats>("/stats/");
+  return data;
+}
+
+export async function getDepartments(): Promise<Department[]> {
+  const { data } = await api.get<Department[]>("/departments/");
   return data;
 }
 

@@ -65,7 +65,7 @@ export default function VacancyDetailsPage() {
         <article className="pp-card">
           <h2>{vacancy.title}</h2>
           <p className="pp-subtitle">
-            {t("vacancyDetails.department")}: {vacancy.department}
+            {t("vacancyDetails.department")}: {vacancy.department_name || vacancy.department}
           </p>
 
           <h3>{t("vacancyDetails.responsibilities")}</h3>

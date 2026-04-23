@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import {
   createVacancy,
+  getDepartments,
   getVacancies,
   getVacancyApplications,
   getVacancyByLang,
@@ -12,7 +13,7 @@ import {
   updateVacancy
 } from "../api/services";
 import { getToken } from "../auth";
-import type { ApplicationStatus, Vacancy, VacancyWritePayload } from "../types/api";
+import type { ApplicationStatus, Department, Vacancy, VacancyWritePayload } from "../types/api";
 
 type Mode = "create" | "edit";
 
@@ -21,12 +22,12 @@ type Translation = {
   description: string;
   responsibilities: string;
   requirements: string;
+  location: string;
 };
 
 type VacancyForm = {
   department: string;
   employment_type: "internship" | "part_time";
-  location: string;
   workload_hours: string;
   salary_from: string;
   salary_to: string;
@@ -41,13 +42,13 @@ const emptyTranslation = (): Translation => ({
   title: "",
   description: "",
   responsibilities: "",
-  requirements: ""
+  requirements: "",
+  location: ""
 });
 
 const defaultForm = (): VacancyForm => ({
-  department: "1",
+  department: "",
   employment_type: "internship",
-  location: "",
   workload_hours: "",
   salary_from: "",
   salary_to: "",
@@ -58,11 +59,21 @@ const defaultForm = (): VacancyForm => ({
   ru: emptyTranslation()
 });
 
+const isCompleteTranslation = (tr: Translation) =>
+  Boolean(
+    tr.title.trim() &&
+      tr.description.trim() &&
+      tr.responsibilities.trim() &&
+      tr.requirements.trim() &&
+      tr.location.trim()
+  );
+
 export default function AdminVacanciesPage() {
   const { t } = useTranslation();
   const token = getToken();
   const [mode, setMode] = useState<Mode>("create");
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(null);
   const [counts, setCounts] = useState<Record<number, number>>({});
   const [quickStatus, setQuickStatus] = useState<Record<number, ApplicationStatus>>({});
@@ -76,8 +87,19 @@ export default function AdminVacanciesPage() {
     setLoading(true);
     setError("");
     try {
-      const data = await getVacancies();
+      const [data, deps] = await Promise.all([getVacancies(), getDepartments()]);
       setVacancies(data);
+      setDepartments(deps);
+      setForm((prev) => {
+        const existingIds = new Set(deps.map((dep) => String(dep.id)));
+        if (prev.department && existingIds.has(prev.department)) {
+          return prev;
+        }
+        if (deps.length === 0) {
+          return prev;
+        }
+        return { ...prev, department: String(deps[0].id) };
+      });
       const quick: Record<number, ApplicationStatus> = {};
       data.forEach((v) => {
         quick[v.id] = "under_review";
@@ -126,7 +148,6 @@ export default function AdminVacanciesPage() {
       setForm({
         department: String(vacancy.department),
         employment_type: vacancy.employment_type as "internship" | "part_time",
-        location: vacancy.location || "",
         workload_hours: vacancy.workload_hours ? String(vacancy.workload_hours) : "",
         salary_from: vacancy.salary_from || "",
         salary_to: vacancy.salary_to || "",
@@ -136,19 +157,22 @@ export default function AdminVacanciesPage() {
           title: en.title,
           description: en.description,
           responsibilities: en.responsibilities,
-          requirements: en.requirements
+          requirements: en.requirements,
+          location: en.location || vacancy.location || ""
         },
         de: {
           title: de.title,
           description: de.description,
           responsibilities: de.responsibilities,
-          requirements: de.requirements
+          requirements: de.requirements,
+          location: de.location || vacancy.location || ""
         },
         ru: {
           title: ru.title,
           description: ru.description,
           responsibilities: ru.responsibilities,
-          requirements: ru.requirements
+          requirements: ru.requirements,
+          location: ru.location || vacancy.location || ""
         }
       });
     } catch (e) {
@@ -156,24 +180,35 @@ export default function AdminVacanciesPage() {
     }
   };
 
-  const toPayload = (): VacancyWritePayload => ({
-    department: Number(form.department),
-    employment_type: form.employment_type,
-    location: form.location,
-    workload_hours: form.workload_hours ? Number(form.workload_hours) : null,
-    salary_from: form.salary_from || null,
-    salary_to: form.salary_to || null,
-    status: form.status,
-    application_deadline: form.application_deadline || null,
-    translations: {
-      en: form.en,
-      de: form.de,
-      ru: form.ru
+  const toPayload = (): VacancyWritePayload => {
+    const translations: VacancyWritePayload["translations"] = {
+      en: form.en
+    };
+    if (isCompleteTranslation(form.de)) {
+      translations.de = form.de;
     }
-  });
+    if (isCompleteTranslation(form.ru)) {
+      translations.ru = form.ru;
+    }
+    return {
+      department: Number(form.department),
+      employment_type: form.employment_type,
+      location: form.en.location,
+      workload_hours: form.workload_hours ? Number(form.workload_hours) : null,
+      salary_from: form.salary_from || null,
+      salary_to: form.salary_to || null,
+      status: form.status,
+      application_deadline: form.application_deadline || null,
+      translations
+    };
+  };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!form.department) {
+      setError(t("common.notFound"));
+      return;
+    }
     setSaving(true);
     setMsg("");
     setError("");
@@ -244,8 +279,9 @@ export default function AdminVacanciesPage() {
           {!loading &&
             vacancies.map((vacancy) => (
               <div key={vacancy.id} className="pp-application-item">
-                <h3>{vacancy.title}</h3>
-                <p>{t("admin.applicationsCount", { count: counts[vacancy.id] ?? 0 })}</p>
+              <h3>{vacancy.title}</h3>
+              <p className="pp-subtitle">{vacancy.department_name || vacancy.department}</p>
+              <p>{t("admin.applicationsCount", { count: counts[vacancy.id] ?? 0 })}</p>
                 <div className="pp-row">
                   <select
                     className="pp-select pp-select-sm"
@@ -297,12 +333,18 @@ export default function AdminVacanciesPage() {
         <form onSubmit={onSubmit} className="pp-form-grid">
           <label className="pp-label">
             {t("admin.departmentId")}
-            <input
-              className="pp-input"
+            <select
+              className="pp-select"
               value={form.department}
               onChange={(e) => setForm((prev) => ({ ...prev, department: e.target.value }))}
               required
-            />
+            >
+              {departments.map((dep) => (
+                <option key={dep.id} value={dep.id}>
+                  {dep.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="pp-label">
@@ -320,15 +362,6 @@ export default function AdminVacanciesPage() {
               <option value="internship">{t("vacancies.internship")}</option>
               <option value="part_time">{t("vacancies.partTime")}</option>
             </select>
-          </label>
-
-          <label className="pp-label">
-            {t("admin.location")}
-            <input
-              className="pp-input"
-              value={form.location}
-              onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
-            />
           </label>
 
           <label className="pp-label">
@@ -363,7 +396,7 @@ export default function AdminVacanciesPage() {
                       [lang]: { ...prev[lang], title: e.target.value }
                     }))
                   }
-                  required
+                  required={lang === "en"}
                 />
               </label>
               <label className="pp-label">
@@ -377,7 +410,7 @@ export default function AdminVacanciesPage() {
                       [lang]: { ...prev[lang], description: e.target.value }
                     }))
                   }
-                  required
+                  required={lang === "en"}
                 />
               </label>
               <label className="pp-label">
@@ -391,7 +424,7 @@ export default function AdminVacanciesPage() {
                       [lang]: { ...prev[lang], responsibilities: e.target.value }
                     }))
                   }
-                  required
+                  required={lang === "en"}
                 />
               </label>
               <label className="pp-label">
@@ -405,7 +438,21 @@ export default function AdminVacanciesPage() {
                       [lang]: { ...prev[lang], requirements: e.target.value }
                     }))
                   }
-                  required
+                  required={lang === "en"}
+                />
+              </label>
+              <label className="pp-label">
+                {t("admin.location")}
+                <input
+                  className="pp-input"
+                  value={form[lang].location}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      [lang]: { ...prev[lang], location: e.target.value }
+                    }))
+                  }
+                  required={lang === "en"}
                 />
               </label>
             </fieldset>
