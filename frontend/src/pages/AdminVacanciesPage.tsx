@@ -382,6 +382,52 @@ export default function AdminVacanciesPage() {
             </select>
           </label>
 
+          <label className="pp-label">
+            {t("admin.workloadHours")}
+            <input
+              className="pp-input"
+              type="number"
+              min={0}
+              step={1}
+              value={form.workload_hours}
+              onChange={(e) => setForm((prev) => ({ ...prev, workload_hours: e.target.value }))}
+            />
+          </label>
+
+          <label className="pp-label">
+            {t("admin.salaryFrom")}
+            <input
+              className="pp-input"
+              type="number"
+              min={0}
+              step="0.01"
+              value={form.salary_from}
+              onChange={(e) => setForm((prev) => ({ ...prev, salary_from: e.target.value }))}
+            />
+          </label>
+
+          <label className="pp-label">
+            {t("admin.salaryTo")}
+            <input
+              className="pp-input"
+              type="number"
+              min={0}
+              step="0.01"
+              value={form.salary_to}
+              onChange={(e) => setForm((prev) => ({ ...prev, salary_to: e.target.value }))}
+            />
+          </label>
+
+          <label className="pp-label">
+            {t("admin.applicationDeadline")}
+            <input
+              className="pp-input"
+              type="date"
+              value={form.application_deadline}
+              onChange={(e) => setForm((prev) => ({ ...prev, application_deadline: e.target.value }))}
+            />
+          </label>
+
           {(["en", "de", "ru"] as const).map((lang) => (
             <fieldset key={lang} className="pp-translation-box">
               <legend>{lang.toUpperCase()}</legend>

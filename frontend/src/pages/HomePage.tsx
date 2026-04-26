@@ -27,7 +27,7 @@ function statusClass(status: string): string {
 }
 
 export default function HomePage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [stats, setStats] = useState<HomeStats | null>(null);
@@ -60,7 +60,7 @@ export default function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [i18n.language]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,21 +87,21 @@ export default function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [i18n.language]);
+  }, []);
 
   const activeVacanciesLabel = useMemo(
     () => stripLeadingNumber(t("home.activeVacancies")),
-    [t, i18n.language]
+    [t]
   );
   const studentApplicationsLabel = useMemo(
     () => stripLeadingNumber(t("home.studentApplications")),
-    [t, i18n.language]
+    [t]
   );
   const localizationLabel = useMemo(
     () => stripLanguagePrefix(t("home.localization")),
-    [t, i18n.language]
+    [t]
   );
-  const apiDocsLabel = useMemo(() => stripAfterColon(t("home.apiDocs")), [t, i18n.language]);
+  const apiDocsLabel = useMemo(() => stripAfterColon(t("home.apiDocs")), [t]);
 
   const statsLanguages = stats?.supported_languages?.join(" | ") || "EN | DE | RU";
   const activeVacanciesText = `${stats?.active_vacancies ?? 0} ${activeVacanciesLabel}`;

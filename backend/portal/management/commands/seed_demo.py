@@ -26,17 +26,17 @@ class Command(BaseCommand):
             "student": {
                 "en": ("Student", ""),
                 "de": ("Student", ""),
-                "ru": ("Student", ""),
+                "ru": ("\u0421\u0442\u0443\u0434\u0435\u043d\u0442", ""),
             },
             "employer": {
                 "en": ("Employer", ""),
                 "de": ("Arbeitgeber", ""),
-                "ru": ("Employer", ""),
+                "ru": ("\u0420\u0430\u0431\u043e\u0442\u043e\u0434\u0430\u0442\u0435\u043b\u044c", ""),
             },
             "admin": {
                 "en": ("Administrator", ""),
                 "de": ("Administrator", ""),
-                "ru": ("Administrator", ""),
+                "ru": ("\u0410\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440", ""),
             },
         }
         for code, langs in data.items():
@@ -53,12 +53,12 @@ class Command(BaseCommand):
             "cs": {
                 "en": ("Computer Science", ""),
                 "de": ("Informatik", ""),
-                "ru": ("Computer Science", ""),
+                "ru": ("\u041a\u043e\u043c\u043f\u044c\u044e\u0442\u0435\u0440\u043d\u044b\u0435 \u043d\u0430\u0443\u043a\u0438", ""),
             },
             "library": {
                 "en": ("Library", ""),
                 "de": ("Bibliothek", ""),
-                "ru": ("Library", ""),
+                "ru": ("\u0411\u0438\u0431\u043b\u0438\u043e\u0442\u0435\u043a\u0430", ""),
             },
         }
         out = {}
@@ -160,11 +160,11 @@ class Command(BaseCommand):
                 "Hauptcampus",
             ),
             "ru": (
-                "IT Support Assistant",
-                "Support IT services",
-                "Service desk",
-                "Basic IT skills",
-                "Главный кампус",
+                "\u0410\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 IT-\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438",
+                "\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 IT-\u0441\u0435\u0440\u0432\u0438\u0441\u043e\u0432 \u0443\u043d\u0438\u0432\u0435\u0440\u0441\u0438\u0442\u0435\u0442\u0430",
+                "\u0420\u0430\u0431\u043e\u0442\u0430 \u043d\u0430 \u043b\u0438\u043d\u0438\u0438 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438 \u0438 \u043f\u043e\u043c\u043e\u0449\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\u043c",
+                "\u0411\u0430\u0437\u043e\u0432\u044b\u0435 \u043d\u0430\u0432\u044b\u043a\u0438 IT \u0438 \u043a\u043e\u043c\u043c\u0443\u043d\u0438\u043a\u0430\u0446\u0438\u0438",
+                "\u0413\u043b\u0430\u0432\u043d\u044b\u0439 \u043a\u0430\u043c\u043f\u0443\u0441",
             ),
         }
 

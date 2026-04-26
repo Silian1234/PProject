@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2o9++%1y-br594tu2y&q-!x^^b+x2+$3qtr519d2s3lx+yk_pr'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "1").lower() in {"1", "true", "yes"}
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if host.strip()]
 
 
 # Application definition
@@ -48,15 +48,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
     "portal.middleware.LanguageResolverMiddleware",
 ]
 
@@ -157,10 +155,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-GOOGLE_TRANSLATE_API_KEY = "AIzaSyBsKGsiNXLpoQFXL13-sajCPNwgC9mcwMI"
+GOOGLE_TRANSLATE_API_KEY = os.getenv("GOOGLE_TRANSLATE_API_KEY", "")
 GOOGLE_TRANSLATE_API_URL = os.getenv(
     "GOOGLE_TRANSLATE_API_URL",
     "https://translation.googleapis.com/language/translate/v2",
 ).strip()
 GOOGLE_TRANSLATE_TIMEOUT_SECONDS = float(os.getenv("GOOGLE_TRANSLATE_TIMEOUT_SECONDS", "12"))
 GOOGLE_TRANSLATE_MAX_SEGMENTS_PER_REQUEST = int(os.getenv("GOOGLE_TRANSLATE_MAX_SEGMENTS_PER_REQUEST", "100"))
+
+try:
+    from .local_settings import *  # noqa: F401,F403
+except ImportError:
+    pass

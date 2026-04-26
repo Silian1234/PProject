@@ -5,6 +5,7 @@ from rest_framework import serializers
 from .constants import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CHOICES, SUPPORTED_LANGUAGE_CODES
 from .i18n import t
 from .models import *
+from .translation_service import translate_fields_with_google
 
 
 def request_language(serializer):
@@ -190,10 +191,57 @@ class VacancyWriteSerializer(serializers.ModelSerializer):
                 },
             )
 
+    @staticmethod
+    def _payload_from_translation(translation):
+        return {
+            "title": translation.title,
+            "description": translation.description,
+            "responsibilities": translation.responsibilities,
+            "requirements": translation.requirements,
+            "location": translation.location,
+        }
+
+    def _source_payload(self, vacancy, incoming):
+        if incoming:
+            if "en" in incoming:
+                return "en", incoming["en"]
+            first_code = next(iter(incoming))
+            return first_code, incoming[first_code]
+
+        source = vacancy.translations.filter(language="en").first() or vacancy.translations.first()
+        if not source:
+            return None, None
+        return source.language, self._payload_from_translation(source)
+
+    def _autofill_missing_translations(self, vacancy, incoming):
+        existing_codes = set(vacancy.translations.values_list("language", flat=True))
+        missing_codes = SUPPORTED_LANGUAGE_CODES - existing_codes
+        if not missing_codes:
+            return
+
+        source_language, source_payload = self._source_payload(vacancy, incoming)
+        if not source_language or not source_payload:
+            return
+
+        for lang_code in sorted(missing_codes):
+            translated_values = translate_fields_with_google(
+                source_language=source_language,
+                target_language=lang_code,
+                fields=source_payload,
+            )
+            if not translated_values:
+                continue
+            VacancyTranslation.objects.update_or_create(
+                vacancy=vacancy,
+                language=lang_code,
+                defaults=translated_values,
+            )
+
     def create(self, validated_data):
         tr = validated_data.pop("translations")
         vacancy = Vacancy.objects.create(**validated_data)
         self._sync(vacancy, tr)
+        self._autofill_missing_translations(vacancy, tr)
         return vacancy
 
     def update(self, instance, validated_data):
@@ -203,6 +251,7 @@ class VacancyWriteSerializer(serializers.ModelSerializer):
         instance.save()
         if tr:
             self._sync(instance, tr)
+            self._autofill_missing_translations(instance, tr)
         return instance
 
 
@@ -324,7 +373,7 @@ class RegisterSerializer(serializers.Serializer):
     def validate(self, attrs):
         lang = request_language(self)
         if attrs["password"] != attrs["password_confirm"]:
-            raise serializers.ValidationError({"password_confirm": t("msg.field_required", lang)})
+            raise serializers.ValidationError({"password_confirm": t("msg.password_mismatch", lang)})
 
         if User.objects.filter(username=attrs["username"]).exists():
             raise serializers.ValidationError({"username": t("msg.username_exists", lang)})

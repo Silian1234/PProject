@@ -170,29 +170,6 @@ class Vacancy(TimestampedModel):
             return existing
 
         source = self.translations.filter(language="en").first() or self.translations.first()
-        if not source:
-            return None
-        if source.language == requested:
-            return source
-
-        translated_values = translate_fields_with_google(
-            source_language=source.language,
-            target_language=requested,
-            fields={
-                "title": source.title,
-                "description": source.description,
-                "responsibilities": source.responsibilities,
-                "requirements": source.requirements,
-                "location": source.location,
-            },
-        )
-        if translated_values:
-            translated, _ = VacancyTranslation.objects.update_or_create(
-                vacancy=self,
-                language=requested,
-                defaults=translated_values,
-            )
-            return translated
         return source
 
 

@@ -23,9 +23,9 @@ export default function App() {
         <Route
           path="/vacancies/:id/apply"
           element={
-            <RequireAuth>
+            <RequireRole allowed={["student"]}>
               <ApplyPage />
-            </RequireAuth>
+            </RequireRole>
           }
         />
         <Route
@@ -39,9 +39,9 @@ export default function App() {
         <Route
           path="/my-applications"
           element={
-            <RequireAuth>
+            <RequireRole allowed={["student"]}>
               <MyApplicationsPage />
-            </RequireAuth>
+            </RequireRole>
           }
         />
         <Route

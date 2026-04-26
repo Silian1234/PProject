@@ -15,7 +15,8 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Token ${token}`;
   }
 
-  config.params = { ...(config.params || {}), lang };
+  // Keep explicit per-request `lang` if it was provided by caller.
+  config.params = { lang, ...(config.params || {}) };
   return config;
 });
 

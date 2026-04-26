@@ -43,7 +43,8 @@ class DepartmentListAPIView(generics.ListAPIView):
 
 class VacancyViewSet(viewsets.ModelViewSet):
     queryset = Vacancy.objects.select_related("department", "employer", "employer__employer_profile").prefetch_related(
-        "translations"
+        "translations",
+        "department__translations",
     )
     filterset_fields = ("department", "employment_type", "status")
 
@@ -91,7 +92,10 @@ class VacancyViewSet(viewsets.ModelViewSet):
         if not (user.is_superuser or user.role_code == Role.RoleCode.ADMIN or vacancy.employer_id == user.id):
             return Response({"detail": t("msg.permission_denied", get_lang(request))}, status=403)
         data = ApplicationSerializer(
-            Application.objects.filter(vacancy=vacancy).order_by("-created_at"),
+            Application.objects.filter(vacancy=vacancy)
+            .select_related("vacancy")
+            .prefetch_related("vacancy__translations")
+            .order_by("-created_at"),
             many=True,
             context={"request": request},
         ).data
@@ -124,6 +128,7 @@ class MyApplicationListAPIView(generics.ListAPIView):
         return (
             Application.objects.filter(student=self.request.user)
             .select_related("vacancy", "vacancy__department", "vacancy__employer", "vacancy__employer__employer_profile")
+            .prefetch_related("vacancy__translations", "vacancy__department__translations")
             .order_by("-created_at")
         )
 
