@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import {
+  createInterview,
+  createReview,
   createVacancy,
   getVacancies,
   getVacancyApplications,
@@ -47,6 +49,16 @@ type VacancyForm = {
 type ApplicationDraft = {
   status: ApplicationStatus;
   employer_comment: string;
+};
+
+type InterviewDraft = {
+  scheduled_at: string;
+  notes: string;
+};
+
+type ReviewDraft = {
+  rating: string;
+  comment: string;
 };
 
 const languages = ["en", "de", "ru"] as const;
@@ -114,6 +126,8 @@ export default function AdminVacanciesPage() {
   const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(null);
   const [applications, setApplications] = useState<VacancyApplication[]>([]);
   const [applicationDrafts, setApplicationDrafts] = useState<Record<number, ApplicationDraft>>({});
+  const [interviewDrafts, setInterviewDrafts] = useState<Record<number, InterviewDraft>>({});
+  const [reviewDrafts, setReviewDrafts] = useState<Record<number, ReviewDraft>>({});
   const [expandedApplicationId, setExpandedApplicationId] = useState<number | null>(null);
   const [form, setForm] = useState<VacancyForm>(defaultForm());
   const [visibleTranslations, setVisibleTranslations] = useState<Record<Lang, boolean>>(
@@ -123,6 +137,8 @@ export default function AdminVacanciesPage() {
   const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [updatingApplicationId, setUpdatingApplicationId] = useState<number | null>(null);
+  const [schedulingApplicationId, setSchedulingApplicationId] = useState<number | null>(null);
+  const [reviewingApplicationId, setReviewingApplicationId] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
@@ -135,7 +151,7 @@ export default function AdminVacanciesPage() {
     setLoading(true);
     setError("");
     try {
-      const data = await getVacancies();
+      const data = await getVacancies({ mine: true });
       setVacancies(data);
       setSelectedVacancyId((prev) => prev ?? data[0]?.id ?? null);
     } catch (e) {
@@ -163,10 +179,18 @@ export default function AdminVacanciesPage() {
           ])
         )
       );
+      setInterviewDrafts(
+        Object.fromEntries(data.map((item) => [item.id, { scheduled_at: "", notes: "" }]))
+      );
+      setReviewDrafts(
+        Object.fromEntries(data.map((item) => [item.id, { rating: "5", comment: "" }]))
+      );
     } catch (e) {
       setError(getErrorMessage(e));
       setApplications([]);
       setApplicationDrafts({});
+      setInterviewDrafts({});
+      setReviewDrafts({});
     } finally {
       setApplicationsLoading(false);
     }
@@ -303,6 +327,64 @@ export default function AdminVacanciesPage() {
       setError(getErrorMessage(e));
     } finally {
       setUpdatingApplicationId(null);
+    }
+  };
+
+  const onScheduleInterview = async (applicationId: number) => {
+    const draft = interviewDrafts[applicationId];
+    if (!draft?.scheduled_at) {
+      setError(t("admin.interviewDateRequired", "Interview date is required."));
+      return;
+    }
+
+    setSchedulingApplicationId(applicationId);
+    setMsg("");
+    setError("");
+    try {
+      const response = await createInterview({
+        application_id: applicationId,
+        scheduled_at: draft.scheduled_at,
+        status: "planned",
+        notes: draft.notes
+      });
+      setMsg(response.message);
+      setInterviewDrafts((prev) => ({
+        ...prev,
+        [applicationId]: { scheduled_at: "", notes: "" }
+      }));
+      if (selectedVacancyId) {
+        await loadApplications(selectedVacancyId);
+      }
+    } catch (e) {
+      setError(getErrorMessage(e));
+    } finally {
+      setSchedulingApplicationId(null);
+    }
+  };
+
+  const onCreateEmployerReview = async (applicationId: number) => {
+    const draft = reviewDrafts[applicationId];
+    if (!draft) return;
+
+    setReviewingApplicationId(applicationId);
+    setMsg("");
+    setError("");
+    try {
+      const response = await createReview({
+        application: applicationId,
+        review_type: "employer_to_student",
+        rating: Number(draft.rating),
+        comment: draft.comment
+      });
+      setMsg(response.message);
+      setReviewDrafts((prev) => ({
+        ...prev,
+        [applicationId]: { rating: "5", comment: "" }
+      }));
+    } catch (e) {
+      setError(getErrorMessage(e));
+    } finally {
+      setReviewingApplicationId(null);
     }
   };
 
@@ -570,6 +652,109 @@ export default function AdminVacanciesPage() {
                             ? t("admin.saving")
                             : t("admin.saveApplication")}
                         </button>
+
+                        <div className="pp-admin-action-box">
+                          <h4>{t("admin.scheduleInterview", "Schedule interview")}</h4>
+                          <div className="pp-form-grid pp-inline-form">
+                            <label className="pp-label">
+                              {t("admin.interviewDate", "Date and time")}
+                              <input
+                                className="pp-input"
+                                type="datetime-local"
+                                value={interviewDrafts[application.id]?.scheduled_at || ""}
+                                onChange={(e) =>
+                                  setInterviewDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] || { scheduled_at: "", notes: "" }),
+                                      scheduled_at: e.target.value
+                                    }
+                                  }))
+                                }
+                              />
+                            </label>
+                            <label className="pp-label pp-grow">
+                              {t("admin.interviewNotes", "Notes")}
+                              <input
+                                className="pp-input"
+                                value={interviewDrafts[application.id]?.notes || ""}
+                                onChange={(e) =>
+                                  setInterviewDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] || { scheduled_at: "", notes: "" }),
+                                      notes: e.target.value
+                                    }
+                                  }))
+                                }
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              className="pp-btn-outline pp-btn-sm"
+                              disabled={schedulingApplicationId === application.id}
+                              onClick={() => void onScheduleInterview(application.id)}
+                            >
+                              {schedulingApplicationId === application.id
+                                ? t("admin.saving")
+                                : t("admin.scheduleInterview", "Schedule interview")}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="pp-admin-action-box">
+                          <h4>{t("admin.employerReview", "Employer review")}</h4>
+                          <div className="pp-form-grid pp-inline-form">
+                            <label className="pp-label">
+                              {t("admin.rating", "Rating")}
+                              <select
+                                className="pp-select"
+                                value={reviewDrafts[application.id]?.rating || "5"}
+                                onChange={(e) =>
+                                  setReviewDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] || { rating: "5", comment: "" }),
+                                      rating: e.target.value
+                                    }
+                                  }))
+                                }
+                              >
+                                {[5, 4, 3, 2, 1].map((value) => (
+                                  <option key={value} value={value}>
+                                    {value}/5
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="pp-label pp-grow">
+                              {t("admin.reviewComment", "Review comment")}
+                              <input
+                                className="pp-input"
+                                value={reviewDrafts[application.id]?.comment || ""}
+                                onChange={(e) =>
+                                  setReviewDrafts((prev) => ({
+                                    ...prev,
+                                    [application.id]: {
+                                      ...(prev[application.id] || { rating: "5", comment: "" }),
+                                      comment: e.target.value
+                                    }
+                                  }))
+                                }
+                              />
+                            </label>
+                            <button
+                              type="button"
+                              className="pp-btn-outline pp-btn-sm"
+                              disabled={reviewingApplicationId === application.id}
+                              onClick={() => void onCreateEmployerReview(application.id)}
+                            >
+                              {reviewingApplicationId === application.id
+                                ? t("admin.saving")
+                                : t("admin.saveReview", "Save review")}
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

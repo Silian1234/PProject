@@ -35,7 +35,7 @@ body {
 
 .pp-topbar {
   display: grid;
-  grid-template-columns: 140px 1fr auto;
+  grid-template-columns: 132px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
   border: 1px solid var(--stroke);
@@ -53,16 +53,19 @@ body {
 
 .pp-desktop-nav {
   display: flex;
-  gap: 16px;
+  flex-wrap: nowrap;
+  gap: 8px;
   align-items: center;
+  min-width: 0;
 }
 
 .pp-nav-link {
-  padding: 8px 10px;
+  padding: 7px 9px;
   border-radius: 8px;
   color: var(--text);
   text-decoration: none;
-  font-size: 18px;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
 .pp-nav-link:hover {
@@ -78,6 +81,56 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.pp-tools-menu {
+  position: relative;
+}
+
+.pp-tools-trigger {
+  border: 1px solid var(--stroke);
+  border-radius: 9px;
+  background: #eef3fb;
+  color: var(--text);
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pp-tools-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 190px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 18px 40px rgba(22, 44, 87, 0.14);
+  padding: 8px;
+  display: none;
+  z-index: 50;
+}
+
+.pp-tools-menu:hover .pp-tools-dropdown,
+.pp-tools-menu:focus-within .pp-tools-dropdown {
+  display: grid;
+  gap: 4px;
+}
+
+.pp-tools-link {
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 9px 10px;
+  text-decoration: none;
+}
+
+.pp-tools-link:hover,
+.pp-tools-link.active {
+  background: #e6ecf8;
+  color: var(--blue);
 }
 
 .pp-lang {
@@ -591,6 +644,76 @@ body {
   grid-column: 1 / -1;
 }
 
+.pp-feed-item,
+.pp-calendar-item,
+.pp-review-item {
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #f3f6fb;
+}
+
+.pp-feed-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.pp-feed-unread {
+  border-color: #8fa7e8;
+  background: #edf3ff;
+}
+
+.pp-notification-form,
+.pp-calendar-edit,
+.pp-review-form,
+.pp-inline-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+.pp-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-weight: 600;
+}
+
+.pp-admin-action-box {
+  border-top: 1px solid var(--stroke);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.pp-admin-action-box h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.pp-recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.pp-recommendation-card {
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: #edf3ff;
+  color: var(--text);
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.pp-recommendation-card span {
+  color: var(--muted);
+}
+
 @media (max-width: 920px) {
   .pp-root {
     width: 100%;
@@ -610,6 +733,7 @@ body {
   }
 
   .pp-desktop-nav,
+  .pp-tools-menu,
   .pp-auth {
     display: none;
   }
@@ -749,7 +873,7 @@ body {
     border: 1px solid var(--stroke);
     border-radius: 16px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     padding: 10px 8px;
     z-index: 20;
   }
@@ -758,7 +882,7 @@ body {
     text-decoration: none;
     color: #7385a2;
     text-align: center;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     padding: 0 4px;
     overflow-wrap: anywhere;
@@ -789,5 +913,16 @@ body {
 
   .pp-col-span-2 {
     grid-column: auto;
+  }
+
+  .pp-feed-item {
+    display: grid;
+  }
+
+  .pp-notification-form,
+  .pp-calendar-edit,
+  .pp-review-form,
+  .pp-inline-form {
+    grid-template-columns: 1fr;
   }
 }

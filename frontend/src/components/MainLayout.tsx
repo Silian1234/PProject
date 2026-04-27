@@ -64,9 +64,18 @@ export default function MainLayout() {
       { to: withCurrentLanguage("/vacancies"), label: t("nav.vacancies"), show: true },
       { to: withCurrentLanguage("/dashboard"), label: t("nav.profile"), show: Boolean(token) },
       { to: withCurrentLanguage("/my-applications"), label: t("nav.applications"), show: canSeeApplications },
-      { to: withCurrentLanguage("/admin/vacancies"), label: t("nav.admin"), show: canSeeEmployer }
+      { to: withCurrentLanguage("/employer/vacancies"), label: t("nav.admin"), show: canSeeEmployer }
     ],
     [t, token, canSeeApplications, canSeeEmployer]
+  );
+
+  const serviceNav = useMemo(
+    () => [
+      { to: withCurrentLanguage("/notifications"), label: t("nav.notifications"), show: Boolean(token) },
+      { to: withCurrentLanguage("/calendar"), label: t("nav.calendar"), show: Boolean(token) },
+      { to: withCurrentLanguage("/reviews"), label: t("nav.reviews"), show: Boolean(token) }
+    ],
+    [t, token]
   );
 
   const mobileNav = useMemo(
@@ -74,7 +83,7 @@ export default function MainLayout() {
       { to: withCurrentLanguage("/"), label: t("nav.home"), show: true },
       { to: withCurrentLanguage("/vacancies"), label: t("nav.vacancies"), show: true },
       { to: withCurrentLanguage("/my-applications"), label: t("nav.applications"), show: canSeeApplications },
-      { to: withCurrentLanguage("/admin/vacancies"), label: t("nav.adminShort"), show: canSeeEmployer },
+      { to: withCurrentLanguage("/employer/vacancies"), label: t("nav.adminShort"), show: canSeeEmployer },
       { to: withCurrentLanguage(token ? "/dashboard" : "/login"), label: t("nav.profile"), show: true }
     ],
     [t, token, canSeeApplications, canSeeEmployer]
@@ -121,6 +130,29 @@ export default function MainLayout() {
         </nav>
 
         <div className="pp-topbar-right">
+          {token && (
+            <div className="pp-tools-menu">
+              <button type="button" className="pp-tools-trigger">
+                {t("nav.tools")}
+              </button>
+              <div className="pp-tools-dropdown">
+                {serviceNav
+                  .filter((item) => item.show)
+                  .map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className={({ isActive }) =>
+                        isActive ? "pp-tools-link active" : "pp-tools-link"
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+              </div>
+            </div>
+          )}
+
           <div className="pp-lang">
             <button type="button" onClick={() => setLang("ru")}>
               RU
@@ -186,3 +218,4 @@ export default function MainLayout() {
     </div>
   );
 }
+

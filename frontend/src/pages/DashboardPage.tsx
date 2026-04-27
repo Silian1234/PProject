@@ -166,8 +166,21 @@ export default function DashboardPage() {
                 {t("dashboard.viewMyApplications")}
               </Link>
             )}
+            {user && (
+              <>
+                <Link to={withCurrentLanguage("/notifications")} className="pp-btn-outline">
+                  {t("nav.notifications")}
+                </Link>
+                <Link to={withCurrentLanguage("/calendar")} className="pp-btn-outline">
+                  {t("nav.calendar")}
+                </Link>
+                <Link to={withCurrentLanguage("/reviews")} className="pp-btn-outline">
+                  {t("nav.reviews")}
+                </Link>
+              </>
+            )}
             {(user?.role_code === "employer" || user?.role_code === "admin") && (
-              <Link to={withCurrentLanguage("/admin/vacancies")} className="pp-btn-outline">
+              <Link to={withCurrentLanguage("/employer/vacancies")} className="pp-btn-outline">
                 {t("dashboard.openEmployerPanel")}
               </Link>
             )}
@@ -336,3 +349,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

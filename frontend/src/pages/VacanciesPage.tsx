@@ -3,7 +3,8 @@ import type { FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
-import { getDepartments, getVacancies } from "../api/services";
+import { getDepartments, getRecommendedVacancies, getVacancies } from "../api/services";
+import { getStoredUser, getToken } from "../auth";
 import type { Department, Vacancy } from "../types/api";
 import {
   formatDate,
@@ -30,6 +31,7 @@ export default function VacanciesPage() {
   const [employmentType, setEmploymentType] = useState(searchParams.get("employment_type") || "");
 
   const [items, setItems] = useState<Vacancy[]>([]);
+  const [recommended, setRecommended] = useState<Vacancy[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,6 +50,13 @@ export default function VacanciesPage() {
       ]);
       setItems(vacanciesData);
       setDepartments(departmentsData);
+      if (getToken() && getStoredUser()?.role_code === "student") {
+        try {
+          setRecommended(await getRecommendedVacancies());
+        } catch {
+          setRecommended([]);
+        }
+      }
     } catch (e) {
       setError(getErrorMessage(e));
     } finally {
@@ -108,6 +117,27 @@ export default function VacanciesPage() {
       {loading && <p>{t("common.loading")}</p>}
       {error && <p className="pp-error">{error}</p>}
       {!loading && !error && rows.length === 0 && <p>{t("common.notFound")}</p>}
+
+      {!loading && !error && recommended.length > 0 && (
+        <section className="pp-card">
+          <h2>{t("vacancies.recommended", "Recommended for you")}</h2>
+          <p className="pp-subtitle">
+            {t("vacancies.recommendedHint", "Based on your profile and applications.")}
+          </p>
+          <div className="pp-recommendation-grid">
+            {recommended.map((vacancy) => (
+              <Link
+                key={vacancy.id}
+                to={withCurrentLanguage(`/vacancies/${vacancy.id}`)}
+                className="pp-recommendation-card"
+              >
+                <strong>{vacancy.title}</strong>
+                <span>{vacancy.department_name || vacancy.employer_name || t("common.notSpecified")}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {!loading &&
         !error &&

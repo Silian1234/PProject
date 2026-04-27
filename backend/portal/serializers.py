@@ -542,6 +542,7 @@ class ApplicationCreateSerializer(serializers.Serializer):
         Notification.objects.create(
             user=student,
             application=app,
+            vacancy=vacancy,
             language=lang,
             message=t("msg.application_submitted", lang),
             event_type=Notification.NotificationType.APPLICATION_SUBMITTED,
@@ -551,6 +552,7 @@ class ApplicationCreateSerializer(serializers.Serializer):
 
 class ApplicationSerializer(serializers.ModelSerializer):
     vacancy_title = serializers.SerializerMethodField()
+    employer_name = serializers.SerializerMethodField()
     student_name = serializers.SerializerMethodField()
     student_email = serializers.EmailField(source="student.email", read_only=True)
     resume_title = serializers.SerializerMethodField()
@@ -563,6 +565,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "id",
             "vacancy",
             "vacancy_title",
+            "employer_name",
             "student_name",
             "student_email",
             "resume_title",
@@ -578,6 +581,12 @@ class ApplicationSerializer(serializers.ModelSerializer):
     def get_vacancy_title(self, obj) -> str:
         tr = obj.vacancy.translation_for(request_language(self))
         return tr.title if tr else f"Vacancy #{obj.vacancy_id}"
+
+    def get_employer_name(self, obj) -> str:
+        employer = obj.vacancy.employer
+        if hasattr(employer, "employer_profile") and employer.employer_profile.organization_name:
+            return employer.employer_profile.organization_name
+        return employer.get_full_name() or employer.username
 
     def get_student_name(self, obj) -> str:
         full_name = f"{obj.student.first_name} {obj.student.last_name}".strip()
@@ -612,11 +621,270 @@ class ApplicationStatusUpdateSerializer(serializers.ModelSerializer):
         Notification.objects.create(
             user=instance.student,
             application=instance,
+            vacancy=instance.vacancy,
             language=lang,
             message=t("msg.status_updated", lang),
             event_type=Notification.NotificationType.STATUS_UPDATED,
         )
         return instance
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    message = serializers.SerializerMethodField()
+    vacancy_title = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = (
+            "id",
+            "event_type",
+            "message",
+            "is_read",
+            "application",
+            "vacancy_title",
+            "created_at",
+        )
+
+    def _vacancy(self, obj):
+        if obj.vacancy_id:
+            return obj.vacancy
+        if obj.application_id:
+            return obj.application.vacancy
+        return None
+
+    def get_vacancy_title(self, obj) -> str:
+        vacancy = self._vacancy(obj)
+        if not vacancy:
+            return ""
+        tr = vacancy.translation_for(request_language(self))
+        return tr.title if tr else f"Vacancy #{vacancy.pk}"
+
+    def get_message(self, obj) -> str:
+        lang = request_language(self)
+        event_map = {
+            Notification.NotificationType.APPLICATION_SUBMITTED: "msg.application_submitted",
+            Notification.NotificationType.STATUS_UPDATED: "msg.status_updated",
+            Notification.NotificationType.INTERVIEW_SCHEDULED: "msg.interview_scheduled",
+            Notification.NotificationType.REVIEW_CREATED: "msg.review_created",
+        }
+
+        if obj.event_type == Notification.NotificationType.NEW_VACANCY:
+            title = self.get_vacancy_title(obj)
+            if title:
+                return t("msg.new_vacancy", lang).format(title=title)
+            return t("msg.new_vacancy_generic", lang, default=obj.message)
+
+        key = event_map.get(obj.event_type)
+        return t(key, lang, default=obj.message) if key else obj.message
+
+
+class VacancySubscriptionSerializer(serializers.ModelSerializer):
+    department_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = VacancySubscription
+        fields = (
+            "id",
+            "is_active",
+            "department",
+            "department_name",
+            "employment_type",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("id", "department_name", "created_at", "updated_at")
+        extra_kwargs = {
+            "department": {"required": False, "allow_null": True},
+            "employment_type": {"required": False, "allow_blank": True},
+            "is_active": {"required": False},
+        }
+
+    def get_department_name(self, obj) -> str:
+        if not obj.department:
+            return ""
+        tr = obj.department.translation_for(request_language(self))
+        return tr.name if tr else obj.department.code
+
+    def validate_department(self, value):
+        if value and not value.is_active:
+            raise serializers.ValidationError(t("msg.department_not_found", request_language(self)))
+        return value
+
+
+class InterviewSerializer(serializers.ModelSerializer):
+    application_status = serializers.CharField(source="application.status", read_only=True)
+    vacancy_title = serializers.SerializerMethodField()
+    student_name = serializers.SerializerMethodField()
+    employer_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Interview
+        fields = (
+            "id",
+            "application",
+            "application_status",
+            "vacancy_title",
+            "student_name",
+            "employer_name",
+            "scheduled_at",
+            "status",
+            "notes",
+            "created_at",
+            "updated_at",
+        )
+
+    def get_vacancy_title(self, obj) -> str:
+        tr = obj.application.vacancy.translation_for(request_language(self))
+        return tr.title if tr else f"Vacancy #{obj.application.vacancy_id}"
+
+    def get_student_name(self, obj) -> str:
+        full_name = f"{obj.application.student.first_name} {obj.application.student.last_name}".strip()
+        return full_name or obj.application.student.username
+
+    def get_employer_name(self, obj) -> str:
+        employer = obj.application.vacancy.employer
+        if hasattr(employer, "employer_profile") and employer.employer_profile.organization_name:
+            return employer.employer_profile.organization_name
+        return employer.get_full_name() or employer.username
+
+
+class InterviewCreateSerializer(serializers.ModelSerializer):
+    application_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Interview
+        fields = ("application_id", "scheduled_at", "status", "notes")
+
+    def validate(self, attrs):
+        lang = request_language(self)
+        request = self.context["request"]
+        try:
+            application = Application.objects.select_related("vacancy", "student").get(pk=attrs["application_id"])
+        except Application.DoesNotExist:
+            raise serializers.ValidationError({"application_id": t("msg.application_not_found", lang)})
+
+        user = request.user
+        is_owner = application.vacancy.employer_id == user.id
+        is_admin = user.is_superuser or user.role_code == Role.RoleCode.ADMIN
+        if not (is_owner or is_admin):
+            raise serializers.ValidationError(t("msg.permission_denied", lang))
+
+        attrs["application"] = application
+        return attrs
+
+    @transaction.atomic
+    def create(self, validated_data):
+        request = self.context["request"]
+        lang = request_language(self)
+        application = validated_data.pop("application")
+        validated_data.pop("application_id", None)
+        interview = Interview.objects.create(application=application, **validated_data)
+        application.status = Application.ApplicationStatus.INTERVIEW
+        application.save(update_fields=["status", "updated_at"])
+        Notification.objects.create(
+            user=application.student,
+            application=application,
+            vacancy=application.vacancy,
+            language=application.student.preferred_language or lang,
+            message=t("msg.interview_scheduled", application.student.preferred_language or lang),
+            event_type=Notification.NotificationType.INTERVIEW_SCHEDULED,
+        )
+        return interview
+
+
+class InterviewUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interview
+        fields = ("scheduled_at", "status", "notes")
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    review_type = serializers.ChoiceField(choices=Review.ReviewType.choices, required=False)
+    vacancy_title = serializers.SerializerMethodField()
+    student_name = serializers.SerializerMethodField()
+    employer_name = serializers.SerializerMethodField()
+    author_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Review
+        fields = (
+            "id",
+            "application",
+            "review_type",
+            "rating",
+            "comment",
+            "author",
+            "author_name",
+            "vacancy_title",
+            "student_name",
+            "employer_name",
+            "created_at",
+        )
+        read_only_fields = ("author", "author_name", "vacancy_title", "student_name", "employer_name", "created_at")
+
+    def get_vacancy_title(self, obj) -> str:
+        tr = obj.application.vacancy.translation_for(request_language(self))
+        return tr.title if tr else f"Vacancy #{obj.application.vacancy_id}"
+
+    def get_student_name(self, obj) -> str:
+        full_name = f"{obj.application.student.first_name} {obj.application.student.last_name}".strip()
+        return full_name or obj.application.student.username
+
+    def get_employer_name(self, obj) -> str:
+        employer = obj.application.vacancy.employer
+        if hasattr(employer, "employer_profile") and employer.employer_profile.organization_name:
+            return employer.employer_profile.organization_name
+        return employer.get_full_name() or employer.username
+
+    def get_author_name(self, obj) -> str:
+        return obj.author.get_full_name() or obj.author.username
+
+    def validate(self, attrs):
+        lang = request_language(self)
+        request = self.context["request"]
+        user = request.user
+        application = attrs["application"]
+        incoming_review_type = attrs.get("review_type")
+
+        if user.role_code == Role.RoleCode.STUDENT:
+            if application.student_id != user.id:
+                raise serializers.ValidationError(t("msg.permission_denied", lang))
+            attrs["review_type"] = Review.ReviewType.STUDENT_TO_EMPLOYER
+
+        elif user.is_superuser or user.role_code in {Role.RoleCode.EMPLOYER, Role.RoleCode.ADMIN}:
+            is_owner = application.vacancy.employer_id == user.id
+            is_admin = user.is_superuser or user.role_code == Role.RoleCode.ADMIN
+            if not (is_owner or is_admin):
+                raise serializers.ValidationError(t("msg.permission_denied", lang))
+            attrs["review_type"] = Review.ReviewType.EMPLOYER_TO_STUDENT
+
+        else:
+            raise serializers.ValidationError(t("msg.permission_denied", lang))
+
+        review_type = attrs["review_type"]
+        if incoming_review_type and incoming_review_type != review_type:
+            # Role wins over client payload: students cannot rate students, employers cannot rate employers.
+            attrs["review_type"] = review_type
+        if Review.objects.filter(application=application, author=user, review_type=review_type).exists():
+            raise serializers.ValidationError(t("msg.review_exists", lang))
+
+        return attrs
+
+    def create(self, validated_data):
+        request = self.context["request"]
+        review = Review.objects.create(author=request.user, **validated_data)
+        recipient = review.application.student
+        if review.review_type == Review.ReviewType.STUDENT_TO_EMPLOYER:
+            recipient = review.application.vacancy.employer
+        Notification.objects.create(
+            user=recipient,
+            application=review.application,
+            vacancy=review.application.vacancy,
+            language=recipient.preferred_language,
+            message=t("msg.review_created", recipient.preferred_language),
+            event_type=Notification.NotificationType.REVIEW_CREATED,
+        )
+        return review
 
 
 class RegisterSerializer(serializers.Serializer):

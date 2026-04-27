@@ -119,7 +119,7 @@ export default function HomePage() {
               {t("home.browseVacancies")}
             </Link>
             {showEmployerLink && (
-              <Link to={withCurrentLanguage("/admin/vacancies")} className="pp-btn-outline">
+              <Link to={withCurrentLanguage("/employer/vacancies")} className="pp-btn-outline">
                 {t("home.forEmployers")}
               </Link>
             )}
@@ -191,3 +191,4 @@ export default function HomePage() {
     </div>
   );
 }
+

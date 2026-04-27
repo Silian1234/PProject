@@ -26,7 +26,11 @@ const resources = {
         login: "Login",
         register: "Register",
         logout: "Logout",
-        profile: "Profile"
+        profile: "Profile",
+        notifications: "Updates",
+        calendar: "Calendar",
+        reviews: "Reviews",
+        tools: "Services"
       },
       common: {
         loading: "Loading...",
@@ -93,7 +97,9 @@ const resources = {
         campus: "Campus",
         partTime: "Part-time",
         internship: "Internship",
-        open: "Open"
+        open: "Open",
+        recommended: "Recommended for you",
+        recommendedHint: "Based on your profile and applications."
       },
       vacancyDetails: {
         title: "Vacancy Details",
@@ -242,7 +248,15 @@ const resources = {
         employerComment: "Employer comment",
         commentPlaceholder: "Add a comment for the candidate...",
         saveApplication: "Save application",
-        applicationUpdated: "Application updated"
+        applicationUpdated: "Application updated",
+        scheduleInterview: "Schedule interview",
+        interviewDate: "Date and time",
+        interviewDateRequired: "Interview date is required.",
+        interviewNotes: "Notes",
+        employerReview: "Employer review",
+        rating: "Rating",
+        reviewComment: "Review comment",
+        saveReview: "Save review"
       },
       footer: {
         product: "Student jobs and internships",
@@ -266,7 +280,11 @@ const resources = {
         login: "Anmelden",
         register: "Registrieren",
         logout: "Abmelden",
-        profile: "Profil"
+        profile: "Profil",
+        notifications: "Updates",
+        calendar: "Kalender",
+        reviews: "Bewertungen",
+        tools: "Services"
       },
       common: {
         loading: "Wird geladen...",
@@ -333,7 +351,9 @@ const resources = {
         campus: "Campus",
         partTime: "Teilzeit",
         internship: "Praktikum",
-        open: "Öffnen"
+        open: "Öffnen",
+        recommended: "Empfohlen für dich",
+        recommendedHint: "Basierend auf deinem Profil und deinen Bewerbungen."
       },
       vacancyDetails: {
         title: "Stellendetails",
@@ -482,7 +502,15 @@ const resources = {
         employerComment: "Kommentar des Arbeitgebers",
         commentPlaceholder: "Kommentar für den Kandidaten hinzufügen...",
         saveApplication: "Bewerbung speichern",
-        applicationUpdated: "Bewerbung aktualisiert"
+        applicationUpdated: "Bewerbung aktualisiert",
+        scheduleInterview: "Interview planen",
+        interviewDate: "Datum und Uhrzeit",
+        interviewDateRequired: "Interviewdatum ist erforderlich.",
+        interviewNotes: "Notizen",
+        employerReview: "Arbeitgeberbewertung",
+        rating: "Bewertung",
+        reviewComment: "Bewertungskommentar",
+        saveReview: "Bewertung speichern"
       },
       footer: {
         product: "Studentenjobs und Praktika",
@@ -506,7 +534,11 @@ const resources = {
         login: "Вход",
         register: "Регистрация",
         logout: "Выход",
-        profile: "Профиль"
+        profile: "Профиль",
+        notifications: "Уведомления",
+        calendar: "Календарь",
+        reviews: "Отзывы",
+        tools: "Сервисы"
       },
       common: {
         loading: "Загрузка...",
@@ -573,7 +605,9 @@ const resources = {
         campus: "Кампус",
         partTime: "Частичная занятость",
         internship: "Стажировка",
-        open: "Открыть"
+        open: "Открыть",
+        recommended: "Рекомендовано для вас",
+        recommendedHint: "На основе профиля и ваших заявок."
       },
       vacancyDetails: {
         title: "Детали вакансии",
@@ -722,7 +756,15 @@ const resources = {
         employerComment: "Комментарий работодателя",
         commentPlaceholder: "Добавьте комментарий для кандидата...",
         saveApplication: "Сохранить отклик",
-        applicationUpdated: "Отклик обновлен"
+        applicationUpdated: "Отклик обновлен",
+        scheduleInterview: "Назначить собеседование",
+        interviewDate: "Дата и время",
+        interviewDateRequired: "Дата собеседования обязательна.",
+        interviewNotes: "Заметки",
+        employerReview: "Отзыв работодателя",
+        rating: "Оценка",
+        reviewComment: "Комментарий к отзыву",
+        saveReview: "Сохранить отзыв"
       },
       footer: {
         product: "Работа и стажировки для студентов",

@@ -196,17 +196,45 @@ class Notification(TimestampedModel):
     class NotificationType(models.TextChoices):
         APPLICATION_SUBMITTED = "application_submitted", "Application submitted"
         STATUS_UPDATED = "status_updated", "Status updated"
+        NEW_VACANCY = "new_vacancy", "New vacancy"
+        INTERVIEW_SCHEDULED = "interview_scheduled", "Interview scheduled"
+        REVIEW_CREATED = "review_created", "Review created"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="notifications", null=True, blank=True)
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.SET_NULL, related_name="notifications", null=True, blank=True)
     language = models.CharField(max_length=2, choices=SUPPORTED_LANGUAGE_CHOICES, default="en")
     message = models.TextField()
     event_type = models.CharField(max_length=40, choices=NotificationType.choices)
     is_read = models.BooleanField(default=False)
 
 
+class VacancySubscription(TimestampedModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="vacancy_subscription")
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
+    employment_type = models.CharField(max_length=20, choices=Vacancy.EmploymentType.choices, blank=True)
+    is_active = models.BooleanField(default=True)
+
+
 class Review(TimestampedModel):
-    application = models.OneToOneField(Application, on_delete=models.CASCADE, related_name="review")
+    class ReviewType(models.TextChoices):
+        EMPLOYER_TO_STUDENT = "employer_to_student", "Employer to student"
+        STUDENT_TO_EMPLOYER = "student_to_employer", "Student to employer"
+
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name="reviews")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
+    review_type = models.CharField(
+        max_length=32,
+        choices=ReviewType.choices,
+        default=ReviewType.STUDENT_TO_EMPLOYER,
+    )
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["application", "author", "review_type"],
+                name="unique_application_author_review_type",
+            )
+        ]

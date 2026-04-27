@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
 from portal.models import (
@@ -10,11 +10,15 @@ from portal.models import (
     Department,
     DepartmentTranslation,
     EmployerProfile,
+    Interview,
+    Notification,
     Role,
     RoleTranslation,
+    Review,
     StudentProfile,
     User,
     Vacancy,
+    VacancySubscription,
     VacancyTranslation,
 )
 from portal.serializers import LoginSerializer, RegisterSerializer, VacancyWriteSerializer
@@ -119,6 +123,7 @@ class TranslationServiceTests(TestCase):
         )
         self.assertIsNone(translated)
 
+    @override_settings(GOOGLE_TRANSLATE_MAX_SEGMENTS_PER_REQUEST=100)
     @patch("portal.translation_service._translate_text_batch_single")
     def test_batch_translation_chunks_requests(self, single_call_mock):
         single_call_mock.side_effect = lambda **kwargs: kwargs["texts"]
@@ -583,3 +588,269 @@ class DepartmentAPITests(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["code"], "cs")
         self.assertEqual(response.data[0]["name"], "Informatik")
+
+
+class ExtendedProcessAPITests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.student_role = Role.objects.create(code=Role.RoleCode.STUDENT)
+        self.employer_role = Role.objects.create(code=Role.RoleCode.EMPLOYER)
+        self.department = Department.objects.create(code="extended")
+        DepartmentTranslation.objects.create(
+            department=self.department,
+            language="en",
+            name="Extended Department",
+            description="Department",
+        )
+        self.student = User.objects.create_user(
+            username="extended_student",
+            email="extended_student@example.com",
+            password="pass-12345",
+            role=self.student_role,
+            preferred_language="en",
+        )
+        StudentProfile.objects.create(
+            user=self.student,
+            university_id="S-EXT-1",
+            faculty="Extended",
+            course=2,
+        )
+        self.employer = User.objects.create_user(
+            username="extended_employer",
+            password="pass-12345",
+            role=self.employer_role,
+            preferred_language="en",
+        )
+        EmployerProfile.objects.create(user=self.employer, organization_name="Extended Employer")
+        self.other_employer = User.objects.create_user(
+            username="other_employer",
+            password="pass-12345",
+            role=self.employer_role,
+            preferred_language="en",
+        )
+        EmployerProfile.objects.create(user=self.other_employer, organization_name="Other Employer")
+        self.vacancy = Vacancy.objects.create(
+            employer=self.employer,
+            department=self.department,
+            employment_type=Vacancy.EmploymentType.INTERNSHIP,
+            status=Vacancy.VacancyStatus.ACTIVE,
+        )
+        VacancyTranslation.objects.create(
+            vacancy=self.vacancy,
+            language="en",
+            title="Extended Internship",
+            description="Description",
+            responsibilities="Responsibilities",
+            requirements="Requirements",
+            location="Main Campus",
+        )
+        self.other_vacancy = Vacancy.objects.create(
+            employer=self.other_employer,
+            department=self.department,
+            employment_type=Vacancy.EmploymentType.INTERNSHIP,
+            status=Vacancy.VacancyStatus.ACTIVE,
+        )
+        VacancyTranslation.objects.create(
+            vacancy=self.other_vacancy,
+            language="en",
+            title="Other Employer Internship",
+            description="Description",
+            responsibilities="Responsibilities",
+            requirements="Requirements",
+            location="Main Campus",
+        )
+        self.application = Application.objects.create(vacancy=self.vacancy, student=self.student)
+
+    @patch("portal.serializers.translate_fields_with_google")
+    def test_subscription_receives_notification_when_active_vacancy_is_created(self, translate_mock):
+        translate_mock.return_value = None
+        self.client.force_authenticate(self.student)
+        response = self.client.patch(
+            "/api/v1/vacancy-subscription/",
+            {"is_active": True, "employment_type": Vacancy.EmploymentType.INTERNSHIP},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(VacancySubscription.objects.filter(user=self.student, is_active=True).count(), 1)
+
+        self.client.force_authenticate(self.employer)
+        response = self.client.post(
+            "/api/v1/vacancies/",
+            {
+                "department": self.department.id,
+                "employment_type": Vacancy.EmploymentType.INTERNSHIP,
+                "status": Vacancy.VacancyStatus.ACTIVE,
+                "translations": {
+                    "en": {
+                        "title": "Fresh Internship",
+                        "description": "Description",
+                        "responsibilities": "Responsibilities",
+                        "requirements": "Requirements",
+                        "location": "Main Campus",
+                    }
+                },
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            Notification.objects.filter(
+                user=self.student,
+                event_type=Notification.NotificationType.NEW_VACANCY,
+                vacancy_id=response.data["id"],
+            ).exists()
+        )
+
+    @patch("portal.serializers.translate_fields_with_google")
+    def test_new_vacancy_notification_message_is_localized_on_read(self, translate_mock):
+        translate_mock.return_value = None
+        self.client.force_authenticate(self.student)
+        self.client.patch(
+            "/api/v1/vacancy-subscription/",
+            {"is_active": True, "employment_type": Vacancy.EmploymentType.INTERNSHIP},
+            format="json",
+        )
+
+        self.client.force_authenticate(self.employer)
+        create_response = self.client.post(
+            "/api/v1/vacancies/",
+            {
+                "department": self.department.id,
+                "employment_type": Vacancy.EmploymentType.INTERNSHIP,
+                "status": Vacancy.VacancyStatus.ACTIVE,
+                "translations": {
+                    "en": {
+                        "title": "Localized Internship",
+                        "description": "Description",
+                        "responsibilities": "Responsibilities",
+                        "requirements": "Requirements",
+                        "location": "Main Campus",
+                    },
+                    "ru": {
+                        "title": "Локализованная стажировка",
+                        "description": "Описание",
+                        "responsibilities": "Обязанности",
+                        "requirements": "Требования",
+                        "location": "Главный кампус",
+                    },
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(create_response.status_code, 201)
+
+        self.client.force_authenticate(self.student)
+        en_response = self.client.get("/api/v1/notifications/?lang=en")
+        ru_response = self.client.get("/api/v1/notifications/?lang=ru")
+
+        self.assertEqual(en_response.status_code, 200)
+        self.assertEqual(ru_response.status_code, 200)
+        self.assertIn("New vacancy available: Localized Internship", en_response.data[0]["message"])
+        self.assertIn("Появилась новая вакансия: Локализованная стажировка", ru_response.data[0]["message"])
+
+    def test_employer_can_schedule_interview_and_student_can_see_it(self):
+        self.client.force_authenticate(self.employer)
+        response = self.client.post(
+            "/api/v1/interviews/",
+            {
+                "application_id": self.application.id,
+                "scheduled_at": "2026-05-01T12:00:00Z",
+                "status": Interview.InterviewStatus.PLANNED,
+                "notes": "Bring portfolio",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.status, Application.ApplicationStatus.INTERVIEW)
+
+        self.client.force_authenticate(self.student)
+        response = self.client.get("/api/v1/interviews/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["notes"], "Bring portfolio")
+
+    def test_employer_management_scope_excludes_other_employers_vacancies(self):
+        self.client.force_authenticate(self.other_employer)
+        response = self.client.get("/api/v1/vacancies/?mine=1")
+
+        self.assertEqual(response.status_code, 200)
+        returned_ids = {item["id"] for item in response.data}
+        self.assertIn(self.other_vacancy.id, returned_ids)
+        self.assertNotIn(self.vacancy.id, returned_ids)
+
+    def test_employer_cannot_open_or_update_other_employer_applications(self):
+        self.client.force_authenticate(self.other_employer)
+
+        applications_response = self.client.get(f"/api/v1/vacancies/{self.vacancy.id}/applications/")
+        self.assertEqual(applications_response.status_code, 404)
+
+        status_response = self.client.patch(
+            f"/api/v1/applications/{self.application.id}/status/",
+            {
+                "status": Application.ApplicationStatus.ACCEPTED,
+                "employer_comment": "Should not be allowed",
+            },
+            format="json",
+        )
+        self.assertEqual(status_response.status_code, 404)
+
+    def test_student_and_employer_can_create_directional_reviews(self):
+        self.client.force_authenticate(self.student)
+        response = self.client.post(
+            "/api/v1/reviews/",
+            {
+                "application": self.application.id,
+                "review_type": Review.ReviewType.STUDENT_TO_EMPLOYER,
+                "rating": 5,
+                "comment": "Useful internship",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+
+        self.client.force_authenticate(self.employer)
+        response = self.client.post(
+            "/api/v1/reviews/",
+            {
+                "application": self.application.id,
+                "review_type": Review.ReviewType.EMPLOYER_TO_STUDENT,
+                "rating": 5,
+                "comment": "Strong candidate",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Review.objects.filter(application=self.application).count(), 2)
+
+    def test_review_type_is_forced_by_authenticated_role(self):
+        self.client.force_authenticate(self.student)
+        response = self.client.post(
+            "/api/v1/reviews/",
+            {
+                "application": self.application.id,
+                "review_type": Review.ReviewType.EMPLOYER_TO_STUDENT,
+                "rating": 4,
+                "comment": "I am rating the employer, not another student",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        review = Review.objects.get(pk=response.data["review"]["id"])
+        self.assertEqual(review.review_type, Review.ReviewType.STUDENT_TO_EMPLOYER)
+
+        self.client.force_authenticate(self.employer)
+        response = self.client.post(
+            "/api/v1/reviews/",
+            {
+                "application": self.application.id,
+                "review_type": Review.ReviewType.STUDENT_TO_EMPLOYER,
+                "rating": 5,
+                "comment": "I am rating the student",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        review = Review.objects.get(pk=response.data["review"]["id"])
+        self.assertEqual(review.review_type, Review.ReviewType.EMPLOYER_TO_STUDENT)

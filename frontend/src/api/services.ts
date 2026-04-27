@@ -4,13 +4,19 @@ import type {
   ApplicationStatus,
   Department,
   HomeStats,
+  Interview,
+  InterviewStatus,
   LoginResponse,
+  NotificationItem,
   RegisterPayload,
   RegisterResponse,
+  Review,
+  ReviewType,
   StudentProfileUpdateResponse,
   User,
   Vacancy,
   VacancyApplication,
+  VacancySubscription,
   VacancyWritePayload
 } from "../types/api";
 
@@ -19,6 +25,7 @@ export type VacancyQuery = {
   department?: number | string;
   employment_type?: "internship" | "part_time" | "";
   status?: "draft" | "active" | "archived" | "";
+  mine?: boolean;
 };
 
 export async function getVacancies(query: VacancyQuery = {}): Promise<Vacancy[]> {
@@ -27,6 +34,7 @@ export async function getVacancies(query: VacancyQuery = {}): Promise<Vacancy[]>
   if (query.department !== undefined && query.department !== "") params.department = query.department;
   if (query.employment_type) params.employment_type = query.employment_type;
   if (query.status) params.status = query.status;
+  if (query.mine) params.mine = 1;
 
   const { data } = await api.get<Vacancy[]>("/vacancies/", {
     params
@@ -189,5 +197,81 @@ export async function updateApplicationStatus(
     status,
     employer_comment
   });
+  return data;
+}
+
+export async function getNotifications(): Promise<NotificationItem[]> {
+  const { data } = await api.get<NotificationItem[]>("/notifications/");
+  return data;
+}
+
+export async function markNotificationRead(id: number): Promise<{ message: string }> {
+  const { data } = await api.patch<{ message: string }>(`/notifications/${id}/read/`);
+  return data;
+}
+
+export type VacancySubscriptionPayload = {
+  is_active: boolean;
+  department?: number | null;
+  employment_type?: "part_time" | "internship" | "";
+};
+
+export async function getVacancySubscription(): Promise<VacancySubscription> {
+  const { data } = await api.get<VacancySubscription>("/vacancy-subscription/");
+  return data;
+}
+
+export async function updateVacancySubscription(
+  payload: VacancySubscriptionPayload
+): Promise<{ message: string; subscription: VacancySubscription }> {
+  const { data } = await api.patch<{ message: string; subscription: VacancySubscription }>(
+    "/vacancy-subscription/",
+    payload
+  );
+  return data;
+}
+
+export async function getInterviews(): Promise<Interview[]> {
+  const { data } = await api.get<Interview[]>("/interviews/");
+  return data;
+}
+
+export async function createInterview(payload: {
+  application_id: number;
+  scheduled_at: string;
+  status?: InterviewStatus;
+  notes?: string;
+}): Promise<{ message: string; interview: Interview }> {
+  const { data } = await api.post<{ message: string; interview: Interview }>("/interviews/", payload);
+  return data;
+}
+
+export async function updateInterview(
+  id: number,
+  payload: Partial<Pick<Interview, "scheduled_at" | "status" | "notes">>
+): Promise<{ message: string; interview: Interview }> {
+  const { data } = await api.patch<{ message: string; interview: Interview }>(`/interviews/${id}/`, payload);
+  return data;
+}
+
+export async function getReviews(applicationId?: number): Promise<Review[]> {
+  const { data } = await api.get<Review[]>("/reviews/", {
+    params: applicationId ? { application: applicationId } : undefined
+  });
+  return data;
+}
+
+export async function createReview(payload: {
+  application: number;
+  review_type: ReviewType;
+  rating: number;
+  comment?: string;
+}): Promise<{ message: string; review: Review }> {
+  const { data } = await api.post<{ message: string; review: Review }>("/reviews/", payload);
+  return data;
+}
+
+export async function getRecommendedVacancies(): Promise<Vacancy[]> {
+  const { data } = await api.get<Vacancy[]>("/recommendations/");
   return data;
 }

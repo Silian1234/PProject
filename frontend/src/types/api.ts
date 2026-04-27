@@ -22,6 +22,7 @@ export type Application = {
   id: number;
   vacancy: number;
   vacancy_title: string;
+  employer_name?: string;
   student_name?: string;
   student_email?: string;
   resume_title?: string;
@@ -119,6 +120,7 @@ export type VacancyApplication = {
   id: number;
   vacancy: number;
   vacancy_title: string;
+  employer_name?: string;
   student_name: string;
   student_email: string;
   resume_title: string;
@@ -134,4 +136,56 @@ export type VacancyApplication = {
 export type HomeStats = {
   active_vacancies: number;
   student_applications: number;
+};
+
+export type NotificationItem = {
+  id: number;
+  event_type: string;
+  message: string;
+  is_read: boolean;
+  application: number | null;
+  vacancy_title: string;
+  created_at: string;
+};
+
+export type VacancySubscription = {
+  id: number | null;
+  is_active: boolean;
+  department: number | null;
+  department_name: string;
+  employment_type: "part_time" | "internship" | "";
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export type InterviewStatus = "planned" | "done" | "cancelled";
+
+export type Interview = {
+  id: number;
+  application: number;
+  application_status: ApplicationStatus;
+  vacancy_title: string;
+  student_name: string;
+  employer_name: string;
+  scheduled_at: string;
+  status: InterviewStatus;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ReviewType = "employer_to_student" | "student_to_employer";
+
+export type Review = {
+  id: number;
+  application: number;
+  review_type: ReviewType;
+  rating: number;
+  comment: string;
+  author: number;
+  author_name: string;
+  vacancy_title: string;
+  student_name: string;
+  employer_name: string;
+  created_at: string;
 };

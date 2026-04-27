@@ -22,8 +22,22 @@ function getActiveLanguage() {
   return "en";
 }
 
+function getApiBaseURL() {
+  const configured = import.meta.env.VITE_API_BASE_URL as string | undefined;
+  const fallback = "/api/v1";
+
+  if (!configured) {
+    return fallback;
+  }
+
+  const isBrowserOnLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+  const configuredIsLocalhost = configured.includes("localhost") || configured.includes("127.0.0.1");
+
+  return configuredIsLocalhost && !isBrowserOnLocalhost ? fallback : configured;
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL
+  baseURL: getApiBaseURL()
 });
 
 api.interceptors.request.use((config) => {

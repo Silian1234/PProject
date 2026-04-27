@@ -12,6 +12,9 @@ import NotFoundPage from "./pages/NotFoundPage";
 import RequireAuth from "./components/RequireAuth";
 import RequireRole from "./components/RequireRole";
 import ApplyPage from "./pages/ApplyPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import CalendarPage from "./pages/CalendarPage";
+import ReviewsPage from "./pages/ReviewsPage";
 
 export default function App() {
   return (
@@ -45,11 +48,35 @@ export default function App() {
           }
         />
         <Route
-          path="/admin/vacancies"
+          path="/employer/vacancies"
           element={
             <RequireRole allowed={["employer", "admin"]}>
               <AdminVacanciesPage />
             </RequireRole>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <RequireAuth>
+              <NotificationsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <RequireAuth>
+              <CalendarPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reviews"
+          element={
+            <RequireAuth>
+              <ReviewsPage />
+            </RequireAuth>
           }
         />
         <Route path="/login" element={<LoginPage />} />
@@ -60,3 +87,4 @@ export default function App() {
     </Routes>
   );
 }
+
