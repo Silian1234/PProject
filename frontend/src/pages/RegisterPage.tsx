@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -6,15 +6,14 @@ import { getErrorMessage } from "../api/error";
 import { registerUser } from "../api/services";
 import { getToken, saveAuth } from "../auth";
 import type { RegisterPayload } from "../types/api";
+import { withCurrentLanguage } from "../utils/display";
 
-type Role = "student" | "employer";
 type Lang = "en" | "de" | "ru";
 
 export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [role, setRole] = useState<Role>("student");
   const [preferredLanguage, setPreferredLanguage] = useState<Lang>(
     (localStorage.getItem("lang") as Lang) || "en"
   );
@@ -24,24 +23,14 @@ export default function RegisterPage() {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [universityId, setUniversityId] = useState("");
-  const [organizationName, setOrganizationName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (getToken()) {
-      navigate("/dashboard", { replace: true });
+      navigate(withCurrentLanguage("/dashboard"), { replace: true });
     }
   }, [navigate]);
-
-  const roleHint = useMemo(
-    () =>
-      role === "student"
-        ? t("auth.studentHint")
-        : t("auth.employerHint"),
-    [role, t]
-  );
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -61,15 +50,13 @@ export default function RegisterPage() {
         last_name: lastName,
         password,
         password_confirm: passwordConfirm,
-        role,
+        role: "student",
         preferred_language: preferredLanguage
       };
-      if (role === "student") payload.university_id = universityId;
-      if (role === "employer") payload.organization_name = organizationName;
 
       const data = await registerUser(payload);
       saveAuth(data.token, data.user);
-      navigate("/dashboard");
+      window.location.assign(withCurrentLanguage("/dashboard"));
     } catch (e) {
       setError(getErrorMessage(e));
     } finally {
@@ -83,21 +70,9 @@ export default function RegisterPage() {
 
       <section className="pp-card pp-auth-card">
         <p className="pp-auth-subtitle">{t("auth.registerSubtitle")}</p>
-        <p className="pp-auth-note">{roleHint}</p>
+        <p className="pp-auth-note">{t("auth.studentHint")}</p>
 
         <form onSubmit={onSubmit} className="pp-auth-form pp-auth-grid">
-          <label className="pp-label">
-            {t("common.role")}
-            <select
-              className="pp-select"
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-            >
-              <option value="student">{t("auth.roleStudent")}</option>
-              <option value="employer">{t("auth.roleEmployer")}</option>
-            </select>
-          </label>
-
           <label className="pp-label">
             {t("auth.preferredLanguage")}
             <select
@@ -154,32 +129,6 @@ export default function RegisterPage() {
             />
           </label>
 
-          {role === "student" && (
-            <label className="pp-label pp-col-span-2">
-              {t("auth.universityId")}
-              <input
-                className="pp-input"
-                value={universityId}
-                onChange={(e) => setUniversityId(e.target.value)}
-                placeholder={t("auth.universityIdPlaceholder")}
-                required
-              />
-            </label>
-          )}
-
-          {role === "employer" && (
-            <label className="pp-label pp-col-span-2">
-              {t("auth.organizationName")}
-              <input
-                className="pp-input"
-                value={organizationName}
-                onChange={(e) => setOrganizationName(e.target.value)}
-                placeholder={t("auth.organizationNamePlaceholder")}
-                required
-              />
-            </label>
-          )}
-
           <label className="pp-label">
             {t("auth.password")}
             <input
@@ -210,7 +159,7 @@ export default function RegisterPage() {
             <button type="submit" className="pp-btn-primary" disabled={submitting}>
               {submitting ? t("auth.creating") : t("auth.createAccount")}
             </button>
-            <Link to="/login" className="pp-btn-outline">
+            <Link to={withCurrentLanguage("/login")} className="pp-btn-outline">
               {t("auth.backToLogin")}
             </Link>
           </div>

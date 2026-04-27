@@ -125,7 +125,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Campus Jobs API",
-    "DESCRIPTION": "API для сайта с подработками студентов",
+    "DESCRIPTION": "API for the university student jobs and internships service.",
     "VERSION": "1.0.0",
 }
 

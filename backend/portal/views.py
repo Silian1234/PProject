@@ -5,7 +5,6 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
-from .constants import SUPPORTED_LANGUAGE_CHOICES
 from .permissions import IsEmployerOrAdmin, IsStudent, IsVacancyOwnerOrAdmin
 from .serializers import *
 
@@ -16,6 +15,7 @@ def get_lang(request):
 
 class HealthAPIView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    serializer_class = HealthSerializer
 
     def get(self, request):
         return Response({"ok": True, "service": "backend"})
@@ -23,14 +23,13 @@ class HealthAPIView(generics.GenericAPIView):
 
 class HomeStatsAPIView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    serializer_class = HomeStatsSerializer
 
     def get(self, request):
         return Response(
             {
                 "active_vacancies": Vacancy.objects.filter(status=Vacancy.VacancyStatus.ACTIVE).count(),
                 "student_applications": Application.objects.count(),
-                "supported_languages": [code.upper() for code, _ in SUPPORTED_LANGUAGE_CHOICES],
-                "api_docs_url": "/api/docs/swagger/",
             }
         )
 
@@ -93,7 +92,7 @@ class VacancyViewSet(viewsets.ModelViewSet):
             return Response({"detail": t("msg.permission_denied", get_lang(request))}, status=403)
         data = ApplicationSerializer(
             Application.objects.filter(vacancy=vacancy)
-            .select_related("vacancy")
+            .select_related("vacancy", "student", "resume", "cover_letter")
             .prefetch_related("vacancy__translations")
             .order_by("-created_at"),
             many=True,
@@ -125,9 +124,19 @@ class MyApplicationListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsStudent]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Application.objects.none()
         return (
             Application.objects.filter(student=self.request.user)
-            .select_related("vacancy", "vacancy__department", "vacancy__employer", "vacancy__employer__employer_profile")
+            .select_related(
+                "vacancy",
+                "vacancy__department",
+                "vacancy__employer",
+                "vacancy__employer__employer_profile",
+                "student",
+                "resume",
+                "cover_letter",
+            )
             .prefetch_related("vacancy__translations", "vacancy__department__translations")
             .order_by("-created_at")
         )
@@ -178,6 +187,7 @@ class LoginAPIView(generics.GenericAPIView):
 
 class LogoutAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MessageSerializer
 
     def post(self, request):
         Token.objects.filter(user=request.user).delete()
@@ -193,4 +203,44 @@ class CurrentUserAPIView(generics.RetrieveAPIView):
             User.objects.select_related("role", "student_profile", "employer_profile")
             .prefetch_related("resumes")
             .get(pk=self.request.user.pk)
+        )
+
+
+class StudentProfileUpdateAPIView(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+    http_method_names = ["patch", "put"]
+
+    def get_serializer_class(self):
+        if getattr(self, "swagger_fake_view", False):
+            return StudentProfileUpdateSerializer
+        user = self.request.user
+        if user.role_code == Role.RoleCode.STUDENT:
+            return StudentProfileUpdateSerializer
+        if user.is_superuser or user.role_code in {Role.RoleCode.EMPLOYER, Role.RoleCode.ADMIN}:
+            return EmployerProfileUpdateSerializer
+        raise permissions.PermissionDenied(t("msg.permission_denied", get_lang(self.request)))
+
+    def get_object(self):
+        return (
+            User.objects.select_related("role", "student_profile", "employer_profile", "employer_profile__department")
+            .prefetch_related("resumes")
+            .get(pk=self.request.user.pk)
+        )
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        updated_user = serializer.save()
+        updated_user = (
+            User.objects.select_related("role", "student_profile", "employer_profile", "employer_profile__department")
+            .prefetch_related("resumes")
+            .get(pk=updated_user.pk)
+        )
+        return Response(
+            {
+                "message": t("msg.profile_updated", get_lang(request)),
+                "user": UserSerializer(updated_user, context={"request": request}).data,
+            }
         )

@@ -2,21 +2,21 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
-import { getVacancy, getVacancyByLang } from "../api/services";
+import { getVacancy } from "../api/services";
 import type { Vacancy } from "../types/api";
-
-type LocalizedPreview = {
-  en: string;
-  de: string;
-  ru: string;
-};
+import {
+  formatDate,
+  formatEmploymentType,
+  formatSalary,
+  formatWorkload,
+  withCurrentLanguage
+} from "../utils/display";
 
 export default function VacancyDetailsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const vacancyId = Number(id);
   const [vacancy, setVacancy] = useState<Vacancy | null>(null);
-  const [localization, setLocalization] = useState<LocalizedPreview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -31,18 +31,8 @@ export default function VacancyDetailsPage() {
       setLoading(true);
       setError("");
       try {
-        const [base, en, de, ru] = await Promise.all([
-          getVacancy(vacancyId),
-          getVacancyByLang(vacancyId, "en"),
-          getVacancyByLang(vacancyId, "de"),
-          getVacancyByLang(vacancyId, "ru")
-        ]);
-        setVacancy(base);
-        setLocalization({
-          en: en.title,
-          de: de.title,
-          ru: ru.title
-        });
+        const data = await getVacancy(vacancyId);
+        setVacancy(data);
       } catch (e) {
         setError(getErrorMessage(e));
       } finally {
@@ -57,47 +47,57 @@ export default function VacancyDetailsPage() {
   if (error) return <p className="pp-error">{error}</p>;
   if (!vacancy) return <p>{t("vacancyDetails.vacancyNotFound")}</p>;
 
+  const details = [
+    [t("vacancyDetails.department"), vacancy.department_name || String(vacancy.department)],
+    [t("vacancyDetails.employer"), vacancy.employer_name || t("common.notSpecified")],
+    [t("vacancyDetails.employmentType"), formatEmploymentType(vacancy.employment_type, t)],
+    [t("vacancyDetails.location"), vacancy.location || t("common.notSpecified")],
+    [t("vacancyDetails.workload"), formatWorkload(vacancy.workload_hours, t)],
+    [t("vacancyDetails.salary"), formatSalary(vacancy.salary_from, vacancy.salary_to, t)],
+    [t("vacancyDetails.deadline"), formatDate(vacancy.application_deadline, i18n.language, t)],
+    [t("common.status"), t(`status.${vacancy.status}`, vacancy.status)]
+  ];
+
   return (
     <div className="pp-page">
       <h1 className="pp-title">{t("vacancyDetails.title")}</h1>
 
-      <div className="pp-details-grid">
-        <article className="pp-card">
-          <h2>{vacancy.title}</h2>
-          <p className="pp-subtitle">
-            {t("vacancyDetails.department")}: {vacancy.department_name || vacancy.department}
-          </p>
+      <article className="pp-card">
+        <h2>{vacancy.title}</h2>
 
+        <section className="pp-section-block">
+          <h3>{t("vacancyDetails.mainInfo")}</h3>
+          <div className="pp-info-grid">
+            {details.map(([label, value]) => (
+              <div key={label} className="pp-info-item">
+                <span className="pp-muted">{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="pp-section-block">
+          <h3>{t("vacancyDetails.description")}</h3>
+          <div className="pp-multiline">{vacancy.description}</div>
+        </section>
+
+        <section className="pp-section-block">
           <h3>{t("vacancyDetails.responsibilities")}</h3>
           <div className="pp-multiline">{vacancy.responsibilities}</div>
+        </section>
 
+        <section className="pp-section-block">
           <h3>{t("vacancyDetails.requirements")}</h3>
           <div className="pp-multiline">{vacancy.requirements}</div>
+        </section>
 
-          <div className="pp-actions-bottom">
-            <Link to={`/vacancies/${vacancy.id}/apply`} className="pp-btn-primary">
-              {t("vacancyDetails.apply")}
-            </Link>
-          </div>
-        </article>
-
-        <aside className="pp-card">
-          <h3>{t("vacancyDetails.localizationPreview")}</h3>
-          <p>EN: {localization?.en || "-"}</p>
-          <p>DE: {localization?.de || "-"}</p>
-          <p>RU: {localization?.ru || "-"}</p>
-
-          <div className="pp-note">
-            {t("vacancyDetails.selectorAffects")}
-            <br />
-            {t("vacancyDetails.uiLabels")}
-            <br />
-            {t("vacancyDetails.apiMessages")}
-            <br />
-            {t("vacancyDetails.vacancyContent")}
-          </div>
-        </aside>
-      </div>
+        <div className="pp-actions-bottom">
+          <Link to={withCurrentLanguage(`/vacancies/${vacancy.id}/apply`)} className="pp-btn-primary">
+            {t("vacancyDetails.apply")}
+          </Link>
+        </div>
+      </article>
     </div>
   );
 }

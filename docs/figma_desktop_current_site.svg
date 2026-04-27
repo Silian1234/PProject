@@ -1,0 +1,1199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3960" height="2950" viewBox="0 0 3960 2950">
+<defs><style>text{font-family:Segoe UI,Arial,sans-serif;white-space:pre;} rect,line,text{vector-effect:non-scaling-stroke;}</style></defs>
+<text id="desktop import title" x="0.0" y="34.0" font-size="30" font-weight="700" fill="#162c57">
+<tspan x="0.0" dy="0.0">Current site UI / Desktop (RU)</tspan>
+</text>
+<g id="Desktop Home">
+<g transform="translate(0,70)">
+<rect id="Desktop Home bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="login bg" x="1044.0" y="21.0" width="76.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="login text" x="1058.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1058.0" dy="0.0">Вход</tspan>
+</text>
+<rect id="register bg" x="1128.0" y="21.0" width="86.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="register text" x="1142.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1142.0" dy="0.0">Регистра</tspan>
+<tspan x="1142.0" dy="14.0">ция</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Главная</tspan>
+</text>
+<rect id="hero" x="24.0" y="154.0" width="820.0" height="210.0" rx="14.0" fill="#dfe7f7" stroke="#cbd6ea" stroke-width="1"/>
+<text id="hero title" x="44.0" y="214.0" font-size="32" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Находите работу и стажировки в</tspan>
+<tspan x="44.0" dy="35.8">университете быстрее</tspan>
+</text>
+<text id="hero subtitle" x="44.0" y="288.0" font-size="16" font-weight="400" fill="#64758f">
+<tspan x="44.0" dy="0.0">Единая платформа для студентов, подразделений и партнёрских работодателей.</tspan>
+</text>
+<rect id="browse bg" x="44.0" y="310.0" width="170.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="browse text" x="58.0" y="335.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="58.0" dy="0.0">Смотреть</tspan>
+<tspan x="58.0" dy="16.0">вакансии</tspan>
+</text>
+<rect id="for employer bg" x="226.0" y="310.0" width="170.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="for employer text" x="240.0" y="335.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="240.0" dy="0.0">Для</tspan>
+<tspan x="240.0" dy="16.0">работодателей</tspan>
+</text>
+<rect id="stats" x="862.0" y="154.0" width="354.0" height="210.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="stats title" x="882.0" y="204.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="882.0" dy="0.0">Быстрая статистика</tspan>
+</text>
+<text id="stat active" x="882.0" y="246.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="882.0" dy="0.0">7 активных вакансий</tspan>
+</text>
+<text id="stat apps" x="882.0" y="280.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="882.0" dy="0.0">7 студенческих откликов</tspan>
+</text>
+<rect id="featured" x="24.0" y="386.0" width="1192.0" height="292.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="featured title" x="44.0" y="438.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Рекомендуемые предложения</tspan>
+</text>
+<rect id="featured vacancy card" x="44.0" y="462.0" width="1132.0" height="230.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="featured vacancy title" x="60.0" y="502.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="60.0" dy="0.0">Стажер-аналитик данных</tspan>
+</text>
+<text id="featured vacancy desc" x="60.0" y="535.0" font-size="16" font-weight="400" fill="#64758f">
+<tspan x="60.0" dy="0.0">Работайте с исследовательскими командами над опросами, лабораторными и учебными данными.</tspan>
+</text>
+<rect id="featured vacancy status bg" x="958.0" y="480.0" width="110.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="featured vacancy status text" x="970.0" y="499.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="970.0" dy="0.0">активна</tspan>
+</text>
+<rect id="featured vacancy open bg" x="1080.0" y="476.0" width="82.0" height="36.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="featured vacancy open text" x="1094.0" y="499.0" font-size="14" font-weight="600" fill="#ffffff">
+<tspan x="1094.0" dy="0.0">Открыть</tspan>
+</text>
+<rect id="featured vacancy info 0 bg" x="60.0" y="550.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 0 label" x="72.0" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="72.0" dy="0.0">Подразделение</tspan>
+</text>
+<text id="featured vacancy info 0 value" x="72.0" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="72.0" dy="0.0">Офис исследовательских проектов</tspan>
+</text>
+<rect id="featured vacancy info 1 bg" x="337.5" y="550.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 1 label" x="349.5" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="349.5" dy="0.0">Работодатель</tspan>
+</text>
+<text id="featured vacancy info 1 value" x="349.5" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="349.5" dy="0.0">University Career Center</tspan>
+</text>
+<rect id="featured vacancy info 2 bg" x="615.0" y="550.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 2 label" x="627.0" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="627.0" dy="0.0">Тип занятости</tspan>
+</text>
+<text id="featured vacancy info 2 value" x="627.0" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="627.0" dy="0.0">Стажировка</tspan>
+</text>
+<rect id="featured vacancy info 3 bg" x="892.5" y="550.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 3 label" x="904.5" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="904.5" dy="0.0">Локация</tspan>
+</text>
+<text id="featured vacancy info 3 value" x="904.5" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="904.5" dy="0.0">Офис исследовательских проектов</tspan>
+</text>
+<rect id="featured vacancy info 4 bg" x="60.0" y="624.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 4 label" x="72.0" y="646.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="72.0" dy="0.0">Занятость</tspan>
+</text>
+<text id="featured vacancy info 4 value" x="72.0" y="671.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="72.0" dy="0.0">16 часов/неделю</tspan>
+</text>
+<rect id="featured vacancy info 5 bg" x="337.5" y="624.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 5 label" x="349.5" y="646.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="349.5" dy="0.0">Оплата</tspan>
+</text>
+<text id="featured vacancy info 5 value" x="349.5" y="671.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="349.5" dy="0.0">600.00 - 850.00</tspan>
+</text>
+<rect id="featured vacancy info 6 bg" x="615.0" y="624.0" width="267.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="featured vacancy info 6 label" x="627.0" y="646.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="627.0" dy="0.0">Дедлайн подачи</tspan>
+</text>
+<text id="featured vacancy info 6 value" x="627.0" y="671.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="627.0" dy="0.0">Не указано</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Vacancies">
+<g transform="translate(1320,70)">
+<rect id="Desktop Vacancies bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="login bg" x="1044.0" y="21.0" width="76.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="login text" x="1058.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1058.0" dy="0.0">Вход</tspan>
+</text>
+<rect id="register bg" x="1128.0" y="21.0" width="86.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="register text" x="1142.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1142.0" dy="0.0">Регистра</tspan>
+<tspan x="1142.0" dy="14.0">ция</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Список вакансий</tspan>
+</text>
+<rect id="search" x="24.0" y="154.0" width="650.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="placeholder" x="38.0" y="179.0" font-size="16" font-weight="400" fill="#64758f">
+<tspan x="38.0" dy="0.0">Поиск по ключевому слову, компании, роли...</tspan>
+</text>
+<rect id="dep select" x="686.0" y="154.0" width="220.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="dep text" x="700.0" y="179.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="700.0" dy="0.0">Все подразделения</tspan>
+</text>
+<rect id="type select" x="918.0" y="154.0" width="190.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="type text" x="932.0" y="179.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="932.0" dy="0.0">Все типы</tspan>
+</text>
+<rect id="open bg" x="1118.0" y="154.0" width="98.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="open text" x="1132.0" y="179.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="1132.0" dy="0.0">Открыть</tspan>
+</text>
+<rect id="vacancy 1 card" x="24.0" y="218.0" width="1192.0" height="230.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="vacancy 1 title" x="40.0" y="258.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="40.0" dy="0.0">Стажер-аналитик данных</tspan>
+</text>
+<text id="vacancy 1 desc" x="40.0" y="291.0" font-size="16" font-weight="400" fill="#64758f">
+<tspan x="40.0" dy="0.0">Работайте с исследовательскими командами над опросами, лабораторными и учебными данными.</tspan>
+</text>
+<rect id="vacancy 1 status bg" x="998.0" y="236.0" width="110.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="vacancy 1 status text" x="1010.0" y="255.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="1010.0" dy="0.0">активна</tspan>
+</text>
+<rect id="vacancy 1 open bg" x="1120.0" y="232.0" width="82.0" height="36.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="vacancy 1 open text" x="1134.0" y="255.0" font-size="14" font-weight="600" fill="#ffffff">
+<tspan x="1134.0" dy="0.0">Открыть</tspan>
+</text>
+<rect id="vacancy 1 info 0 bg" x="40.0" y="306.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 0 label" x="52.0" y="328.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="52.0" dy="0.0">Подразделение</tspan>
+</text>
+<text id="vacancy 1 info 0 value" x="52.0" y="353.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="52.0" dy="0.0">Офис исследовательских проектов</tspan>
+</text>
+<rect id="vacancy 1 info 1 bg" x="332.5" y="306.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 1 label" x="344.5" y="328.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="344.5" dy="0.0">Работодатель</tspan>
+</text>
+<text id="vacancy 1 info 1 value" x="344.5" y="353.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="344.5" dy="0.0">University Career Center</tspan>
+</text>
+<rect id="vacancy 1 info 2 bg" x="625.0" y="306.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 2 label" x="637.0" y="328.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="637.0" dy="0.0">Тип занятости</tspan>
+</text>
+<text id="vacancy 1 info 2 value" x="637.0" y="353.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="637.0" dy="0.0">Стажировка</tspan>
+</text>
+<rect id="vacancy 1 info 3 bg" x="917.5" y="306.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 3 label" x="929.5" y="328.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="929.5" dy="0.0">Локация</tspan>
+</text>
+<text id="vacancy 1 info 3 value" x="929.5" y="353.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="929.5" dy="0.0">Офис исследовательских проектов</tspan>
+</text>
+<rect id="vacancy 1 info 4 bg" x="40.0" y="380.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 4 label" x="52.0" y="402.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="52.0" dy="0.0">Занятость</tspan>
+</text>
+<text id="vacancy 1 info 4 value" x="52.0" y="427.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="52.0" dy="0.0">16 часов/неделю</tspan>
+</text>
+<rect id="vacancy 1 info 5 bg" x="332.5" y="380.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 5 label" x="344.5" y="402.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="344.5" dy="0.0">Оплата</tspan>
+</text>
+<text id="vacancy 1 info 5 value" x="344.5" y="427.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="344.5" dy="0.0">600.00 - 850.00</tspan>
+</text>
+<rect id="vacancy 1 info 6 bg" x="625.0" y="380.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 1 info 6 label" x="637.0" y="402.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="637.0" dy="0.0">Дедлайн подачи</tspan>
+</text>
+<text id="vacancy 1 info 6 value" x="637.0" y="427.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="637.0" dy="0.0">Не указано</tspan>
+</text>
+<rect id="vacancy 2 card" x="24.0" y="462.0" width="1192.0" height="230.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="vacancy 2 title" x="40.0" y="502.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="40.0" dy="0.0">Ассистент IT-поддержки</tspan>
+</text>
+<text id="vacancy 2 desc" x="40.0" y="535.0" font-size="16" font-weight="400" fill="#64758f">
+<tspan x="40.0" dy="0.0">Помогайте студентам и сотрудникам решать повседневные IT-задачи в кампусе.</tspan>
+</text>
+<rect id="vacancy 2 status bg" x="998.0" y="480.0" width="110.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="vacancy 2 status text" x="1010.0" y="499.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="1010.0" dy="0.0">активна</tspan>
+</text>
+<rect id="vacancy 2 open bg" x="1120.0" y="476.0" width="82.0" height="36.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="vacancy 2 open text" x="1134.0" y="499.0" font-size="14" font-weight="600" fill="#ffffff">
+<tspan x="1134.0" dy="0.0">Открыть</tspan>
+</text>
+<rect id="vacancy 2 info 0 bg" x="40.0" y="550.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 0 label" x="52.0" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="52.0" dy="0.0">Подразделение</tspan>
+</text>
+<text id="vacancy 2 info 0 value" x="52.0" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="52.0" dy="0.0">Кафедра компьютерных наук</tspan>
+</text>
+<rect id="vacancy 2 info 1 bg" x="332.5" y="550.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 1 label" x="344.5" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="344.5" dy="0.0">Работодатель</tspan>
+</text>
+<text id="vacancy 2 info 1 value" x="344.5" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="344.5" dy="0.0">University Career Center</tspan>
+</text>
+<rect id="vacancy 2 info 2 bg" x="625.0" y="550.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 2 label" x="637.0" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="637.0" dy="0.0">Тип занятости</tspan>
+</text>
+<text id="vacancy 2 info 2 value" x="637.0" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="637.0" dy="0.0">Стажировка</tspan>
+</text>
+<rect id="vacancy 2 info 3 bg" x="917.5" y="550.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 3 label" x="929.5" y="572.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="929.5" dy="0.0">Локация</tspan>
+</text>
+<text id="vacancy 2 info 3 value" x="929.5" y="597.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="929.5" dy="0.0">IT-служба главного кампуса</tspan>
+</text>
+<rect id="vacancy 2 info 4 bg" x="40.0" y="624.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 4 label" x="52.0" y="646.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="52.0" dy="0.0">Занятость</tspan>
+</text>
+<text id="vacancy 2 info 4 value" x="52.0" y="671.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="52.0" dy="0.0">20 часов/неделю</tspan>
+</text>
+<rect id="vacancy 2 info 5 bg" x="332.5" y="624.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 5 label" x="344.5" y="646.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="344.5" dy="0.0">Оплата</tspan>
+</text>
+<text id="vacancy 2 info 5 value" x="344.5" y="671.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="344.5" dy="0.0">500.00 - 700.00</tspan>
+</text>
+<rect id="vacancy 2 info 6 bg" x="625.0" y="624.0" width="282.5" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="vacancy 2 info 6 label" x="637.0" y="646.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="637.0" dy="0.0">Дедлайн подачи</tspan>
+</text>
+<text id="vacancy 2 info 6 value" x="637.0" y="671.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="637.0" dy="0.0">05.05.2026</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Vacancy Details">
+<g transform="translate(2640,70)">
+<rect id="Desktop Vacancy Details bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<text id="nav Мои заявки" x="378.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="378.0" dy="0.0">Мои заявки</tspan>
+</text>
+<text id="nav Профиль" x="510.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="510.0" dy="0.0">Профиль</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="logout bg" x="1134.0" y="21.0" width="80.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="logout text" x="1148.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1148.0" dy="0.0">Выход</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Детали вакансии</tspan>
+</text>
+<rect id="card" x="24.0" y="154.0" width="1192.0" height="612.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="vacancy title" x="44.0" y="211.0" font-size="32" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Стажер-аналитик данных</tspan>
+</text>
+<text id="main info" x="44.0" y="263.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Основная информация</tspan>
+</text>
+<rect id="details info 0 bg" x="44.0" y="280.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 0 label" x="56.0" y="302.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Подразделение</tspan>
+</text>
+<text id="details info 0 value" x="56.0" y="327.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="56.0" dy="0.0">Офис исследовательских проектов</tspan>
+</text>
+<rect id="details info 1 bg" x="324.0" y="280.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 1 label" x="336.0" y="302.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="336.0" dy="0.0">Работодатель</tspan>
+</text>
+<text id="details info 1 value" x="336.0" y="327.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="336.0" dy="0.0">University Career Center</tspan>
+</text>
+<rect id="details info 2 bg" x="604.0" y="280.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 2 label" x="616.0" y="302.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="616.0" dy="0.0">Тип занятости</tspan>
+</text>
+<text id="details info 2 value" x="616.0" y="327.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="616.0" dy="0.0">Стажировка</tspan>
+</text>
+<rect id="details info 3 bg" x="884.0" y="280.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 3 label" x="896.0" y="302.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="896.0" dy="0.0">Локация</tspan>
+</text>
+<text id="details info 3 value" x="896.0" y="327.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="896.0" dy="0.0">Офис исследовательских проектов</tspan>
+</text>
+<rect id="details info 4 bg" x="44.0" y="354.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 4 label" x="56.0" y="376.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Занятость</tspan>
+</text>
+<text id="details info 4 value" x="56.0" y="401.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="56.0" dy="0.0">16 часов/неделю</tspan>
+</text>
+<rect id="details info 5 bg" x="324.0" y="354.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 5 label" x="336.0" y="376.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="336.0" dy="0.0">Оплата</tspan>
+</text>
+<text id="details info 5 value" x="336.0" y="401.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="336.0" dy="0.0">600.00 - 850.00</tspan>
+</text>
+<rect id="details info 6 bg" x="604.0" y="354.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 6 label" x="616.0" y="376.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="616.0" dy="0.0">Дедлайн подачи</tspan>
+</text>
+<text id="details info 6 value" x="616.0" y="401.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="616.0" dy="0.0">Не указано</tspan>
+</text>
+<rect id="details info 7 bg" x="884.0" y="354.0" width="264.0" height="64.0" rx="10.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="details info 7 label" x="896.0" y="376.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="896.0" dy="0.0">Статус</tspan>
+</text>
+<text id="details info 7 value" x="896.0" y="401.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="896.0" dy="0.0">активна</tspan>
+</text>
+<text id="desc title" x="44.0" y="478.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Описание</tspan>
+</text>
+<text id="desc" x="44.0" y="514.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Работайте с исследовательскими командами над опросами, лабораторными и учебными данными.</tspan>
+</text>
+<text id="resp title" x="44.0" y="564.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Обязанности</tspan>
+</text>
+<text id="resp" x="44.0" y="600.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Очищать наборы данных, готовить дашборды и резюмировать выводы для руководителей проектов.</tspan>
+</text>
+<text id="req title" x="44.0" y="650.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Требования</tspan>
+</text>
+<text id="req" x="44.0" y="686.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Опыт Python или таблиц, внимательность и интерес к прикладным исследованиям.</tspan>
+</text>
+<rect id="apply bg" x="44.0" y="704.0" width="150.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="apply text" x="58.0" y="729.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="58.0" dy="0.0">Откликнуться</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Apply">
+<g transform="translate(0,1030)">
+<rect id="Desktop Apply bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<text id="nav Мои заявки" x="378.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="378.0" dy="0.0">Мои заявки</tspan>
+</text>
+<text id="nav Профиль" x="510.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="510.0" dy="0.0">Профиль</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="logout bg" x="1134.0" y="21.0" width="80.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="logout text" x="1148.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1148.0" dy="0.0">Выход</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Форма отклика</tspan>
+</text>
+<rect id="context" x="24.0" y="154.0" width="1192.0" height="140.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="context title" x="44.0" y="202.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Вакансия, на которую вы откликаетесь</tspan>
+</text>
+<text id="context vacancy" x="44.0" y="240.0" font-size="20" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Стажер-аналитик данных</tspan>
+</text>
+<text id="context meta" x="44.0" y="272.0" font-size="16" font-weight="400" fill="#64758f">
+<tspan x="44.0" dy="0.0">Офис исследовательских проектов • Стажировка • 16 часов/неделю</tspan>
+</text>
+<rect id="form" x="24.0" y="314.0" width="1192.0" height="438.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="form title" x="44.0" y="364.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Отправьте заявку</tspan>
+</text>
+<text id="resume label" x="44.0" y="390.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Резюме</tspan>
+</text>
+<rect id="resume field" x="44.0" y="412.0" width="1120.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="resume placeholder" x="56.0" y="437.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Выберите файл или укажите ссылку</tspan>
+</text>
+<text id="letter label" x="44.0" y="474.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Сопроводительное письмо</tspan>
+</text>
+<rect id="letter field" x="44.0" y="496.0" width="1120.0" height="120.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="letter placeholder" x="56.0" y="521.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Почему вы подходите на эту позицию?</tspan>
+</text>
+<text id="message label" x="44.0" y="626.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Сообщение работодателю</tspan>
+</text>
+<rect id="message field" x="44.0" y="648.0" width="1120.0" height="80.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="message placeholder" x="56.0" y="673.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Краткое сообщение</tspan>
+</text>
+<rect id="submit bg" x="44.0" y="724.0" width="170.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="submit text" x="58.0" y="749.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="58.0" dy="0.0">Отправить отклик</tspan>
+</text>
+<rect id="cancel bg" x="226.0" y="724.0" width="96.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="cancel text" x="240.0" y="749.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="240.0" dy="0.0">Отмена</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Login">
+<g transform="translate(1320,1030)">
+<rect id="Desktop Login bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="login bg" x="1044.0" y="21.0" width="76.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="login text" x="1058.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1058.0" dy="0.0">Вход</tspan>
+</text>
+<rect id="register bg" x="1128.0" y="21.0" width="86.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="register text" x="1142.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1142.0" dy="0.0">Регистра</tspan>
+<tspan x="1142.0" dy="14.0">ция</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Вход</tspan>
+</text>
+<rect id="login card" x="170.0" y="166.0" width="900.0" height="360.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="login title" x="194.0" y="220.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="194.0" dy="0.0">Войдите в аккаунт</tspan>
+</text>
+<text id="login note" x="194.0" y="250.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="194.0" dy="0.0">Войдите, чтобы откликаться на вакансии и отслеживать статусы заявок.</tspan>
+</text>
+<text id="login user label" x="194.0" y="282.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="194.0" dy="0.0">Логин или email</tspan>
+</text>
+<rect id="login user field" x="194.0" y="304.0" width="852.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="login user placeholder" x="206.0" y="329.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="206.0" dy="0.0">student@example.edu</tspan>
+</text>
+<text id="login pass label" x="194.0" y="366.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="194.0" dy="0.0">Пароль</tspan>
+</text>
+<rect id="login pass field" x="194.0" y="388.0" width="852.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="login pass placeholder" x="206.0" y="413.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="206.0" dy="0.0">Введите пароль</tspan>
+</text>
+<rect id="submit bg" x="194.0" y="462.0" width="120.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="submit text" x="208.0" y="487.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="208.0" dy="0.0">Войти</tspan>
+</text>
+<rect id="reg bg" x="326.0" y="462.0" width="150.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="reg text" x="340.0" y="487.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="340.0" dy="0.0">Создать</tspan>
+<tspan x="340.0" dy="16.0">аккаунт</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Register">
+<g transform="translate(2640,1030)">
+<rect id="Desktop Register bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="login bg" x="1044.0" y="21.0" width="76.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="login text" x="1058.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1058.0" dy="0.0">Вход</tspan>
+</text>
+<rect id="register bg" x="1128.0" y="21.0" width="86.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="register text" x="1142.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1142.0" dy="0.0">Регистра</tspan>
+<tspan x="1142.0" dy="14.0">ция</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Регистрация</tspan>
+</text>
+<rect id="register card" x="120.0" y="152.0" width="1000.0" height="560.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="register title" x="144.0" y="204.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="144.0" dy="0.0">Создайте студенческий аккаунт</tspan>
+</text>
+<text id="register note" x="144.0" y="232.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="144.0" dy="0.0">После регистрации можно откликаться на вакансии и редактировать профиль.</tspan>
+</text>
+<text id="reg 0 label" x="144.0" y="260.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="144.0" dy="0.0">Предпочитаемый язык</tspan>
+</text>
+<rect id="reg 0 field" x="144.0" y="282.0" width="460.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 0 placeholder" x="156.0" y="307.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="156.0" dy="0.0">Русский</tspan>
+</text>
+<text id="reg 1 label" x="628.0" y="260.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="628.0" dy="0.0">Логин</tspan>
+</text>
+<rect id="reg 1 field" x="628.0" y="282.0" width="468.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 1 placeholder" x="640.0" y="307.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="640.0" dy="0.0">anna.kovalenko</tspan>
+</text>
+<text id="reg 2 label" x="144.0" y="344.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="144.0" dy="0.0">Email</tspan>
+</text>
+<rect id="reg 2 field" x="144.0" y="366.0" width="460.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 2 placeholder" x="156.0" y="391.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="156.0" dy="0.0">student@example.edu</tspan>
+</text>
+<text id="reg 3 label" x="628.0" y="344.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="628.0" dy="0.0">Имя</tspan>
+</text>
+<rect id="reg 3 field" x="628.0" y="366.0" width="468.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 3 placeholder" x="640.0" y="391.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="640.0" dy="0.0">Анна</tspan>
+</text>
+<text id="reg 4 label" x="144.0" y="428.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="144.0" dy="0.0">Фамилия</tspan>
+</text>
+<rect id="reg 4 field" x="144.0" y="450.0" width="460.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 4 placeholder" x="156.0" y="475.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="156.0" dy="0.0">Коваленко</tspan>
+</text>
+<text id="reg 5 label" x="628.0" y="428.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="628.0" dy="0.0">Пароль</tspan>
+</text>
+<rect id="reg 5 field" x="628.0" y="450.0" width="468.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 5 placeholder" x="640.0" y="475.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="640.0" dy="0.0">Минимум 8 символов</tspan>
+</text>
+<text id="reg 6 label" x="144.0" y="512.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="144.0" dy="0.0">Подтвердите пароль</tspan>
+</text>
+<rect id="reg 6 field" x="144.0" y="534.0" width="460.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="reg 6 placeholder" x="156.0" y="559.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="156.0" dy="0.0">Повторите пароль</tspan>
+</text>
+<rect id="submit bg" x="144.0" y="620.0" width="170.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="submit text" x="158.0" y="645.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="158.0" dy="0.0">Создать аккаунт</tspan>
+</text>
+<rect id="back bg" x="326.0" y="620.0" width="150.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="back text" x="340.0" y="645.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="340.0" dy="0.0">Назад ко входу</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Employer Profile">
+<g transform="translate(0,1990)">
+<rect id="Desktop Employer Profile bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<text id="nav Панель" x="378.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="378.0" dy="0.0">Панель</tspan>
+</text>
+<text id="nav Профиль" x="478.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="478.0" dy="0.0">Профиль</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="logout bg" x="1134.0" y="21.0" width="80.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="logout text" x="1148.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1148.0" dy="0.0">Выход</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Профиль</tspan>
+</text>
+<rect id="profile" x="24.0" y="154.0" width="386.0" height="310.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="name" x="44.0" y="209.0" font-size="32" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Marta Reed</tspan>
+</text>
+<text id="meta" x="44.0" y="245.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Email: career.center@example.edu</tspan>
+<tspan x="44.0" dy="24.8">Роль: Работодатель</tspan>
+<tspan x="44.0" dy="24.8">Предпочитаемый язык: Английский</tspan>
+<tspan x="44.0" dy="24.8">Название организации: University</tspan>
+<tspan x="44.0" dy="24.8">Career Center</tspan>
+<tspan x="44.0" dy="24.8">Должность: Recruitment Coordinator</tspan>
+<tspan x="44.0" dy="24.8">Подразделение: Кафедра компьютерных</tspan>
+<tspan x="44.0" dy="24.8">наук</tspan>
+</text>
+<rect id="actions" x="430.0" y="154.0" width="786.0" height="310.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="actions title" x="454.0" y="211.0" font-size="32" font-weight="700" fill="#162c57">
+<tspan x="454.0" dy="0.0">Быстрые действия</tspan>
+</text>
+<rect id="view bg" x="454.0" y="238.0" width="170.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="view text" x="468.0" y="263.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="468.0" dy="0.0">Смотреть</tspan>
+<tspan x="468.0" dy="16.0">вакансии</tspan>
+</text>
+<rect id="admin bg" x="638.0" y="238.0" width="260.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="admin text" x="652.0" y="263.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="652.0" dy="0.0">Открыть панель</tspan>
+<tspan x="652.0" dy="16.0">работодателя</tspan>
+</text>
+<rect id="edit" x="24.0" y="488.0" width="1192.0" height="300.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="edit title" x="44.0" y="535.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Редактировать профиль работодателя</tspan>
+</text>
+<text id="profile input 0 label" x="44.0" y="558.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Имя</tspan>
+</text>
+<rect id="profile input 0 field" x="44.0" y="580.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="profile input 0 placeholder" x="56.0" y="605.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Marta</tspan>
+</text>
+<text id="profile input 1 label" x="428.0" y="558.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="428.0" dy="0.0">Фамилия</tspan>
+</text>
+<rect id="profile input 1 field" x="428.0" y="580.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="profile input 1 placeholder" x="440.0" y="605.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="440.0" dy="0.0">Reed</tspan>
+</text>
+<text id="profile input 2 label" x="812.0" y="558.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="812.0" dy="0.0">Предпочитаемый язык</tspan>
+</text>
+<rect id="profile input 2 field" x="812.0" y="580.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="profile input 2 placeholder" x="824.0" y="605.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="824.0" dy="0.0">English</tspan>
+</text>
+<text id="profile input 3 label" x="44.0" y="642.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Название организации</tspan>
+</text>
+<rect id="profile input 3 field" x="44.0" y="664.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="profile input 3 placeholder" x="56.0" y="689.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">University Career Center</tspan>
+</text>
+<text id="profile input 4 label" x="428.0" y="642.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="428.0" dy="0.0">Должность</tspan>
+</text>
+<rect id="profile input 4 field" x="428.0" y="664.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="profile input 4 placeholder" x="440.0" y="689.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="440.0" dy="0.0">Recruitment Coordinator</tspan>
+</text>
+<text id="profile input 5 label" x="812.0" y="642.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="812.0" dy="0.0">Подразделение</tspan>
+</text>
+<rect id="profile input 5 field" x="812.0" y="664.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="profile input 5 placeholder" x="824.0" y="689.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="824.0" dy="0.0">Кафедра компьютерных наук</tspan>
+</text>
+<rect id="save bg" x="44.0" y="736.0" width="170.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="save text" x="58.0" y="761.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="58.0" dy="0.0">Сохранить</tspan>
+<tspan x="58.0" dy="16.0">профиль</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Student Applications">
+<g transform="translate(1320,1990)">
+<rect id="Desktop Student Applications bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<text id="nav Мои заявки" x="378.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="378.0" dy="0.0">Мои заявки</tspan>
+</text>
+<text id="nav Профиль" x="510.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="510.0" dy="0.0">Профиль</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="logout bg" x="1134.0" y="21.0" width="80.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="logout text" x="1148.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1148.0" dy="0.0">Выход</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Кабинет студента / Мои заявки</tspan>
+</text>
+<rect id="student" x="24.0" y="154.0" width="360.0" height="520.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="student name" x="44.0" y="205.0" font-size="28" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Anna Kovalenko</tspan>
+</text>
+<text id="student meta" x="44.0" y="255.0" font-size="16" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Computer Science • 2 курс</tspan>
+<tspan x="44.0" dy="24.8">Резюме: Anna Kovalenko CV</tspan>
+<tspan x="44.0" dy="24.8">Email: anna.kovalenko@example.edu</tspan>
+</text>
+<rect id="edit student bg" x="44.0" y="598.0" width="190.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="edit student text" x="58.0" y="623.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="58.0" dy="0.0">Редактировать</tspan>
+<tspan x="58.0" dy="16.0">профиль</tspan>
+</text>
+<rect id="apps" x="408.0" y="154.0" width="808.0" height="520.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="apps title" x="432.0" y="210.0" font-size="28" font-weight="700" fill="#162c57">
+<tspan x="432.0" dy="0.0">Мои заявки</tspan>
+</text>
+<rect id="app row 0" x="432.0" y="226.0" width="736.0" height="104.0" rx="12.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="app title 0" x="450.0" y="264.0" font-size="20" font-weight="700" fill="#162c57">
+<tspan x="450.0" dy="0.0">Стажер-аналитик данных</tspan>
+</text>
+<text id="app meta 0" x="450.0" y="294.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="450.0" dy="0.0">Офис исследовательских проектов • 16 часов/неделю</tspan>
+</text>
+<rect id="app status 0 bg" x="978.0" y="244.0" width="150.0" height="28.0" rx="14.0" fill="#ffe6c1" stroke="#f0ab54" stroke-width="1"/>
+<text id="app status 0 text" x="990.0" y="263.0" font-size="14" font-weight="600" fill="#d07a00">
+<tspan x="990.0" dy="0.0">на рассмотрении</tspan>
+</text>
+<rect id="app row 1" x="432.0" y="352.0" width="736.0" height="104.0" rx="12.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="app title 1" x="450.0" y="390.0" font-size="20" font-weight="700" fill="#162c57">
+<tspan x="450.0" dy="0.0">Ассистент IT-поддержки</tspan>
+</text>
+<text id="app meta 1" x="450.0" y="420.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="450.0" dy="0.0">Кафедра компьютерных наук • 20 часов/неделю</tspan>
+</text>
+<rect id="app status 1 bg" x="978.0" y="370.0" width="150.0" height="28.0" rx="14.0" fill="none" stroke="#9e7ef4" stroke-width="1"/>
+<text id="app status 1 text" x="990.0" y="389.0" font-size="14" font-weight="600" fill="#7543f0">
+<tspan x="990.0" dy="0.0">интервью</tspan>
+</text>
+<rect id="app row 2" x="432.0" y="478.0" width="736.0" height="104.0" rx="12.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="app title 2" x="450.0" y="516.0" font-size="20" font-weight="700" fill="#162c57">
+<tspan x="450.0" dy="0.0">Помощник библиотечной службы</tspan>
+</text>
+<text id="app meta 2" x="450.0" y="546.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="450.0" dy="0.0">Университетская библиотека • 12 часов/неделю</tspan>
+</text>
+<rect id="app status 2 bg" x="978.0" y="496.0" width="150.0" height="28.0" rx="14.0" fill="#d6e0f7" stroke="#d6e0f7" stroke-width="1"/>
+<text id="app status 2 text" x="990.0" y="515.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="990.0" dy="0.0">отправлена</tspan>
+</text>
+</g>
+</g>
+<g id="Desktop Employer Admin">
+<g transform="translate(2640,1990)">
+<rect id="Desktop Employer Admin bg" x="0.0" y="0.0" width="1240.0" height="900.0" rx="0.0" fill="#e9edf5"/>
+<rect id="topbar" x="16.0" y="14.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="logo" x="30.0" y="48.0" font-size="24" font-weight="700" fill="#162c57">
+<tspan x="30.0" dy="0.0">PProject</tspan>
+</text>
+<text id="nav Главная" x="178.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="178.0" dy="0.0">Главная</tspan>
+</text>
+<text id="nav Вакансии" x="278.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="278.0" dy="0.0">Вакансии</tspan>
+</text>
+<text id="nav Панель" x="378.0" y="45.0" font-size="18" font-weight="700" fill="#2a55d7">
+<tspan x="378.0" dy="0.0">Панель</tspan>
+</text>
+<text id="nav Профиль" x="478.0" y="45.0" font-size="18" font-weight="400" fill="#162c57">
+<tspan x="478.0" dy="0.0">Профиль</tspan>
+</text>
+<rect id="lang RU" x="842.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang RU text" x="858.0" y="44.0" font-size="14" font-weight="700" fill="#2a55d7">
+<tspan x="858.0" dy="0.0">RU</tspan>
+</text>
+<rect id="lang EN" x="906.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang EN text" x="922.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="922.0" dy="0.0">EN</tspan>
+</text>
+<rect id="lang DE" x="970.0" y="22.0" width="56.0" height="34.0" rx="9.0" fill="none" stroke="#cbd6ea" stroke-width="1"/>
+<text id="lang DE text" x="986.0" y="44.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="986.0" dy="0.0">DE</tspan>
+</text>
+<rect id="logout bg" x="1134.0" y="21.0" width="80.0" height="36.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="logout text" x="1148.0" y="44.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1148.0" dy="0.0">Выход</tspan>
+</text>
+<rect id="footer" x="16.0" y="828.0" width="1208.0" height="50.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="footer brand" x="32.0" y="860.0" font-size="14" font-weight="700" fill="#162c57">
+<tspan x="32.0" dy="0.0">PProject</tspan>
+</text>
+<text id="footer desc" x="140.0" y="860.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="140.0" dy="0.0">Работа и стажировки для студентов</tspan>
+</text>
+<text id="footer mail" x="956.0" y="860.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="956.0" dy="0.0">Контакты: example@gmail.com</tspan>
+</text>
+<text id="title" x="24.0" y="128.0" font-size="46" font-weight="800" fill="#162c57">
+<tspan x="24.0" dy="0.0">Управление вакансиями работодателя</tspan>
+</text>
+<rect id="vacancies" x="24.0" y="154.0" width="380.0" height="330.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="vacancies title" x="44.0" y="209.0" font-size="28" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Вакансии</tspan>
+</text>
+<line id="divider 0" x1="44.0" y1="214.0" x2="364.0" y2="214.0" stroke="#cbd6ea" stroke-width="1"/>
+<text id="admin vacancy 0" x="44.0" y="244.0" font-size="16" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Стажер-аналитик данных</tspan>
+</text>
+<rect id="status 0 bg" x="282.0" y="224.0" width="82.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="status 0 text" x="294.0" y="243.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="294.0" dy="0.0">активна</tspan>
+</text>
+<rect id="resp 0 bg" x="44.0" y="260.0" width="92.0" height="32.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="resp 0 text" x="58.0" y="281.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="58.0" dy="0.0">Отклики</tspan>
+</text>
+<rect id="edit 0 bg" x="146.0" y="260.0" width="82.0" height="32.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="edit 0 text" x="160.0" y="281.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="160.0" dy="0.0">Редакт.</tspan>
+</text>
+<line id="divider 1" x1="44.0" y1="290.0" x2="364.0" y2="290.0" stroke="#cbd6ea" stroke-width="1"/>
+<text id="admin vacancy 1" x="44.0" y="320.0" font-size="16" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Ассистент IT-поддержки</tspan>
+</text>
+<rect id="status 1 bg" x="282.0" y="300.0" width="82.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="status 1 text" x="294.0" y="319.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="294.0" dy="0.0">активна</tspan>
+</text>
+<rect id="resp 1 bg" x="44.0" y="336.0" width="92.0" height="32.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="resp 1 text" x="58.0" y="357.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="58.0" dy="0.0">Отклики</tspan>
+</text>
+<rect id="edit 1 bg" x="146.0" y="336.0" width="82.0" height="32.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="edit 1 text" x="160.0" y="357.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="160.0" dy="0.0">Редакт.</tspan>
+</text>
+<line id="divider 2" x1="44.0" y1="366.0" x2="364.0" y2="366.0" stroke="#cbd6ea" stroke-width="1"/>
+<text id="admin vacancy 2" x="44.0" y="396.0" font-size="16" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Помощник библиотечной</tspan>
+<tspan x="44.0" dy="16.0">службы</tspan>
+</text>
+<rect id="status 2 bg" x="282.0" y="376.0" width="82.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="status 2 text" x="294.0" y="395.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="294.0" dy="0.0">активна</tspan>
+</text>
+<rect id="resp 2 bg" x="44.0" y="412.0" width="92.0" height="32.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="resp 2 text" x="58.0" y="433.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="58.0" dy="0.0">Отклики</tspan>
+</text>
+<rect id="edit 2 bg" x="146.0" y="412.0" width="82.0" height="32.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="edit 2 text" x="160.0" y="433.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="160.0" dy="0.0">Редакт.</tspan>
+</text>
+<rect id="responses" x="426.0" y="154.0" width="790.0" height="330.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="responses title" x="450.0" y="209.0" font-size="28" font-weight="700" fill="#162c57">
+<tspan x="450.0" dy="0.0">Отклики по вакансии</tspan>
+</text>
+<rect id="response 0" x="450.0" y="226.0" width="720.0" height="64.0" rx="12.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="response name 0" x="466.0" y="258.0" font-size="18" font-weight="700" fill="#162c57">
+<tspan x="466.0" dy="0.0">Anna Kovalenko</tspan>
+</text>
+<text id="response email 0" x="466.0" y="280.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="466.0" dy="0.0">anna.kovalenko@example.edu</tspan>
+</text>
+<rect id="response status 0 bg" x="788.0" y="244.0" width="120.0" height="28.0" rx="14.0" fill="#d6e0f7" stroke="#d6e0f7" stroke-width="1"/>
+<text id="response status 0 text" x="800.0" y="263.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="800.0" dy="0.0">отправлена</tspan>
+</text>
+<rect id="details 0 bg" x="1048.0" y="242.0" width="92.0" height="34.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="details 0 text" x="1062.0" y="264.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1062.0" dy="0.0">Детали</tspan>
+</text>
+<rect id="response 1" x="450.0" y="306.0" width="720.0" height="64.0" rx="12.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="response name 1" x="466.0" y="338.0" font-size="18" font-weight="700" fill="#162c57">
+<tspan x="466.0" dy="0.0">Igor Petrov</tspan>
+</text>
+<text id="response email 1" x="466.0" y="360.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="466.0" dy="0.0">igor.petrov@example.edu</tspan>
+</text>
+<rect id="response status 1 bg" x="788.0" y="324.0" width="120.0" height="28.0" rx="14.0" fill="none" stroke="#9e7ef4" stroke-width="1"/>
+<text id="response status 1 text" x="800.0" y="343.0" font-size="14" font-weight="600" fill="#7543f0">
+<tspan x="800.0" dy="0.0">интервью</tspan>
+</text>
+<rect id="details 1 bg" x="1048.0" y="322.0" width="92.0" height="34.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="details 1 text" x="1062.0" y="344.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1062.0" dy="0.0">Детали</tspan>
+</text>
+<rect id="response 2" x="450.0" y="386.0" width="720.0" height="64.0" rx="12.0" fill="#f3f6fb" stroke="#dbe4f4" stroke-width="1"/>
+<text id="response name 2" x="466.0" y="418.0" font-size="18" font-weight="700" fill="#162c57">
+<tspan x="466.0" dy="0.0">Lea Muller</tspan>
+</text>
+<text id="response email 2" x="466.0" y="440.0" font-size="13" font-weight="400" fill="#64758f">
+<tspan x="466.0" dy="0.0">lea.muller@example.edu</tspan>
+</text>
+<rect id="response status 2 bg" x="788.0" y="404.0" width="120.0" height="28.0" rx="14.0" fill="#cae8d8" stroke="#57b77e" stroke-width="1"/>
+<text id="response status 2 text" x="800.0" y="423.0" font-size="14" font-weight="600" fill="#2d854d">
+<tspan x="800.0" dy="0.0">принята</tspan>
+</text>
+<rect id="details 2 bg" x="1048.0" y="402.0" width="92.0" height="34.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="details 2 text" x="1062.0" y="424.0" font-size="14" font-weight="600" fill="#2a55d7">
+<tspan x="1062.0" dy="0.0">Детали</tspan>
+</text>
+<rect id="create" x="24.0" y="506.0" width="1192.0" height="300.0" rx="14.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="create title" x="44.0" y="556.0" font-size="28" font-weight="700" fill="#162c57">
+<tspan x="44.0" dy="0.0">Создать вакансию</tspan>
+</text>
+<text id="dep label" x="44.0" y="580.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="44.0" dy="0.0">Подразделение</tspan>
+</text>
+<rect id="dep field" x="44.0" y="602.0" width="360.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="dep placeholder" x="56.0" y="627.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="56.0" dy="0.0">Введите любое название подразделения</tspan>
+</text>
+<text id="type label" x="428.0" y="580.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="428.0" dy="0.0">Тип</tspan>
+</text>
+<rect id="type field" x="428.0" y="602.0" width="220.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="type placeholder" x="440.0" y="627.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="440.0" dy="0.0">Стажировка</tspan>
+</text>
+<text id="status label" x="672.0" y="580.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="672.0" dy="0.0">Статус</tspan>
+</text>
+<rect id="status field" x="672.0" y="602.0" width="220.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="status placeholder" x="684.0" y="627.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="684.0" dy="0.0">черновик</tspan>
+</text>
+<text id="workload label" x="916.0" y="580.0" font-size="14" font-weight="400" fill="#162c57">
+<tspan x="916.0" dy="0.0">Занятость (часов/неделю)</tspan>
+</text>
+<rect id="workload field" x="916.0" y="602.0" width="256.0" height="40.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="workload placeholder" x="928.0" y="627.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="928.0" dy="0.0">16</tspan>
+</text>
+<rect id="ru group" x="44.0" y="678.0" width="700.0" height="92.0" rx="10.0" fill="#f8f9fb" stroke="#cbd6ea" stroke-width="1"/>
+<text id="ru legend" x="60.0" y="690.0" font-size="14" font-weight="600" fill="#162c57">
+<tspan x="60.0" dy="0.0">RU (основная версия)</tspan>
+</text>
+<text id="ru fields" x="64.0" y="730.0" font-size="14" font-weight="400" fill="#64758f">
+<tspan x="64.0" dy="0.0">Название (RU)   Описание (RU)   Обязанности (RU)   Требования (RU)   Локация (RU)</tspan>
+</text>
+<rect id="add en bg" x="770.0" y="684.0" width="210.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="add en text" x="784.0" y="709.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="784.0" dy="0.0">Добавить локализацию</tspan>
+<tspan x="784.0" dy="16.0">EN</tspan>
+</text>
+<rect id="add de bg" x="994.0" y="684.0" width="210.0" height="40.0" rx="10.0" fill="none" stroke="#2a55d7" stroke-width="1"/>
+<text id="add de text" x="1008.0" y="709.0" font-size="16" font-weight="600" fill="#2a55d7">
+<tspan x="1008.0" dy="0.0">Добавить локализацию</tspan>
+<tspan x="1008.0" dy="16.0">DE</tspan>
+</text>
+<rect id="submit bg" x="770.0" y="734.0" width="180.0" height="40.0" rx="10.0" fill="#2a55d7" stroke="#2a55d7" stroke-width="1"/>
+<text id="submit text" x="784.0" y="759.0" font-size="16" font-weight="600" fill="#ffffff">
+<tspan x="784.0" dy="0.0">Создать вакансию</tspan>
+</text>
+</g>
+</g>
+</svg>

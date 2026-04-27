@@ -5,6 +5,7 @@ import { getErrorMessage } from "../api/error";
 import { getCurrentUser, getMyApplications } from "../api/services";
 import { getToken } from "../auth";
 import type { Application, User } from "../types/api";
+import { withCurrentLanguage } from "../utils/display";
 
 function statusClass(status: string) {
   if (status === "submitted") return "pp-pill pp-pill-blue";
@@ -48,14 +49,14 @@ export default function MyApplicationsPage() {
 
   const rows = useMemo(() => items, [items]);
   const displayName = profile?.full_name || profile?.username || t("dashboard.defaultStudent");
-  const program = profile?.faculty || "-";
-  const year = profile?.course ?? "-";
-  const resume = profile?.primary_resume_title || "-";
+  const program = profile?.faculty || t("common.notSpecified");
+  const year = profile?.course ?? t("common.notSpecified");
+  const resume = profile?.primary_resume_title || t("common.notSpecified");
 
   if (!token) {
     return (
       <p>
-        {t("common.loginRequired")} <Link to="/login">{t("nav.login")}</Link>
+        {t("common.loginRequired")} <Link to={withCurrentLanguage("/login")}>{t("nav.login")}</Link>
       </p>
     );
   }
@@ -77,6 +78,9 @@ export default function MyApplicationsPage() {
             <p>{t("myApplications.program")}: {program}</p>
             <p>{t("myApplications.year")}: {year}</p>
             <p>{t("myApplications.resume")}: {resume}</p>
+            <Link to={withCurrentLanguage("/dashboard")} className="pp-btn-outline pp-btn-sm">
+              {t("dashboard.editProfile")}
+            </Link>
           </article>
 
           <article className="pp-card">
@@ -91,6 +95,42 @@ export default function MyApplicationsPage() {
                     {t(`status.${application.status}`, application.status)}
                   </span>
                 </div>
+                <div className="pp-info-grid pp-info-grid-compact">
+                  <div className="pp-info-item">
+                    <span className="pp-muted">{t("myApplications.resume")}</span>
+                    <strong>
+                      {application.resume_file ? (
+                        <a href={application.resume_file} target="_blank" rel="noreferrer">
+                          {application.resume_title || t("admin.openResume")}
+                        </a>
+                      ) : (
+                        application.resume_title || t("common.notSpecified")
+                      )}
+                    </strong>
+                  </div>
+                </div>
+
+                {application.student_message && (
+                  <div className="pp-note">
+                    <strong>{t("myApplications.studentMessage")}</strong>
+                    <br />
+                    {application.student_message}
+                  </div>
+                )}
+                {application.cover_letter_text && (
+                  <div className="pp-note">
+                    <strong>{t("myApplications.coverLetter")}</strong>
+                    <br />
+                    {application.cover_letter_text}
+                  </div>
+                )}
+                {application.employer_comment && (
+                  <div className="pp-note">
+                    <strong>{t("myApplications.employerComment")}</strong>
+                    <br />
+                    {application.employer_comment}
+                  </div>
+                )}
               </div>
             ))}
           </article>

@@ -4,19 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { getHomeStats, getVacancies } from "../api/services";
+import { getStoredUser } from "../auth";
 import type { HomeStats, Vacancy } from "../types/api";
+import { withCurrentLanguage } from "../utils/display";
 
 function stripLeadingNumber(text: string): string {
   return text.replace(/^\s*\d+\s*/, "").trim();
-}
-
-function stripLanguagePrefix(text: string): string {
-  return text.replace(/^\s*EN\s*\|\s*DE\s*\|\s*RU\s*/i, "").trim();
-}
-
-function stripAfterColon(text: string): string {
-  const index = text.indexOf(":");
-  return index >= 0 ? text.slice(0, index).trim() : text.trim();
 }
 
 function statusClass(status: string): string {
@@ -29,6 +22,8 @@ function statusClass(status: string): string {
 export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = getStoredUser();
+  const showEmployerLink = user?.role_code !== "student";
 
   const [stats, setStats] = useState<HomeStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
@@ -97,16 +92,9 @@ export default function HomePage() {
     () => stripLeadingNumber(t("home.studentApplications")),
     [t]
   );
-  const localizationLabel = useMemo(
-    () => stripLanguagePrefix(t("home.localization")),
-    [t]
-  );
-  const apiDocsLabel = useMemo(() => stripAfterColon(t("home.apiDocs")), [t]);
 
-  const statsLanguages = stats?.supported_languages?.join(" | ") || "EN | DE | RU";
   const activeVacanciesText = `${stats?.active_vacancies ?? 0} ${activeVacanciesLabel}`;
   const studentApplicationsText = `${stats?.student_applications ?? 0} ${studentApplicationsLabel}`;
-  const docsUrl = stats?.api_docs_url || "/api/docs/swagger/";
   const showStats = !isLoadingStats;
 
   const primaryFeatured = featuredVacancies[0] || null;
@@ -115,7 +103,7 @@ export default function HomePage() {
   const onSearchSubmit = (event: FormEvent) => {
     event.preventDefault();
     const normalized = searchQuery.trim();
-    navigate(normalized ? `/vacancies?q=${encodeURIComponent(normalized)}` : "/vacancies");
+    navigate(withCurrentLanguage(normalized ? `/vacancies?q=${encodeURIComponent(normalized)}` : "/vacancies"));
   };
 
   return (
@@ -127,12 +115,14 @@ export default function HomePage() {
           <h2>{t("home.heroTitle")}</h2>
           <p>{t("home.heroSubtitle")}</p>
           <div className="pp-row">
-            <Link to="/vacancies" className="pp-btn-primary">
+            <Link to={withCurrentLanguage("/vacancies")} className="pp-btn-primary">
               {t("home.browseVacancies")}
             </Link>
-            <Link to="/admin/vacancies" className="pp-btn-outline">
-              {t("home.forEmployers")}
-            </Link>
+            {showEmployerLink && (
+              <Link to={withCurrentLanguage("/admin/vacancies")} className="pp-btn-outline">
+                {t("home.forEmployers")}
+              </Link>
+            )}
           </div>
         </article>
 
@@ -141,8 +131,6 @@ export default function HomePage() {
           <ul className="pp-flat-list">
             <li>{showStats ? activeVacanciesText : t("common.loading")}</li>
             <li>{showStats ? studentApplicationsText : t("common.loading")}</li>
-            <li>{showStats ? `${statsLanguages} ${localizationLabel}` : t("common.loading")}</li>
-            <li>{showStats ? `${apiDocsLabel}: ${docsUrl}` : t("common.loading")}</li>
           </ul>
         </aside>
       </section>
@@ -167,7 +155,7 @@ export default function HomePage() {
           {!isLoadingFeatured && !featuredError && primaryFeatured && (
             <>
               <h3>{primaryFeatured.title}</h3>
-              <p>{primaryFeatured.department_name || primaryFeatured.location || "-"}</p>
+              <p>{primaryFeatured.department_name || primaryFeatured.location || t("common.notSpecified")}</p>
               <span className={statusClass(primaryFeatured.status)}>
                 {t(`status.${primaryFeatured.status}`, primaryFeatured.status)}
               </span>
@@ -177,11 +165,13 @@ export default function HomePage() {
 
         <div className="pp-mobile-stats">
           <article className="pp-card">
-            <h2 className="pp-stat-number">{showStats ? stats?.active_vacancies ?? 0 : "..."}</h2>
+            <h2 className="pp-stat-number">{showStats ? stats?.active_vacancies ?? 0 : t("common.loading")}</h2>
             <p>{t("home.activeVacanciesSmall")}</p>
           </article>
           <article className="pp-card">
-            <h2 className="pp-stat-number pp-stat-green">{showStats ? stats?.student_applications ?? 0 : "..."}</h2>
+            <h2 className="pp-stat-number pp-stat-green">
+              {showStats ? stats?.student_applications ?? 0 : t("common.loading")}
+            </h2>
             <p>{studentApplicationsLabel}</p>
           </article>
         </div>
@@ -191,7 +181,7 @@ export default function HomePage() {
           secondaryFeatured.map((vacancy) => (
             <article key={vacancy.id} className="pp-card">
               <h3>{vacancy.title}</h3>
-              <p>{vacancy.department_name || vacancy.location || "-"}</p>
+              <p>{vacancy.department_name || vacancy.location || t("common.notSpecified")}</p>
               <span className={statusClass(vacancy.status)}>
                 {t(`status.${vacancy.status}`, vacancy.status)}
               </span>

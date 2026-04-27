@@ -1,6 +1,6 @@
 from rest_framework.views import exception_handler
 
-from .i18n import t
+from .localization import t
 
 def localized_exception_handler(exc, context):
     response = exception_handler(exc, context)

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { loginUser } from "../api/services";
 import { getToken, saveAuth } from "../auth";
+import { withCurrentLanguage } from "../utils/display";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (getToken()) {
-      navigate("/dashboard", { replace: true });
+      navigate(withCurrentLanguage("/dashboard"), { replace: true });
     }
   }, [navigate]);
 
@@ -27,7 +28,7 @@ export default function LoginPage() {
     try {
       const data = await loginUser(username, password);
       saveAuth(data.token, data.user);
-      navigate("/dashboard");
+      window.location.assign(withCurrentLanguage("/dashboard"));
     } catch (e) {
       setError(getErrorMessage(e));
     } finally {
@@ -44,12 +45,12 @@ export default function LoginPage() {
 
         <form onSubmit={onSubmit} className="pp-auth-form">
           <label className="pp-label">
-            {t("auth.username")}
+            {t("auth.loginIdentifier")}
             <input
               className="pp-input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder={t("auth.usernamePlaceholder")}
+              placeholder={t("auth.loginIdentifierPlaceholder")}
               required
             />
           </label>
@@ -72,7 +73,7 @@ export default function LoginPage() {
             <button type="submit" className="pp-btn-primary" disabled={submitting}>
               {submitting ? t("auth.signingIn") : t("auth.loginButton")}
             </button>
-            <Link to="/register" className="pp-btn-outline">
+            <Link to={withCurrentLanguage("/register")} className="pp-btn-outline">
               {t("auth.createAccount")}
             </Link>
           </div>

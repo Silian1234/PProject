@@ -5,6 +5,15 @@ import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import { getDepartments, getVacancies } from "../api/services";
 import type { Department, Vacancy } from "../types/api";
+import {
+  formatDate,
+  formatEmploymentType,
+  formatSalary,
+  formatWorkload,
+  getCurrentLanguage,
+  previewText,
+  withCurrentLanguage
+} from "../utils/display";
 
 function badgeClass(status: string) {
   if (status === "active") return "pp-pill pp-pill-green";
@@ -13,7 +22,7 @@ function badgeClass(status: string) {
 }
 
 export default function VacanciesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [q, setQ] = useState(searchParams.get("q") || "");
@@ -54,6 +63,7 @@ export default function VacanciesPage() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const params: Record<string, string> = {};
+    params.lang = searchParams.get("lang") || getCurrentLanguage();
     if (q.trim()) params.q = q.trim();
     if (department) params.department = department;
     if (employmentType) params.employment_type = employmentType;
@@ -102,23 +112,51 @@ export default function VacanciesPage() {
       {!loading &&
         !error &&
         rows.map((vacancy) => (
-          <article key={vacancy.id} className="pp-card pp-vacancy-row">
-            <div>
-              <h3>{vacancy.title}</h3>
-              <p>
-                {vacancy.department_name || vacancy.location || t("vacancies.campus")} -{" "}
-                {vacancy.employment_type === "part_time"
-                  ? t("vacancies.partTime")
-                  : t("vacancies.internship")}
-              </p>
+          <article key={vacancy.id} className="pp-card pp-vacancy-list-card">
+            <div className="pp-vacancy-row">
+              <div>
+                <h3>{vacancy.title}</h3>
+                <p className="pp-subtitle">{previewText(vacancy.description, 180)}</p>
+              </div>
+              <div className="pp-row">
+                <span className={badgeClass(vacancy.status)}>
+                  {t(`status.${vacancy.status}`, vacancy.status)}
+                </span>
+                <Link to={withCurrentLanguage(`/vacancies/${vacancy.id}`)} className="pp-btn-primary pp-btn-sm">
+                  {t("vacancies.open")}
+                </Link>
+              </div>
             </div>
-            <div className="pp-row">
-              <span className={badgeClass(vacancy.status)}>
-                {t(`status.${vacancy.status}`, vacancy.status)}
-              </span>
-              <Link to={`/vacancies/${vacancy.id}`} className="pp-btn-primary pp-btn-sm">
-                {t("vacancies.open")}
-              </Link>
+
+            <div className="pp-info-grid pp-info-grid-compact">
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.department")}</span>
+                <strong>{vacancy.department_name || String(vacancy.department)}</strong>
+              </div>
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.employer")}</span>
+                <strong>{vacancy.employer_name || t("common.notSpecified")}</strong>
+              </div>
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.employmentType")}</span>
+                <strong>{formatEmploymentType(vacancy.employment_type, t)}</strong>
+              </div>
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.location")}</span>
+                <strong>{vacancy.location || t("common.notSpecified")}</strong>
+              </div>
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.workload")}</span>
+                <strong>{formatWorkload(vacancy.workload_hours, t)}</strong>
+              </div>
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.salary")}</span>
+                <strong>{formatSalary(vacancy.salary_from, vacancy.salary_to, t)}</strong>
+              </div>
+              <div className="pp-info-item">
+                <span className="pp-muted">{t("vacancyDetails.deadline")}</span>
+                <strong>{formatDate(vacancy.application_deadline, i18n.language, t)}</strong>
+              </div>
             </div>
           </article>
         ))}

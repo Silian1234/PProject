@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual env
+.venv/
+
+# Local database and uploads
+backend/db.sqlite3
+backend/media/
+
+# Local Django secrets/config
+backend/PProject/local_settings.py
+
+# Frontend local env
+frontend/.env.local
+frontend/node_modules/
+frontend/dist/

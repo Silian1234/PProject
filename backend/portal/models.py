@@ -3,7 +3,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from .constants import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CHOICES, SUPPORTED_LANGUAGE_CODES
-from .translation_service import translate_fields_with_google
 
 
 class TimestampedModel(models.Model):
@@ -32,26 +31,6 @@ class Role(TimestampedModel):
             return existing
 
         source = self.translations.filter(language="en").first() or self.translations.first()
-        if not source:
-            return None
-        if source.language == requested:
-            return source
-
-        translated_values = translate_fields_with_google(
-            source_language=source.language,
-            target_language=requested,
-            fields={
-                "name": source.name,
-                "description": source.description,
-            },
-        )
-        if translated_values:
-            translated, _ = RoleTranslation.objects.update_or_create(
-                role=self,
-                language=requested,
-                defaults=translated_values,
-            )
-            return translated
         return source
 
 
@@ -103,26 +82,6 @@ class Department(TimestampedModel):
             return existing
 
         source = self.translations.filter(language="en").first() or self.translations.first()
-        if not source:
-            return None
-        if source.language == requested:
-            return source
-
-        translated_values = translate_fields_with_google(
-            source_language=source.language,
-            target_language=requested,
-            fields={
-                "name": source.name,
-                "description": source.description,
-            },
-        )
-        if translated_values:
-            translated, _ = DepartmentTranslation.objects.update_or_create(
-                department=self,
-                language=requested,
-                defaults=translated_values,
-            )
-            return translated
         return source
 
 

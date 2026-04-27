@@ -16,12 +16,15 @@ export function getStoredUser(): User | null {
 
 export function saveAuth(token: string, user: User): void {
   localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(user));
+  saveStoredUser(user);
   localStorage.setItem("lang", user.preferred_language);
+}
+
+export function saveStoredUser(user: User): void {
+  localStorage.setItem("user", JSON.stringify(user));
 }
 
 export function clearAuth(): void {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
 }
-

@@ -17,6 +17,7 @@ urlpatterns = [
     path("auth/login/", LoginAPIView.as_view(), name="login"),
     path("auth/logout/", LogoutAPIView.as_view(), name="logout"),
     path("auth/me/", CurrentUserAPIView.as_view(), name="me"),
+    path("auth/profile/", StudentProfileUpdateAPIView.as_view(), name="student-profile-update"),
 ]
 
 urlpatterns += router.urls

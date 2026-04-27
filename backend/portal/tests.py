@@ -9,13 +9,15 @@ from portal.models import (
     Application,
     Department,
     DepartmentTranslation,
+    EmployerProfile,
     Role,
     RoleTranslation,
+    StudentProfile,
     User,
     Vacancy,
     VacancyTranslation,
 )
-from portal.serializers import RegisterSerializer, VacancyWriteSerializer
+from portal.serializers import LoginSerializer, RegisterSerializer, VacancyWriteSerializer
 from portal.translation_service import _translate_text_batch, translate_fields_with_google
 
 
@@ -59,17 +61,14 @@ class AutoTranslationFallbackTests(TestCase):
             location="Main Campus",
         )
 
-    @patch("portal.models.translate_fields_with_google")
-    def test_vacancy_missing_translation_falls_back_without_writes(self, translate_mock):
+    def test_vacancy_missing_translation_falls_back_without_writes(self):
         translation = self.vacancy.translation_for("de")
         self.assertIsNotNone(translation)
         self.assertEqual(translation.language, "en")
         self.assertEqual(translation.title, "Lab Assistant Intern")
         self.assertFalse(VacancyTranslation.objects.filter(vacancy=self.vacancy, language="de").exists())
-        translate_mock.assert_not_called()
 
-    @patch("portal.models.translate_fields_with_google")
-    def test_vacancy_existing_translation_skips_translator(self, translate_mock):
+    def test_vacancy_existing_translation_is_used(self):
         VacancyTranslation.objects.create(
             vacancy=self.vacancy,
             language="de",
@@ -81,40 +80,25 @@ class AutoTranslationFallbackTests(TestCase):
         )
         translation = self.vacancy.translation_for("de")
         self.assertEqual(translation.title, "Bereits vorhanden")
-        translate_mock.assert_not_called()
 
-    @patch("portal.models.translate_fields_with_google")
-    def test_vacancy_falls_back_to_source_without_translator_call(self, translate_mock):
+    def test_vacancy_falls_back_to_source_without_translator_call(self):
         translation = self.vacancy.translation_for("ru")
         self.assertEqual(translation.language, "en")
         self.assertFalse(VacancyTranslation.objects.filter(vacancy=self.vacancy, language="ru").exists())
-        translate_mock.assert_not_called()
 
-    @patch("portal.models.translate_fields_with_google")
-    def test_role_translation_autocreated_when_missing(self, translate_mock):
-        translate_mock.return_value = {
-            "name": "Arbeitgeber",
-            "description": "Konto fur Arbeitgeber",
-        }
+    def test_role_translation_falls_back_without_writes(self):
         translation = self.role.translation_for("de")
         self.assertIsNotNone(translation)
-        self.assertEqual(translation.language, "de")
-        self.assertEqual(translation.name, "Arbeitgeber")
-        self.assertTrue(RoleTranslation.objects.filter(role=self.role, language="de").exists())
-        translate_mock.assert_called_once()
+        self.assertEqual(translation.language, "en")
+        self.assertEqual(translation.name, "Employer")
+        self.assertFalse(RoleTranslation.objects.filter(role=self.role, language="de").exists())
 
-    @patch("portal.models.translate_fields_with_google")
-    def test_department_translation_autocreated_when_missing(self, translate_mock):
-        translate_mock.return_value = {
-            "name": "IT Abteilung",
-            "description": "Technische Abteilung",
-        }
+    def test_department_translation_falls_back_without_writes(self):
         translation = self.department.translation_for("de")
         self.assertIsNotNone(translation)
-        self.assertEqual(translation.language, "de")
-        self.assertEqual(translation.name, "IT Abteilung")
-        self.assertTrue(DepartmentTranslation.objects.filter(department=self.department, language="de").exists())
-        translate_mock.assert_called_once()
+        self.assertEqual(translation.language, "en")
+        self.assertEqual(translation.name, "IT Department")
+        self.assertFalse(DepartmentTranslation.objects.filter(department=self.department, language="de").exists())
 
 
 class TranslationServiceTests(TestCase):
@@ -158,10 +142,24 @@ class VacancyWriteSerializerTests(TestCase):
             role=self.role,
         )
 
-    def test_create_requires_english_translation(self):
+    def test_create_requires_at_least_one_translation(self):
         serializer = VacancyWriteSerializer(
             data={
                 "department": self.department.id,
+                "employment_type": Vacancy.EmploymentType.INTERNSHIP,
+                "status": Vacancy.VacancyStatus.ACTIVE,
+                "translations": {},
+            }
+        )
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("translations", str(serializer.errors))
+
+    @patch("portal.serializers.translate_fields_with_google")
+    def test_create_accepts_custom_department_name_and_non_english_source(self, translate_mock):
+        translate_mock.return_value = None
+        serializer = VacancyWriteSerializer(
+            data={
+                "department_name": "Student Research Hub",
                 "employment_type": Vacancy.EmploymentType.INTERNSHIP,
                 "status": Vacancy.VacancyStatus.ACTIVE,
                 "translations": {
@@ -175,8 +173,13 @@ class VacancyWriteSerializerTests(TestCase):
                 },
             }
         )
-        self.assertFalse(serializer.is_valid())
-        self.assertIn("translations.en", str(serializer.errors))
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        vacancy = serializer.save(employer=self.employer)
+
+        self.assertEqual(vacancy.department.translations.filter(name="Student Research Hub").count(), 3)
+        self.assertTrue(vacancy.translations.filter(language="de").exists())
+        self.assertEqual(translate_mock.call_count, 2)
 
     @patch("portal.serializers.translate_fields_with_google")
     def test_create_accepts_only_english_and_creates_vacancy(self, translate_mock):
@@ -316,7 +319,136 @@ class RegisterSerializerTests(TestCase):
             context={"request": request},
         )
         self.assertFalse(serializer.is_valid())
-        self.assertIn("Passwoerter stimmen nicht ueberein.", str(serializer.errors))
+        self.assertIn("Passwörter stimmen nicht überein.", str(serializer.errors))
+
+    def test_student_registration_generates_university_id_when_missing(self):
+        request = type("Req", (), {"lang": "en"})()
+        serializer = RegisterSerializer(
+            data={
+                "username": "student_without_id",
+                "email": "student_without_id@example.com",
+                "first_name": "Alex",
+                "last_name": "Student",
+                "password": "pass-12345",
+                "password_confirm": "pass-12345",
+                "role": Role.RoleCode.STUDENT,
+                "preferred_language": "en",
+            },
+            context={"request": request},
+        )
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        user = serializer.save()
+        self.assertEqual(user.student_profile.university_id, f"S-{user.pk:06d}")
+
+
+class LoginSerializerTests(TestCase):
+    def setUp(self):
+        self.role = Role.objects.create(code=Role.RoleCode.STUDENT)
+        self.user = User.objects.create_user(
+            username="login_student",
+            email="login_student@example.com",
+            password="pass-12345",
+            role=self.role,
+        )
+
+    def test_login_accepts_email_as_identifier(self):
+        serializer = LoginSerializer(
+            data={
+                "username": "login_student@example.com",
+                "password": "pass-12345",
+            }
+        )
+
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        self.assertEqual(serializer.validated_data["user"], self.user)
+
+
+class StudentProfileUpdateAPITests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.role = Role.objects.create(code=Role.RoleCode.STUDENT)
+        self.student = User.objects.create_user(
+            username="profile_student",
+            password="pass-12345",
+            role=self.role,
+            first_name="Old",
+            last_name="Name",
+        )
+        StudentProfile.objects.create(
+            user=self.student,
+            university_id="S-2001",
+            faculty="",
+            course=1,
+        )
+
+    def test_student_can_update_profile_program_course_and_resume_title(self):
+        self.client.force_authenticate(self.student)
+        response = self.client.patch(
+            "/api/v1/auth/profile/",
+            {
+                "first_name": "Alex",
+                "last_name": "Ivanov",
+                "preferred_language": "ru",
+                "faculty": "Computer Science",
+                "course": 3,
+                "resume_title": "alex_cv.pdf",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.student.refresh_from_db()
+        self.student.student_profile.refresh_from_db()
+        self.assertEqual(self.student.first_name, "Alex")
+        self.assertEqual(self.student.student_profile.faculty, "Computer Science")
+        self.assertEqual(self.student.student_profile.course, 3)
+        self.assertEqual(self.student.resumes.get(is_primary=True).title, "alex_cv.pdf")
+        self.assertEqual(response.data["user"]["primary_resume_title"], "alex_cv.pdf")
+
+
+class EmployerProfileUpdateAPITests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.role = Role.objects.create(code=Role.RoleCode.EMPLOYER)
+        self.employer = User.objects.create_user(
+            username="profile_employer",
+            password="pass-12345",
+            role=self.role,
+            first_name="Old",
+            last_name="Employer",
+        )
+        EmployerProfile.objects.create(
+            user=self.employer,
+            organization_name="Old Organization",
+            position="Old position",
+        )
+
+    def test_employer_can_update_profile_organization_position_and_department(self):
+        self.client.force_authenticate(self.employer)
+        response = self.client.patch(
+            "/api/v1/auth/profile/",
+            {
+                "first_name": "Career",
+                "last_name": "Manager",
+                "preferred_language": "en",
+                "organization_name": "Career Center",
+                "position": "Employer relations manager",
+                "department_name": "Career Services",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.employer.refresh_from_db()
+        self.employer.employer_profile.refresh_from_db()
+        self.assertEqual(self.employer.first_name, "Career")
+        self.assertEqual(self.employer.employer_profile.organization_name, "Career Center")
+        self.assertEqual(self.employer.employer_profile.position, "Employer relations manager")
+        self.assertEqual(self.employer.employer_profile.department.translations.filter(name="Career Services").count(), 3)
+        self.assertEqual(response.data["user"]["organization_name"], "Career Center")
+        self.assertEqual(response.data["user"]["position"], "Employer relations manager")
+        self.assertEqual(response.data["user"]["employer_department_name"], "Career Services")
 
 
 class HomeStatsAPITests(TestCase):
@@ -371,8 +503,53 @@ class HomeStatsAPITests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["active_vacancies"], 1)
         self.assertEqual(response.data["student_applications"], 1)
-        self.assertEqual(response.data["supported_languages"], ["EN", "DE", "RU"])
-        self.assertEqual(response.data["api_docs_url"], "/api/docs/swagger/")
+
+
+class VacancyAPITests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        employer_role = Role.objects.create(code=Role.RoleCode.EMPLOYER)
+        self.department = Department.objects.create(code="api-create")
+        DepartmentTranslation.objects.create(
+            department=self.department,
+            language="en",
+            name="API Create Department",
+            description="Department",
+        )
+        self.employer = User.objects.create_user(
+            username="api_create_employer",
+            password="pass-12345",
+            role=employer_role,
+        )
+        EmployerProfile.objects.create(user=self.employer, organization_name="API Employer")
+
+    @patch("portal.serializers.translate_fields_with_google")
+    def test_create_vacancy_api_returns_read_shape_with_id(self, translate_mock):
+        translate_mock.return_value = None
+        self.client.force_authenticate(self.employer)
+        response = self.client.post(
+            "/api/v1/vacancies/",
+            {
+                "department_name": "API Custom Department",
+                "employment_type": Vacancy.EmploymentType.INTERNSHIP,
+                "status": Vacancy.VacancyStatus.ACTIVE,
+                "translations": {
+                    "en": {
+                        "title": "API Vacancy",
+                        "description": "Description",
+                        "responsibilities": "Responsibilities",
+                        "requirements": "Requirements",
+                        "location": "Campus",
+                    }
+                },
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("id", response.data)
+        self.assertEqual(response.data["title"], "API Vacancy")
+        self.assertIn("department_name", response.data)
 
 
 class DepartmentAPITests(TestCase):

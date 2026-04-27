@@ -18,6 +18,8 @@ TRANSLATIONS = {
         "msg.only_students": "Only students can perform this action.",
         "msg.only_employers": "Only employers or administrators can perform this action.",
         "msg.unauthorized": "Authentication required.",
+        "msg.employer_registration_disabled": "Employer accounts are issued by the university administration.",
+        "msg.profile_updated": "Profile updated successfully.",
     },
     "de": {
         "msg.application_submitted": "Bewerbung wurde erfolgreich gesendet.",
@@ -30,32 +32,37 @@ TRANSLATIONS = {
         "msg.auth_logged_out": "Abmeldung erfolgreich.",
         "msg.status_updated": "Bewerbungsstatus aktualisiert.",
         "msg.field_required": "Dieses Feld ist erforderlich.",
-        "msg.password_mismatch": "Passwoerter stimmen nicht ueberein.",
+        "msg.password_mismatch": "Passwörter stimmen nicht überein.",
         "msg.username_exists": "Benutzername ist bereits vergeben.",
         "msg.email_exists": "E-Mail ist bereits vergeben.",
         "msg.only_students": "Nur Studierende dürfen diese Aktion ausführen.",
         "msg.only_employers": "Nur Arbeitgeber oder Administratoren dürfen diese Aktion ausführen.",
         "msg.unauthorized": "Authentifizierung erforderlich.",
+        "msg.employer_registration_disabled": "Arbeitgeberkonten werden von der Universitätsverwaltung vergeben.",
+        "msg.profile_updated": "Profil erfolgreich aktualisiert.",
     },
     "ru": {
         "msg.application_submitted": "Отклик успешно отправлен.",
         "msg.application_exists": "Вы уже откликались на эту вакансию.",
         "msg.vacancy_not_found": "Вакансия не найдена.",
-        "msg.permission_denied": "Доступ запрещён.",
+        "msg.permission_denied": "Доступ запрещен.",
         "msg.auth_invalid": "Неверный логин или пароль.",
         "msg.auth_registered": "Регистрация успешно завершена.",
         "msg.auth_logged_in": "Вход выполнен.",
         "msg.auth_logged_out": "Выход выполнен.",
-        "msg.status_updated": "Статус заявки обновлён.",
+        "msg.status_updated": "Статус заявки обновлен.",
         "msg.field_required": "Это поле обязательно.",
-        "msg.password_mismatch": "\u041f\u0430\u0440\u043e\u043b\u0438 \u043d\u0435 \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u044e\u0442.",
+        "msg.password_mismatch": "Пароли не совпадают.",
         "msg.username_exists": "Пользователь с таким логином уже существует.",
         "msg.email_exists": "Пользователь с таким email уже существует.",
         "msg.only_students": "Это действие доступно только студентам.",
         "msg.only_employers": "Это действие доступно только работодателям и администраторам.",
         "msg.unauthorized": "Требуется авторизация.",
+        "msg.employer_registration_disabled": "Аккаунты работодателей выдает администрация университета.",
+        "msg.profile_updated": "Профиль успешно обновлен.",
     },
 }
+
 
 def normalize_language(raw_value: str | None) -> str:
     if not raw_value:
@@ -63,6 +70,7 @@ def normalize_language(raw_value: str | None) -> str:
     primary = raw_value.split(",")[0].split(";")[0].strip().lower()
     normalized = primary.split("-")[0]
     return normalized if normalized in SUPPORTED_LANGUAGE_CODES else DEFAULT_LANGUAGE
+
 
 def resolve_language(headers=None, query_lang=None):
     if query_lang:
@@ -75,6 +83,7 @@ def resolve_language(headers=None, query_lang=None):
         if h in SUPPORTED_LANGUAGE_CODES:
             return h
     return DEFAULT_LANGUAGE
+
 
 def t(key: str, lang: str | None = None, default: str | None = None):
     lang = lang if lang in SUPPORTED_LANGUAGE_CODES else DEFAULT_LANGUAGE

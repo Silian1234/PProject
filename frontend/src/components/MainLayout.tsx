@@ -1,21 +1,49 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { clearAuth, getStoredUser, getToken } from "../auth";
-import { logoutUser } from "../api/services";
+import { clearAuth, getStoredUser, getToken, saveStoredUser } from "../auth";
+import { getCurrentUser, logoutUser } from "../api/services";
+import { withCurrentLanguage } from "../utils/display";
 
 export default function MainLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const token = getToken();
+  const [token, setToken] = useState(getToken());
   const [user, setUser] = useState(getStoredUser());
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
+    const currentToken = getToken();
+    setToken(currentToken);
     setUser(getStoredUser());
-  }, [location.pathname]);
+
+    if (!currentToken) {
+      return;
+    }
+
+    let cancelled = false;
+    getCurrentUser()
+      .then((currentUser) => {
+        if (cancelled) return;
+        saveStoredUser(currentUser);
+        setUser(currentUser);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        clearAuth();
+        setToken(null);
+        setUser(null);
+        if (!["/login", "/register"].includes(location.pathname)) {
+          navigate(withCurrentLanguage("/login"), { replace: true });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location.pathname, navigate]);
 
   const setLang = (lang: "en" | "de" | "ru") => {
     localStorage.setItem("lang", lang);
@@ -32,11 +60,24 @@ export default function MainLayout() {
 
   const desktopNav = useMemo(
     () => [
-      { to: "/vacancies", label: t("nav.vacancies"), show: true },
-      { to: "/my-applications", label: t("nav.applications"), show: canSeeApplications },
-      { to: "/admin/vacancies", label: t("nav.admin"), show: canSeeEmployer }
+      { to: withCurrentLanguage("/"), label: t("nav.home"), show: true },
+      { to: withCurrentLanguage("/vacancies"), label: t("nav.vacancies"), show: true },
+      { to: withCurrentLanguage("/dashboard"), label: t("nav.profile"), show: Boolean(token) },
+      { to: withCurrentLanguage("/my-applications"), label: t("nav.applications"), show: canSeeApplications },
+      { to: withCurrentLanguage("/admin/vacancies"), label: t("nav.admin"), show: canSeeEmployer }
     ],
-    [t, canSeeApplications, canSeeEmployer]
+    [t, token, canSeeApplications, canSeeEmployer]
+  );
+
+  const mobileNav = useMemo(
+    () => [
+      { to: withCurrentLanguage("/"), label: t("nav.home"), show: true },
+      { to: withCurrentLanguage("/vacancies"), label: t("nav.vacancies"), show: true },
+      { to: withCurrentLanguage("/my-applications"), label: t("nav.applications"), show: canSeeApplications },
+      { to: withCurrentLanguage("/admin/vacancies"), label: t("nav.adminShort"), show: canSeeEmployer },
+      { to: withCurrentLanguage(token ? "/dashboard" : "/login"), label: t("nav.profile"), show: true }
+    ],
+    [t, token, canSeeApplications, canSeeEmployer]
   );
 
   const onLogout = async () => {
@@ -47,9 +88,10 @@ export default function MainLayout() {
       // backend token may already be invalid
     } finally {
       clearAuth();
+      setToken(null);
       setUser(null);
       setIsLoggingOut(false);
-      navigate("/login", { replace: true });
+      navigate(withCurrentLanguage("/login"), { replace: true });
     }
   };
 
@@ -57,7 +99,7 @@ export default function MainLayout() {
     <div className="pp-root">
       <header className="pp-topbar">
         <div className="pp-logo-wrap">
-          <NavLink to="/" className="pp-logo">
+          <NavLink to={withCurrentLanguage("/")} className="pp-logo">
             PProject
           </NavLink>
         </div>
@@ -93,10 +135,10 @@ export default function MainLayout() {
 
           {!token && (
             <div className="pp-auth">
-              <NavLink to="/login" className="pp-auth-link">
+              <NavLink to={withCurrentLanguage("/login")} className="pp-auth-link">
                 {t("nav.login")}
               </NavLink>
-              <NavLink to="/register" className="pp-auth-link">
+              <NavLink to={withCurrentLanguage("/register")} className="pp-auth-link">
                 {t("nav.register")}
               </NavLink>
             </div>
@@ -119,22 +161,27 @@ export default function MainLayout() {
         <Outlet />
       </main>
 
+      <footer className="pp-footer">
+        <span className="pp-footer-brand">PProject</span>
+        <span>{t("footer.product")}</span>
+        <span>
+          {t("footer.contact")}:{" "}
+          <a href={`mailto:${t("footer.email")}`}>{t("footer.email")}</a>
+        </span>
+      </footer>
+
       <nav className="pp-mobile-bottom-nav">
-        <NavLink to="/" className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}>
-          {t("nav.home")}
-        </NavLink>
-        <NavLink
-          to="/vacancies"
-          className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
-        >
-          {t("nav.vacancies")}
-        </NavLink>
-        <NavLink
-          to={token ? "/dashboard" : "/login"}
-          className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
-        >
-          {t("nav.profile")}
-        </NavLink>
+        {mobileNav
+          .filter((item) => item.show)
+          .map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => (isActive ? "pp-tab active" : "pp-tab")}
+            >
+              {item.label}
+            </NavLink>
+          ))}
       </nav>
     </div>
   );

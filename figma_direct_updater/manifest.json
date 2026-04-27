@@ -1,0 +1,79 @@
+{
+    "name":  "PProject Direct UI Updater",
+    "id":  "pproject-direct-ui-updater",
+    "api":  "1.0.0",
+    "main":  "code.js",
+    "editorType":  [
+                       "figma"
+                   ],
+    "menu":  [
+                 {
+                     "name":  "01 Очистка",
+                     "command":  "stage-cleanup"
+                 },
+                 {
+                     "name":  "02 Десктоп: витрина",
+                     "command":  "stage-desktop-main"
+                 },
+                 {
+                     "name":  "03 Десктоп: сценарии",
+                     "command":  "stage-desktop-flow"
+                 },
+                 {
+                     "name":  "04 Мобайл: витрина",
+                     "command":  "stage-mobile-main"
+                 },
+                 {
+                     "name":  "05 Мобайл: сценарии",
+                     "command":  "stage-mobile-flow"
+                 },
+                 {
+                     "name":  "06 Десктоп: недостающее",
+                     "command":  "stage-desktop-missing"
+                 },
+                 {
+                     "name":  "07 Мобайл: недостающее",
+                     "command":  "stage-mobile-missing"
+                 },
+                 {
+                     "name":  "08 Десктоп: вход",
+                     "command":  "stage-desktop-auth"
+                 },
+                 {
+                     "name":  "09 Десктоп: профили",
+                     "command":  "stage-desktop-profiles"
+                 },
+                 {
+                     "name":  "10 Десктоп: заявки",
+                     "command":  "stage-desktop-app-states"
+                 },
+                 {
+                     "name":  "11 Мобайл: вход",
+                     "command":  "stage-mobile-auth"
+                 },
+                 {
+                     "name":  "12 Мобайл: профили",
+                     "command":  "stage-mobile-profiles"
+                 },
+                 {
+                     "name":  "13 Мобайл: заявки",
+                     "command":  "stage-mobile-app-states"
+                 },
+                 {
+                     "name":  "14 Проверка макета",
+                     "command":  "stage-audit-fix"
+                 },
+                 {
+                     "name":  "15 Визуальная правка",
+                     "command":  "stage-visual-polish"
+                 },
+                 {
+                     "name":  "16 Правка текста",
+                     "command":  "stage-text-fix"
+                 },
+                 {
+                     "name":  "17 Короткие подписи",
+                     "command":  "stage-short-labels"
+                 }
+             ]
+}

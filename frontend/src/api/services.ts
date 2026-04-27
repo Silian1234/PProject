@@ -7,6 +7,7 @@ import type {
   LoginResponse,
   RegisterPayload,
   RegisterResponse,
+  StudentProfileUpdateResponse,
   User,
   Vacancy,
   VacancyApplication,
@@ -97,6 +98,60 @@ export async function loginUser(username: string, password: string): Promise<Log
 
 export async function getCurrentUser(): Promise<User> {
   const { data } = await api.get<User>("/auth/me/");
+  return data;
+}
+
+export type StudentProfileUpdatePayload = {
+  first_name: string;
+  last_name: string;
+  preferred_language: "en" | "de" | "ru";
+  faculty: string;
+  course: number;
+  resume_title?: string;
+  resume_file?: File | null;
+};
+
+export type EmployerProfileUpdatePayload = {
+  first_name: string;
+  last_name: string;
+  preferred_language: "en" | "de" | "ru";
+  organization_name: string;
+  position: string;
+  department_name: string;
+};
+
+export async function updateStudentProfile(
+  payload: StudentProfileUpdatePayload
+): Promise<StudentProfileUpdateResponse> {
+  const formData = new FormData();
+  formData.append("first_name", payload.first_name);
+  formData.append("last_name", payload.last_name);
+  formData.append("preferred_language", payload.preferred_language);
+  formData.append("faculty", payload.faculty);
+  formData.append("course", String(payload.course));
+  if (payload.resume_title) formData.append("resume_title", payload.resume_title);
+  if (payload.resume_file) formData.append("resume_file", payload.resume_file);
+
+  const { data } = await api.patch<StudentProfileUpdateResponse>("/auth/profile/", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+  return data;
+}
+
+export async function updateEmployerProfile(
+  payload: EmployerProfileUpdatePayload
+): Promise<StudentProfileUpdateResponse> {
+  const formData = new FormData();
+  formData.append("first_name", payload.first_name);
+  formData.append("last_name", payload.last_name);
+  formData.append("preferred_language", payload.preferred_language);
+  formData.append("organization_name", payload.organization_name);
+  formData.append("position", payload.position);
+  formData.append("department_name", payload.department_name);
+
+  const { data } = await api.patch<StudentProfileUpdateResponse>("/auth/profile/", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
   return data;
 }
 

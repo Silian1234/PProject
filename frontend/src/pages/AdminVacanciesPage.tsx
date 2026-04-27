@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage } from "../api/error";
 import {
   createVacancy,
-  getDepartments,
   getVacancies,
   getVacancyApplications,
   getVacancyByLang,
@@ -13,9 +12,16 @@ import {
   updateVacancy
 } from "../api/services";
 import { getToken } from "../auth";
-import type { ApplicationStatus, Department, Vacancy, VacancyWritePayload } from "../types/api";
+import type {
+  ApplicationStatus,
+  Vacancy,
+  VacancyApplication,
+  VacancyWritePayload
+} from "../types/api";
+import { previewText, withCurrentLanguage } from "../utils/display";
 
 type Mode = "create" | "edit";
+type Lang = "en" | "de" | "ru";
 
 type Translation = {
   title: string;
@@ -26,7 +32,7 @@ type Translation = {
 };
 
 type VacancyForm = {
-  department: string;
+  department_name: string;
   employment_type: "internship" | "part_time";
   workload_hours: string;
   salary_from: string;
@@ -38,6 +44,13 @@ type VacancyForm = {
   ru: Translation;
 };
 
+type ApplicationDraft = {
+  status: ApplicationStatus;
+  employer_comment: string;
+};
+
+const languages = ["en", "de", "ru"] as const;
+
 const emptyTranslation = (): Translation => ({
   title: "",
   description: "",
@@ -46,8 +59,14 @@ const emptyTranslation = (): Translation => ({
   location: ""
 });
 
+const hiddenTranslations = (): Record<Lang, boolean> => ({
+  en: false,
+  de: false,
+  ru: false
+});
+
 const defaultForm = (): VacancyForm => ({
-  department: "",
+  department_name: "",
   employment_type: "internship",
   workload_hours: "",
   salary_from: "",
@@ -59,6 +78,11 @@ const defaultForm = (): VacancyForm => ({
   ru: emptyTranslation()
 });
 
+const normalizeLang = (lang: string): Lang => {
+  const short = lang.slice(0, 2).toLowerCase();
+  return languages.includes(short as Lang) ? (short as Lang) : "en";
+};
+
 const isCompleteTranslation = (tr: Translation) =>
   Boolean(
     tr.title.trim() &&
@@ -68,74 +92,95 @@ const isCompleteTranslation = (tr: Translation) =>
       tr.location.trim()
   );
 
+function applicationStatusClass(status: string) {
+  if (status === "submitted") return "pp-pill pp-pill-blue";
+  if (status === "under_review") return "pp-pill pp-pill-orange";
+  if (status === "interview") return "pp-pill pp-pill-violet";
+  if (status === "accepted") return "pp-pill pp-pill-green";
+  return "pp-pill";
+}
+
 export default function AdminVacanciesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const token = getToken();
+  const baseLanguage = useMemo(() => normalizeLang(i18n.language), [i18n.language]);
+  const optionalLanguages = useMemo(
+    () => languages.filter((lang) => lang !== baseLanguage),
+    [baseLanguage]
+  );
+
   const [mode, setMode] = useState<Mode>("create");
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(null);
-  const [counts, setCounts] = useState<Record<number, number>>({});
-  const [quickStatus, setQuickStatus] = useState<Record<number, ApplicationStatus>>({});
+  const [applications, setApplications] = useState<VacancyApplication[]>([]);
+  const [applicationDrafts, setApplicationDrafts] = useState<Record<number, ApplicationDraft>>({});
+  const [expandedApplicationId, setExpandedApplicationId] = useState<number | null>(null);
   const [form, setForm] = useState<VacancyForm>(defaultForm());
+  const [visibleTranslations, setVisibleTranslations] = useState<Record<Lang, boolean>>(
+    hiddenTranslations()
+  );
   const [loading, setLoading] = useState(true);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [updatingApplicationId, setUpdatingApplicationId] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
-
-  const loadVacancies = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const [data, deps] = await Promise.all([getVacancies(), getDepartments()]);
-      setVacancies(data);
-      setDepartments(deps);
-      setForm((prev) => {
-        const existingIds = new Set(deps.map((dep) => String(dep.id)));
-        if (prev.department && existingIds.has(prev.department)) {
-          return prev;
-        }
-        if (deps.length === 0) {
-          return prev;
-        }
-        return { ...prev, department: String(deps[0].id) };
-      });
-      const quick: Record<number, ApplicationStatus> = {};
-      data.forEach((v) => {
-        quick[v.id] = "under_review";
-      });
-      setQuickStatus(quick);
-
-      const countEntries = await Promise.all(
-        data.map(async (vacancy) => {
-          try {
-            const apps = await getVacancyApplications(vacancy.id);
-            return [vacancy.id, apps.length] as const;
-          } catch {
-            return [vacancy.id, 0] as const;
-          }
-        })
-      );
-      setCounts(Object.fromEntries(countEntries));
-
-      if (data.length > 0 && !selectedVacancyId) {
-        setSelectedVacancyId(data[0].id);
-      }
-    } catch (e) {
-      setError(getErrorMessage(e));
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedVacancyId]);
-
-  useEffect(() => {
-    void loadVacancies();
-  }, [loadVacancies]);
 
   const selectedVacancy = useMemo(
     () => vacancies.find((v) => v.id === selectedVacancyId) || null,
     [vacancies, selectedVacancyId]
   );
+
+  const loadVacancies = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await getVacancies();
+      setVacancies(data);
+      setSelectedVacancyId((prev) => prev ?? data[0]?.id ?? null);
+    } catch (e) {
+      setError(getErrorMessage(e));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadApplications = useCallback(async (vacancyId: number) => {
+    setApplicationsLoading(true);
+    setError("");
+    setExpandedApplicationId(null);
+    try {
+      const data = await getVacancyApplications(vacancyId);
+      setApplications(data);
+      setApplicationDrafts(
+        Object.fromEntries(
+          data.map((item) => [
+            item.id,
+            {
+              status: item.status,
+              employer_comment: item.employer_comment || ""
+            }
+          ])
+        )
+      );
+    } catch (e) {
+      setError(getErrorMessage(e));
+      setApplications([]);
+      setApplicationDrafts({});
+    } finally {
+      setApplicationsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadVacancies();
+  }, [loadVacancies]);
+
+  useEffect(() => {
+    if (selectedVacancyId) {
+      void loadApplications(selectedVacancyId);
+    }
+  }, [loadApplications, selectedVacancyId]);
 
   const syncFormFromVacancy = async (vacancy: Vacancy) => {
     setError("");
@@ -145,8 +190,9 @@ export default function AdminVacanciesPage() {
         getVacancyByLang(vacancy.id, "de"),
         getVacancyByLang(vacancy.id, "ru")
       ]);
+      setVisibleTranslations(hiddenTranslations());
       setForm({
-        department: String(vacancy.department),
+        department_name: vacancy.department_name || String(vacancy.department),
         employment_type: vacancy.employment_type as "internship" | "part_time",
         workload_hours: vacancy.workload_hours ? String(vacancy.workload_hours) : "",
         salary_from: vacancy.salary_from || "",
@@ -182,18 +228,19 @@ export default function AdminVacanciesPage() {
 
   const toPayload = (): VacancyWritePayload => {
     const translations: VacancyWritePayload["translations"] = {
-      en: form.en
+      [baseLanguage]: form[baseLanguage]
     };
-    if (isCompleteTranslation(form.de)) {
-      translations.de = form.de;
-    }
-    if (isCompleteTranslation(form.ru)) {
-      translations.ru = form.ru;
-    }
+
+    optionalLanguages.forEach((lang) => {
+      if (visibleTranslations[lang] && isCompleteTranslation(form[lang])) {
+        translations[lang] = form[lang];
+      }
+    });
+
     return {
-      department: Number(form.department),
+      department_name: form.department_name.trim(),
       employment_type: form.employment_type,
-      location: form.en.location,
+      location: form[baseLanguage].location,
       workload_hours: form.workload_hours ? Number(form.workload_hours) : null,
       salary_from: form.salary_from || null,
       salary_to: form.salary_to || null,
@@ -203,12 +250,19 @@ export default function AdminVacanciesPage() {
     };
   };
 
+  const resetEditor = () => {
+    setMode("create");
+    setForm(defaultForm());
+    setVisibleTranslations(hiddenTranslations());
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!form.department) {
-      setError(t("common.notFound"));
+    if (!form.department_name.trim()) {
+      setError(t("admin.departmentRequired"));
       return;
     }
+
     setSaving(true);
     setMsg("");
     setError("");
@@ -217,7 +271,7 @@ export default function AdminVacanciesPage() {
       if (mode === "create") {
         await createVacancy(payload);
         setMsg(t("admin.vacancyCreated"));
-        setForm(defaultForm());
+        resetEditor();
       } else if (selectedVacancyId) {
         await updateVacancy(selectedVacancyId, payload);
         setMsg(t("admin.vacancyUpdated"));
@@ -230,26 +284,110 @@ export default function AdminVacanciesPage() {
     }
   };
 
-  const onQuickSet = async (vacancyId: number) => {
-    setError("");
+  const onUpdateApplication = async (applicationId: number) => {
+    const draft = applicationDrafts[applicationId];
+    if (!draft) {
+      return;
+    }
+
+    setUpdatingApplicationId(applicationId);
     setMsg("");
+    setError("");
     try {
-      const targetStatus = quickStatus[vacancyId] || "under_review";
-      const apps = await getVacancyApplications(vacancyId);
-      await Promise.all(
-        apps.map((app) => updateApplicationStatus(app.id, targetStatus))
-      );
-      setMsg(t("admin.updatedApplications", { count: apps.length }));
-      await loadVacancies();
+      await updateApplicationStatus(applicationId, draft.status, draft.employer_comment);
+      setMsg(t("admin.applicationUpdated"));
+      if (selectedVacancyId) {
+        await loadApplications(selectedVacancyId);
+      }
     } catch (e) {
       setError(getErrorMessage(e));
+    } finally {
+      setUpdatingApplicationId(null);
     }
   };
+
+  const renderTranslationFields = (lang: Lang, required: boolean) => (
+    <fieldset key={lang} className="pp-translation-box">
+      <legend>
+        {lang.toUpperCase()} {required ? t("admin.baseLanguage") : t("admin.optionalLanguage")}
+      </legend>
+      <label className="pp-label">
+        {t("admin.titleField")} ({lang.toUpperCase()})
+        <input
+          className="pp-input"
+          value={form[lang].title}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              [lang]: { ...prev[lang], title: e.target.value }
+            }))
+          }
+          required={required || visibleTranslations[lang]}
+        />
+      </label>
+      <label className="pp-label">
+        {t("admin.descriptionField")} ({lang.toUpperCase()})
+        <textarea
+          className="pp-textarea pp-textarea-sm"
+          value={form[lang].description}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              [lang]: { ...prev[lang], description: e.target.value }
+            }))
+          }
+          required={required || visibleTranslations[lang]}
+        />
+      </label>
+      <label className="pp-label">
+        {t("admin.responsibilitiesField")} ({lang.toUpperCase()})
+        <textarea
+          className="pp-textarea pp-textarea-sm"
+          value={form[lang].responsibilities}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              [lang]: { ...prev[lang], responsibilities: e.target.value }
+            }))
+          }
+          required={required || visibleTranslations[lang]}
+        />
+      </label>
+      <label className="pp-label">
+        {t("admin.requirementsField")} ({lang.toUpperCase()})
+        <textarea
+          className="pp-textarea pp-textarea-sm"
+          value={form[lang].requirements}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              [lang]: { ...prev[lang], requirements: e.target.value }
+            }))
+          }
+          required={required || visibleTranslations[lang]}
+        />
+      </label>
+      <label className="pp-label">
+        {t("admin.location")} ({lang.toUpperCase()})
+        <input
+          className="pp-input"
+          value={form[lang].location}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              [lang]: { ...prev[lang], location: e.target.value }
+            }))
+          }
+          required={required || visibleTranslations[lang]}
+        />
+      </label>
+    </fieldset>
+  );
 
   if (!token) {
     return (
       <p>
-        {t("common.loginRequired")} <Link to="/login">{t("nav.login")}</Link>
+        {t("common.loginRequired")} <Link to={withCurrentLanguage("/login")}>{t("nav.login")}</Link>
       </p>
     );
   }
@@ -262,65 +400,183 @@ export default function AdminVacanciesPage() {
 
       <section className="pp-employer-grid">
         <aside className="pp-card">
-          <h2>{t("admin.actions")}</h2>
-          <div className="pp-column">
-            <button type="button" className="pp-btn-primary" onClick={() => setMode("create")}>
-              {t("admin.createVacancy")}
-            </button>
-            <button type="button" className="pp-btn-outline" onClick={() => setMode("edit")}>
-              {t("admin.editVacancy")}
-            </button>
-          </div>
-        </aside>
-
-        <article className="pp-card">
-          <h2>{t("admin.applicationsByVacancy")}</h2>
+          <h2>{t("admin.selectVacancy")}</h2>
           {loading && <p>{t("common.loading")}</p>}
+          {!loading && vacancies.length === 0 && <p>{t("common.notFound")}</p>}
           {!loading &&
             vacancies.map((vacancy) => (
               <div key={vacancy.id} className="pp-application-item">
-              <h3>{vacancy.title}</h3>
-              <p className="pp-subtitle">{vacancy.department_name || vacancy.department}</p>
-              <p>{t("admin.applicationsCount", { count: counts[vacancy.id] ?? 0 })}</p>
+                <h3>{vacancy.title}</h3>
+                <p className="pp-subtitle">{vacancy.department_name || vacancy.department}</p>
                 <div className="pp-row">
-                  <select
-                    className="pp-select pp-select-sm"
-                    value={quickStatus[vacancy.id] || "under_review"}
-                    onChange={(e) =>
-                      setQuickStatus((prev) => ({
-                        ...prev,
-                        [vacancy.id]: e.target.value as ApplicationStatus
-                      }))
-                    }
-                  >
-                    <option value="submitted">{t("status.submitted")}</option>
-                    <option value="under_review">{t("status.under_review")}</option>
-                    <option value="interview">{t("status.interview")}</option>
-                    <option value="accepted">{t("status.accepted")}</option>
-                    <option value="rejected">{t("status.rejected")}</option>
-                  </select>
                   <button
                     type="button"
-                    className="pp-btn-outline pp-btn-sm"
-                    onClick={() => void onQuickSet(vacancy.id)}
+                    className={
+                      selectedVacancyId === vacancy.id
+                        ? "pp-btn-primary pp-btn-sm"
+                        : "pp-btn-outline pp-btn-sm"
+                    }
+                    onClick={() => setSelectedVacancyId(vacancy.id)}
                   >
-                    {t("admin.setStatus")}: {t(`status.${quickStatus[vacancy.id] || "under_review"}`)}
+                    {t("admin.showApplications")}
                   </button>
-                </div>
-                {mode === "edit" && (
                   <button
                     type="button"
                     className="pp-btn-link"
                     onClick={() => {
+                      setMode("edit");
                       setSelectedVacancyId(vacancy.id);
                       void syncFormFromVacancy(vacancy);
                     }}
                   >
                     {t("admin.loadToEditor")}
                   </button>
-                )}
+                </div>
               </div>
             ))}
+        </aside>
+
+        <article className="pp-card">
+          <h2>{t("admin.applicationsByVacancy")}</h2>
+          {selectedVacancy && (
+            <p className="pp-subtitle">
+              {t("admin.selectedVacancy")}: {selectedVacancy.title}
+            </p>
+          )}
+          {applicationsLoading && <p>{t("common.loading")}</p>}
+          {!applicationsLoading && selectedVacancyId && applications.length === 0 && (
+            <p>{t("admin.noApplications")}</p>
+          )}
+          {!applicationsLoading && applications.length > 0 && (
+            <div className="pp-applications-list">
+              {applications.map((application) => {
+                const draft = applicationDrafts[application.id] || {
+                  status: application.status,
+                  employer_comment: application.employer_comment || ""
+                };
+                const isExpanded = expandedApplicationId === application.id;
+
+                return (
+                  <div key={application.id} className="pp-application-item pp-application-compact">
+                    <div className="pp-application-summary">
+                      <div>
+                        <h3>{application.student_name || t("common.notSpecified")}</h3>
+                        <p className="pp-subtitle">
+                          {application.student_email || t("common.notSpecified")}
+                        </p>
+                      </div>
+                      <span className={applicationStatusClass(draft.status)}>
+                        {t(`status.${draft.status}`, draft.status)}
+                      </span>
+                    </div>
+
+                    <div className="pp-application-meta">
+                      <span>
+                        {t("admin.resume")}:{" "}
+                        {application.resume_title || t("admin.noResume")}
+                      </span>
+                      <span>
+                        {t("admin.studentMessage")}:{" "}
+                        {application.student_message
+                          ? previewText(application.student_message, 70)
+                          : t("common.notSpecified")}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pp-btn-outline pp-btn-sm"
+                      onClick={() => setExpandedApplicationId(isExpanded ? null : application.id)}
+                    >
+                      {isExpanded ? t("admin.hideApplication") : t("admin.openApplication")}
+                    </button>
+
+                    {isExpanded && (
+                      <div className="pp-application-details">
+                        <p>
+                          {t("admin.resume")}:{" "}
+                          {application.resume_file ? (
+                            <a href={application.resume_file} target="_blank" rel="noreferrer">
+                              {application.resume_title || t("admin.openResume")}
+                            </a>
+                          ) : (
+                            t("admin.noResume")
+                          )}
+                        </p>
+
+                        {application.student_message && (
+                          <div className="pp-note">
+                            <strong>{t("admin.studentMessage")}</strong>
+                            <br />
+                            {application.student_message}
+                          </div>
+                        )}
+                        {application.cover_letter_text && (
+                          <div className="pp-note">
+                            <strong>{t("admin.coverLetter")}</strong>
+                            <br />
+                            {application.cover_letter_text}
+                          </div>
+                        )}
+
+                        <div className="pp-row">
+                          <label className="pp-label">
+                            {t("admin.status")}
+                            <select
+                              className="pp-select pp-select-sm"
+                              value={draft.status}
+                              onChange={(e) =>
+                                setApplicationDrafts((prev) => ({
+                                  ...prev,
+                                  [application.id]: {
+                                    ...draft,
+                                    status: e.target.value as ApplicationStatus
+                                  }
+                                }))
+                              }
+                            >
+                              <option value="submitted">{t("status.submitted")}</option>
+                              <option value="under_review">{t("status.under_review")}</option>
+                              <option value="interview">{t("status.interview")}</option>
+                              <option value="accepted">{t("status.accepted")}</option>
+                              <option value="rejected">{t("status.rejected")}</option>
+                            </select>
+                          </label>
+                          <label className="pp-label pp-grow">
+                            {t("admin.employerComment")}
+                            <textarea
+                              className="pp-textarea pp-textarea-sm"
+                              value={draft.employer_comment}
+                              placeholder={t("admin.commentPlaceholder")}
+                              onChange={(e) =>
+                                setApplicationDrafts((prev) => ({
+                                  ...prev,
+                                  [application.id]: {
+                                    ...draft,
+                                    employer_comment: e.target.value
+                                  }
+                                }))
+                              }
+                            />
+                          </label>
+                        </div>
+                        <button
+                          type="button"
+                          className="pp-btn-primary pp-btn-sm"
+                          disabled={updatingApplicationId === application.id}
+                          onClick={() => void onUpdateApplication(application.id)}
+                        >
+                          {updatingApplicationId === application.id
+                            ? t("admin.saving")
+                            : t("admin.saveApplication")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </article>
       </section>
 
@@ -332,19 +588,14 @@ export default function AdminVacanciesPage() {
 
         <form onSubmit={onSubmit} className="pp-form-grid">
           <label className="pp-label">
-            {t("admin.departmentId")}
-            <select
-              className="pp-select"
-              value={form.department}
-              onChange={(e) => setForm((prev) => ({ ...prev, department: e.target.value }))}
+            {t("admin.departmentName")}
+            <input
+              className="pp-input"
+              value={form.department_name}
+              placeholder={t("admin.departmentPlaceholder")}
+              onChange={(e) => setForm((prev) => ({ ...prev, department_name: e.target.value }))}
               required
-            >
-              {departments.map((dep) => (
-                <option key={dep.id} value={dep.id}>
-                  {dep.name}
-                </option>
-              ))}
-            </select>
+            />
           </label>
 
           <label className="pp-label">
@@ -428,81 +679,31 @@ export default function AdminVacanciesPage() {
             />
           </label>
 
-          {(["en", "de", "ru"] as const).map((lang) => (
-            <fieldset key={lang} className="pp-translation-box">
-              <legend>{lang.toUpperCase()}</legend>
-              <label className="pp-label">
-                {t("admin.titleField")}
-                <input
-                  className="pp-input"
-                  value={form[lang].title}
-                  onChange={(e) =>
-                    setForm((prev) => ({
+          {renderTranslationFields(baseLanguage, true)}
+
+          <div className="pp-row">
+            {optionalLanguages.map((lang) =>
+              visibleTranslations[lang] ? null : (
+                <button
+                  key={lang}
+                  type="button"
+                  className="pp-btn-outline pp-btn-sm"
+                  onClick={() =>
+                    setVisibleTranslations((prev) => ({
                       ...prev,
-                      [lang]: { ...prev[lang], title: e.target.value }
+                      [lang]: true
                     }))
                   }
-                  required={lang === "en"}
-                />
-              </label>
-              <label className="pp-label">
-                {t("admin.descriptionField")}
-                <textarea
-                  className="pp-textarea pp-textarea-sm"
-                  value={form[lang].description}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      [lang]: { ...prev[lang], description: e.target.value }
-                    }))
-                  }
-                  required={lang === "en"}
-                />
-              </label>
-              <label className="pp-label">
-                {t("admin.responsibilitiesField")}
-                <textarea
-                  className="pp-textarea pp-textarea-sm"
-                  value={form[lang].responsibilities}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      [lang]: { ...prev[lang], responsibilities: e.target.value }
-                    }))
-                  }
-                  required={lang === "en"}
-                />
-              </label>
-              <label className="pp-label">
-                {t("admin.requirementsField")}
-                <textarea
-                  className="pp-textarea pp-textarea-sm"
-                  value={form[lang].requirements}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      [lang]: { ...prev[lang], requirements: e.target.value }
-                    }))
-                  }
-                  required={lang === "en"}
-                />
-              </label>
-              <label className="pp-label">
-                {t("admin.location")}
-                <input
-                  className="pp-input"
-                  value={form[lang].location}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      [lang]: { ...prev[lang], location: e.target.value }
-                    }))
-                  }
-                  required={lang === "en"}
-                />
-              </label>
-            </fieldset>
-          ))}
+                >
+                  {t("admin.addTranslation", { lang: lang.toUpperCase() })}
+                </button>
+              )
+            )}
+          </div>
+
+          {optionalLanguages
+            .filter((lang) => visibleTranslations[lang])
+            .map((lang) => renderTranslationFields(lang, false))}
 
           <div className="pp-row">
             <button type="submit" className="pp-btn-primary" disabled={saving}>
@@ -512,6 +713,11 @@ export default function AdminVacanciesPage() {
                   ? t("admin.createVacancy")
                   : t("admin.saveChanges")}
             </button>
+            {mode === "edit" && (
+              <button type="button" className="pp-btn-outline" onClick={resetEditor}>
+                {t("common.cancel")}
+              </button>
+            )}
           </div>
         </form>
       </section>
