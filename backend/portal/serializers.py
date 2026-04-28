@@ -804,6 +804,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     student_name = serializers.SerializerMethodField()
     employer_name = serializers.SerializerMethodField()
     author_name = serializers.SerializerMethodField()
+    target_name = serializers.SerializerMethodField()
+    target_role = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
@@ -818,9 +820,20 @@ class ReviewSerializer(serializers.ModelSerializer):
             "vacancy_title",
             "student_name",
             "employer_name",
+            "target_name",
+            "target_role",
             "created_at",
         )
-        read_only_fields = ("author", "author_name", "vacancy_title", "student_name", "employer_name", "created_at")
+        read_only_fields = (
+            "author",
+            "author_name",
+            "vacancy_title",
+            "student_name",
+            "employer_name",
+            "target_name",
+            "target_role",
+            "created_at",
+        )
 
     def get_vacancy_title(self, obj) -> str:
         tr = obj.application.vacancy.translation_for(request_language(self))
@@ -838,6 +851,16 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_author_name(self, obj) -> str:
         return obj.author.get_full_name() or obj.author.username
+
+    def get_target_name(self, obj) -> str:
+        if obj.review_type == Review.ReviewType.STUDENT_TO_EMPLOYER:
+            return self.get_employer_name(obj)
+        return self.get_student_name(obj)
+
+    def get_target_role(self, obj) -> str:
+        if obj.review_type == Review.ReviewType.STUDENT_TO_EMPLOYER:
+            return Role.RoleCode.EMPLOYER
+        return Role.RoleCode.STUDENT
 
     def validate(self, attrs):
         lang = request_language(self)
@@ -865,6 +888,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         if incoming_review_type and incoming_review_type != review_type:
             # Role wins over client payload: students cannot rate students, employers cannot rate employers.
             attrs["review_type"] = review_type
+        target_user_id = (
+            application.vacancy.employer_id
+            if review_type == Review.ReviewType.STUDENT_TO_EMPLOYER
+            else application.student_id
+        )
+        if target_user_id == user.id:
+            raise serializers.ValidationError(t("msg.self_review_not_allowed", lang))
         if Review.objects.filter(application=application, author=user, review_type=review_type).exists():
             raise serializers.ValidationError(t("msg.review_exists", lang))
 

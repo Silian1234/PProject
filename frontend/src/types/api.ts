@@ -187,5 +187,7 @@ export type Review = {
   vacancy_title: string;
   student_name: string;
   employer_name: string;
+  target_name: string;
+  target_role: "student" | "employer";
   created_at: string;
 };

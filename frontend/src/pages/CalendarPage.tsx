@@ -26,7 +26,7 @@ const copy = {
   },
   de: {
     title: "Interview-Kalender",
-    subtitle: "Geplante Interviews werden im System gespeichert und kГ¶nnen von Arbeitgebern verwaltet werden.",
+    subtitle: "Geplante Interviews werden im System gespeichert und können von Arbeitgebern verwaltet werden.",
     empty: "Noch keine Interviews.",
     vacancy: "Stelle",
     student: "Student",
@@ -39,18 +39,18 @@ const copy = {
     cancelled: "abgesagt"
   },
   ru: {
-    title: "РљР°Р»РµРЅРґР°СЂСЊ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёР№",
-    subtitle: "Р—Р°РїР»Р°РЅРёСЂРѕРІР°РЅРЅС‹Рµ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёСЏ С…СЂР°РЅСЏС‚СЃСЏ РІ СЃРёСЃС‚РµРјРµ Рё СѓРїСЂР°РІР»СЏСЋС‚СЃСЏ СЂР°Р±РѕС‚РѕРґР°С‚РµР»РµРј.",
-    empty: "РЎРѕР±РµСЃРµРґРѕРІР°РЅРёР№ РїРѕРєР° РЅРµС‚.",
-    vacancy: "Р’Р°РєР°РЅСЃРёСЏ",
-    student: "РЎС‚СѓРґРµРЅС‚",
-    employer: "Р Р°Р±РѕС‚РѕРґР°С‚РµР»СЊ",
-    date: "Р”Р°С‚Р° Рё РІСЂРµРјСЏ",
-    notes: "Р—Р°РјРµС‚РєРё",
-    save: "РЎРѕС…СЂР°РЅРёС‚СЊ",
-    planned: "Р·Р°РїР»Р°РЅРёСЂРѕРІР°РЅРѕ",
-    done: "РїСЂРѕРІРµРґРµРЅРѕ",
-    cancelled: "РѕС‚РјРµРЅРµРЅРѕ"
+    title: "Календарь собеседований",
+    subtitle: "Запланированные собеседования хранятся в системе и управляются работодателем.",
+    empty: "Собеседований пока нет.",
+    vacancy: "Вакансия",
+    student: "Студент",
+    employer: "Работодатель",
+    date: "Дата и время",
+    notes: "Заметки",
+    save: "Сохранить",
+    planned: "запланировано",
+    done: "проведено",
+    cancelled: "отменено"
   }
 };
 
@@ -168,7 +168,7 @@ export default function CalendarPage() {
                   <div>
                     <h3>{item.vacancy_title}</h3>
                     <p className="pp-subtitle">
-                      {c.student}: {item.student_name} В· {c.employer}: {item.employer_name}
+                      {c.student}: {item.student_name} · {c.employer}: {item.employer_name}
                     </p>
                   </div>
                   <span className={statusClass(draft.status)}>{c[draft.status]}</span>

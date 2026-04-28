@@ -5,24 +5,9 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 
-from portal.models import (
-    Application,
-    Department,
-    DepartmentTranslation,
-    EmployerProfile,
-    Interview,
-    Notification,
-    Role,
-    RoleTranslation,
-    Review,
-    StudentProfile,
-    User,
-    Vacancy,
-    VacancySubscription,
-    VacancyTranslation,
-)
-from portal.serializers import LoginSerializer, RegisterSerializer, VacancyWriteSerializer
-from portal.translation_service import _translate_text_batch, translate_fields_with_google
+from .models import *
+from .serializers import LoginSerializer, RegisterSerializer, VacancyWriteSerializer
+from .translation_service import _translate_text_batch, translate_fields_with_google
 
 
 class AutoTranslationFallbackTests(TestCase):
@@ -809,6 +794,9 @@ class ExtendedProcessAPITests(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["review"]["review_type"], Review.ReviewType.STUDENT_TO_EMPLOYER)
+        self.assertEqual(response.data["review"]["target_name"], "Extended Employer")
+        self.assertEqual(response.data["review"]["target_role"], Role.RoleCode.EMPLOYER)
 
         self.client.force_authenticate(self.employer)
         response = self.client.post(
@@ -822,6 +810,9 @@ class ExtendedProcessAPITests(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["review"]["review_type"], Review.ReviewType.EMPLOYER_TO_STUDENT)
+        self.assertEqual(response.data["review"]["target_name"], "extended_student")
+        self.assertEqual(response.data["review"]["target_role"], Role.RoleCode.STUDENT)
         self.assertEqual(Review.objects.filter(application=self.application).count(), 2)
 
     def test_review_type_is_forced_by_authenticated_role(self):
@@ -854,3 +845,38 @@ class ExtendedProcessAPITests(TestCase):
         self.assertEqual(response.status_code, 201)
         review = Review.objects.get(pk=response.data["review"]["id"])
         self.assertEqual(review.review_type, Review.ReviewType.EMPLOYER_TO_STUDENT)
+
+    def test_user_cannot_review_self_even_if_application_points_to_same_user(self):
+        self_review_vacancy = Vacancy.objects.create(
+            employer=self.student,
+            department=self.department,
+            employment_type=Vacancy.EmploymentType.INTERNSHIP,
+            status=Vacancy.VacancyStatus.ACTIVE,
+        )
+        VacancyTranslation.objects.create(
+            vacancy=self_review_vacancy,
+            language="en",
+            title="Self Review Trap",
+            description="Description",
+            responsibilities="Responsibilities",
+            requirements="Requirements",
+            location="Main Campus",
+        )
+        self_review_application = Application.objects.create(
+            vacancy=self_review_vacancy,
+            student=self.student,
+        )
+
+        self.client.force_authenticate(self.student)
+        response = self.client.post(
+            "/api/v1/reviews/",
+            {
+                "application": self_review_application.id,
+                "rating": 5,
+                "comment": "This must not be possible",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Review.objects.filter(application=self_review_application).exists())

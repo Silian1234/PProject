@@ -31,7 +31,9 @@ const copy = {
     empty: "No reviews yet.",
     noApplications: "No applications available for review.",
     employerToStudent: "Employer review of student",
-    studentToEmployer: "Student review of employer"
+    studentToEmployer: "Student review of employer",
+    target: "Review target",
+    author: "Author"
   },
   de: {
     title: "Bewertungen",
@@ -47,7 +49,9 @@ const copy = {
     empty: "Noch keine Bewertungen.",
     noApplications: "Keine Bewerbungen für eine Bewertung verfügbar.",
     employerToStudent: "Arbeitgeberbewertung des Studierenden",
-    studentToEmployer: "Studierendenbewertung des Arbeitgebers"
+    studentToEmployer: "Studierendenbewertung des Arbeitgebers",
+    target: "Ziel der Bewertung",
+    author: "Autor"
   },
   ru: {
     title: "Отзывы и оценки",
@@ -63,7 +67,9 @@ const copy = {
     empty: "Отзывов пока нет.",
     noApplications: "Нет заявок, по которым можно оставить отзыв.",
     employerToStudent: "Отзыв работодателя о студенте",
-    studentToEmployer: "Отзыв студента о работодателе"
+    studentToEmployer: "Отзыв студента о работодателе",
+    target: "Кого оценивают",
+    author: "Автор"
   }
 };
 
@@ -72,12 +78,21 @@ function currentCopy(language: string) {
   return copy[code] || copy.en;
 }
 
-function applicationLabel(item: ReviewApplication) {
-  if ("student_name" in item && item.student_name) {
-    return `${item.student_name} · ${item.vacancy_title}`;
+function applicationLabel(item: ReviewApplication, isStudent: boolean) {
+  if (isStudent) {
+    const employer = "employer_name" in item && item.employer_name ? ` · ${item.employer_name}` : "";
+    return `${item.vacancy_title}${employer}`;
   }
-  const employer = "employer_name" in item && item.employer_name ? ` · ${item.employer_name}` : "";
-  return `${item.vacancy_title}${employer}`;
+
+  const student = "student_name" in item && item.student_name ? item.student_name : "";
+  return student ? `${student} · ${item.vacancy_title}` : item.vacancy_title;
+}
+
+function reviewTargetName(review: Review) {
+  if (review.target_name) {
+    return review.target_name;
+  }
+  return review.review_type === "student_to_employer" ? review.employer_name : review.student_name;
 }
 
 export default function ReviewsPage() {
@@ -152,7 +167,6 @@ export default function ReviewsPage() {
     try {
       const response = await createReview({
         application: Number(applicationId),
-        review_type: reviewType,
         rating: Number(rating),
         comment
       });
@@ -195,7 +209,7 @@ export default function ReviewsPage() {
                 <select className="pp-select" value={applicationId} onChange={(e) => setApplicationId(e.target.value)}>
                   {applications.map((item) => (
                     <option key={item.id} value={item.id}>
-                      {applicationLabel(item)}
+                      {applicationLabel(item, isStudent)}
                     </option>
                   ))}
                 </select>
@@ -243,7 +257,10 @@ export default function ReviewsPage() {
                 <span className="pp-pill pp-pill-green">{review.rating}/5</span>
               </div>
               <p>
-                {review.author_name} · {formatDate(review.created_at, i18n.language, t)}
+                {c.target}: {reviewTargetName(review)}
+              </p>
+              <p>
+                {c.author}: {review.author_name} · {formatDate(review.created_at, i18n.language, t)}
               </p>
               <p>{review.comment || t("common.notSpecified")}</p>
             </article>

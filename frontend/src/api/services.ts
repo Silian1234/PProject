@@ -263,7 +263,7 @@ export async function getReviews(applicationId?: number): Promise<Review[]> {
 
 export async function createReview(payload: {
   application: number;
-  review_type: ReviewType;
+  review_type?: ReviewType;
   rating: number;
   comment?: string;
 }): Promise<{ message: string; review: Review }> {

@@ -31,6 +31,7 @@ TRANSLATIONS = {
         "msg.interview_updated": "Interview updated.",
         "msg.review_created": "Review saved.",
         "msg.review_exists": "You already left this review.",
+        "msg.self_review_not_allowed": "You cannot leave a review for yourself.",
     },
     "de": {
         "msg.application_submitted": "Bewerbung wurde erfolgreich gesendet.",
@@ -62,6 +63,7 @@ TRANSLATIONS = {
         "msg.interview_updated": "Interview aktualisiert.",
         "msg.review_created": "Bewertung gespeichert.",
         "msg.review_exists": "Du hast diese Bewertung bereits abgegeben.",
+        "msg.self_review_not_allowed": "Du kannst keine Bewertung für dich selbst abgeben.",
     },
     "ru": {
         "msg.application_submitted": "Отклик успешно отправлен.",
@@ -93,6 +95,7 @@ TRANSLATIONS = {
         "msg.interview_updated": "Собеседование обновлено.",
         "msg.review_created": "Отзыв сохранен.",
         "msg.review_exists": "Вы уже оставили этот отзыв.",
+        "msg.self_review_not_allowed": "Нельзя оставить отзыв самому себе.",
     },
 }
 
